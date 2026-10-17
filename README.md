@@ -12,10 +12,13 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ## Estado
 
-M1 y M1.1 se consolidan en el [PR #1](https://github.com/jnbntc/infrabadge/pull/1),
-en borrador y sin fusionar. [El informe consolidado](docs/M1-M11-VALIDATION.md)
+El [PR #1](https://github.com/jnbntc/infrabadge/pull/1) fue fusionado con M1.
+M1.1 y la documentación conjunta se publicaron después en `feat/m1-ui` y siguen
+fuera de ese merge. [El informe consolidado](docs/M1-M11-VALIDATION.md)
 distingue tests/CI, validación M1 por USB, tres retornos M1.1 sólo con batería y
 mediciones pendientes. La placa conserva el diagnóstico M1.1 instalado.
+Por elección del usuario, #1 conserva la evidencia complementaria y no se abrió
+otro PR para los cambios de la rama.
 
 La matriz de conexiones se contrastó con el esquemático oficial N8R8 y los ejemplos
 ESP-IDF **V2**. [HARDWARE.md](docs/HARDWARE.md) documenta señales, polaridades,
@@ -158,10 +161,12 @@ python3 tools/generate_screen.py --check
 El workflow `.github/workflows/m0.yml` prepara los tres perfiles M0, M1 y M1.1 con
 imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
 La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
-pasó el 17 de octubre de 2026. M1 sigue en [PR #1 en borrador](https://github.com/jnbntc/infrabadge/pull/1),
-con la validación funcional física cerrada y sin fusionar con `main`.
+pasó el 17 de octubre de 2026. M1 se fusionó mediante el
+[PR #1](https://github.com/jnbntc/infrabadge/pull/1), con validación funcional física
+cerrada; M1.1 se publicó posteriormente y todavía no está integrado en `main`.
 Los límites y mediciones pendientes están en el informe físico.
-El estado de CI de la revisión consolidada se consulta en los checks del PR #1;
+El estado de CI de la revisión consolidada se consulta en las ejecuciones de Actions
+de `feat/m1-ui` para el SHA correspondiente;
 la ejecución histórica M1 no sustituye la validación de la revisión vigente.
 
 El PNG se compara por píxeles descomprimidos, no por su flujo de compresión zlib.

@@ -79,7 +79,8 @@ El workflow `.github/workflows/m0.yml` cubre los cuatro perfiles y los tests
 nativos/visuales con las mismas acciones e imagen fijadas. El 17 de octubre de 2026
 se publicaron la base M0 `910bf9f` en `main` y M1 `ff353a4` en `feat/m1-ui`, tras
 autorización del usuario. El [PR #1](https://github.com/jnbntc/infrabadge/pull/1)
-permanece en borrador, sin fusionar.
+quedó entonces en borrador. Se fusionó posteriormente con M1 como head `62b0556`;
+los commits M1.1 publicados después quedan fuera de ese merge.
 
 La [ejecución GitHub Actions por push](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
 terminó con **success** para `ff353a494f760f4ef12933e3c28e384ca002e1ac`.

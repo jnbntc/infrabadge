@@ -135,7 +135,7 @@ las seis referencias definitivas.
 | Compilaciones y verificación de cinco perfiles | Pasaron; tamaños a continuación |
 | Registro del diagnóstico en ELF Xtensa | 28 bytes en `.rtc_noinit`, tipo SHT_NOBITS |
 | Actionlint y revisión de espacios del diff | Pasaron |
-| Workflow ampliado en GitHub | En ese cierre local aún no ejecutado; para la revisión publicada, consultar checks del PR #1 |
+| Workflow ampliado en GitHub | En ese cierre local aún no ejecutado; para la revisión publicada, consultar Actions por SHA de la rama |
 | Carga física M1.1 y secuencia con batería | Carga autorizada completada; tres retornos confirmados por el operador |
 
 | Perfil | Aplicación compilada (bytes) |

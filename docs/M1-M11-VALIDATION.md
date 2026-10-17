@@ -2,9 +2,15 @@
 
 Fecha de cierre funcional: **17 de octubre de 2026**. Objetivo físico:
 **Waveshare ESP32-S3-ePaper-1.54 V2**, ESP-IDF **v5.5.5** fijado por commit.
-La integración se conserva en `feat/m1-ui`, [PR #1](https://github.com/jnbntc/infrabadge/pull/1),
-en borrador y sin fusionar. M1.1 se desarrolló en `feat/m1.1-timer-diag` y se
-incorporó por avance directo de la rama del PR, preservando el historial.
+El código conjunto se conserva en `feat/m1-ui`. Mientras se preparaba esta
+consolidación, el [PR #1](https://github.com/jnbntc/infrabadge/pull/1) fue fusionado
+el 17 de octubre de 2026 a las **17:40:59 (Argentina, UTC−3)**, con head `62b0556`
+y merge `be7330d`: incluye **M1**, sin M1.1. Los commits M1.1 y este informe se
+publicaron después en la misma rama y no forman parte de ese merge. M1.1 se
+desarrolló en `feat/m1.1-timer-diag` y se incorporó por avance directo a
+`feat/m1-ui`, preservando el historial; su integración en `main` sigue pendiente.
+Tras comprobar el merge, el usuario eligió dejar sólo la evidencia complementaria
+en #1 y los cambios en la rama, **sin abrir otro PR**. No se ejecutó otra fusión.
 
 ## Qué incorpora
 
@@ -30,7 +36,7 @@ No se incorporan Wi-Fi, MQTT, FastAPI ni dependencias gráficas externas.
 | Compilación local | Cinco perfiles: display, sensors, sleep, ui, timer; verificador Xtensa, 8 MB, USB, cierre sin radios y configuración de seguridad | Firmware compilable, selección exclusiva y artefactos identificados; no valida periféricos reales |
 | M1 físico con USB | 12 combinaciones vista/estado confirmadas, botones, reposo de 60,05 s, agrupación, retorno por timer/BOOT/PWR | Funcionamiento UI y sleep/wake con USB en la placa probada |
 | M1.1 físico con batería | RUN 0/3 nuevo → 1/3 → 2/3 → PASS 3/3, USB retirado, sin intervención, confirmado por el operador | Tres retornos funcionales consecutivos por timer exclusivamente con batería |
-| GitHub Actions | Workflow preparado para los cinco perfiles y tests con sanitizadores, imagen/acciones fijadas, contenedor sin red ni dispositivos | Repetición en CI; consultar los checks de la revisión vigente del PR, sin extrapolarla al hardware |
+| GitHub Actions | Workflow preparado para los cinco perfiles y tests con sanitizadores, imagen/acciones fijadas, contenedor sin red ni dispositivos | Repetición en CI; consultar la ejecución del SHA publicado de la rama, sin extrapolarla al hardware |
 
 La suite de la entrada real M1.1 usa SDK/HAL simulados y exige exactamente tres
 llamadas al Power Manager con 60 s y botones deshabilitados. Las seis referencias
@@ -126,4 +132,4 @@ python3 tools/simulate_timer.py --check
 ```
 
 No abren puertos ni flashean. Para identificar qué revisión pasó CI, usar el SHA y
-el enlace de su ejecución en el PR; un run histórico no valida otro commit.
+el enlace de su ejecución en Actions; un run histórico no valida otro commit.
