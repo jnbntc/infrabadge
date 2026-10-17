@@ -1,4 +1,4 @@
-# InfraBadge — M1 / diagnóstico M1.1
+# InfraBadge — M2 Wi-Fi / HTTPS (en desarrollo)
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -9,6 +9,42 @@ Este repositorio es **jnbntc/infrabadge**. `jnbntc/distrobox-stack` sigue admini
 exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente.
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
+
+## M2: conectividad de laboratorio
+
+Perfil separado: STA → HTTPS con CA/hostname/fechas → snapshot validado → pantalla
+condicional → deep sleep. Gateway FastAPI/Pydantic con estados simulados, tokens
+individuales y ETag/304. Sin collectors de producción, MQTT ni base de datos.
+La placa conserva **M1.1**: M2 no se ha flasheado ni validado físicamente.
+
+M1.1 se propone por separado en [PR #2](https://github.com/jnbntc/infrabadge/pull/2),
+base main; M2 parte de esa misma base estable y usa feat/m2-connectivity.
+Ninguna rama anterior se reescribió y no se fusionó nada automáticamente.
+
+```sh
+bash tools/build-m2.sh --all  # seis perfiles + tests C/sanitizadores/visuales; no hardware
+# Backend independiente, sin instalar nada en el SDK:
+python3 -m venv /tmp/infrabadge-gateway
+/tmp/infrabadge-gateway/bin/python -m pip install --require-hashes -r gateway/requirements.lock
+/tmp/infrabadge-gateway/bin/python -m pytest -q gateway/tests
+/tmp/infrabadge-gateway/bin/python tools/m2/generate_protocol.py --check
+```
+
+Se necesita hora UTC inicial desde un host físico confiable para validar TLS.
+Reset frío o pérdida de continuidad exige renovarla por USB. La NVS no está
+cifrada; no se promete resistencia a extracción física. No hay credenciales
+compiladas ni TLS sin validación. El RTC externo2056 continúa excluido.
+
+- [Arquitectura y ramas M2](docs/M2-DESIGN.md).
+- [Contrato, gateway, provisión y rotación](docs/M2-API.md).
+- [Seguridad y límites de confianza](docs/SECURITY.md).
+- [Resultados M2](docs/M2-VALIDATION.md).
+- [Procedimiento físico futuro, requiere autorización](docs/M2-PHYSICAL.md).
+- [Impacto energético esperado, sin mediciones](docs/POWER.md).
+
+Captura SINTÉTICA generada por el mismo renderizador C (no prueba de hardware):
+
+![M2 simulado](docs/connectivity-ui/simulated-healthy.png)
 
 ## Estado
 
@@ -158,7 +194,7 @@ python3 tools/generate_screen.py
 python3 tools/generate_screen.py --check
 ```
 
-El workflow `.github/workflows/m0.yml` prepara los tres perfiles M0, M1 y M1.1 con
+El workflow `.github/workflows/m0.yml` conserva los tres perfiles M0, M1 y M1.1 y añade M2 con
 imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
 La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
 pasó el 17 de octubre de 2026. M1 se fusionó mediante el

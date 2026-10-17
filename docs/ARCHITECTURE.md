@@ -75,3 +75,46 @@ Los recursos de pantalla se regeneran con Python estándar y se validan sin red.
 
 La arquitectura UI nueva y sus contratos están en [UI.md](UI.md). M0 conserva sus
 perfiles originales; la selección M1 utiliza una entrada de aplicación separada.
+
+## Extensión M2: ciclo conectado separado
+
+La entrada `main/m2_main.c` usa componentes nuevos `connectivity_core`,
+`device_config`, `wifi_manager`, `https_client` y `connectivity_ui`. Conserva los
+archivos originales de HAL, e-paper, Power Manager, UI M1 y diagnóstico M1.1.
+[Diseño y ramas](M2-DESIGN.md), [contrato](M2-API.md), [seguridad](SECURITY.md).
+
+El perfil exclusivo `IB_M2_CONNECTIVITY` necesita además `-DIB_BUILD_M2=ON` en
+un directorio propio. Esa selección se pasa como propiedad de build a la expansión
+temprana de CMake/IDF: CONFIG_* todavía no está disponible allí. Los cinco perfiles
+anteriores mantienen fuera su cierre de dependencias radio/HTTP. El verificador
+inspecciona configuración, arquitectura ELF, símbolos y offsets de cada perfil.
+Sólo M2 admite Wi-Fi; Bluetooth/MQTT permanecen excluidos en todos.
+
+El core portable recibe puertos de conexión, fetch, reloj, persistencia, render,
+apagado y sueño. Por eso las pruebas inyectan fallos sin abrir sockets Wi-Fi ni
+invocar deep sleep real. El adaptador de display llama al renderer M1 intacto y
+sustituye sólo etiquetas M2, reloj y semántica de datos históricos. No utiliza
+valores simulados como diagnósticos físicos del dispositivo.
+
+Caché de snapshot versionada en NVS ligada al CRC de configuración, con último
+estado bueno y ETag. Caché de framebuffer exacto de 5000 bytes en RTC RAM con CRC,
+aceptada sólo al volver de deep sleep con la misma configuración. Comparación por
+bytes, sin depender únicamente de hash. Un reset frío invalida framebuffer y hora;
+la copia NVS sigue siendo histórica hasta validar tiempo y consulta.
+No se añade escritura NVS por cada 304 ni por snapshot semánticamente idéntico.
+No hay refresco parcial ni nueva pila gráfica; PSRAM sigue desactivada.
+
+Wi-Fi STA usa credenciales RAM del driver, tres intentos como máximo y backoff
+1/2 s dentro del presupuesto configurado (1000..15000 ms desde driver iniciado).
+HTTPS nativo asíncrono usa CA explícita y controles de hostname/fecha. Presupuesto
+1000..10000 ms, body ≤2048, sin redirects. Una tarea guardia interrumpe el socket
+activo al vencer el plazo; su propietario la detiene y espera antes de liberar
+cliente/contexto. No se utiliza el retorno del callback HTTP como supuesto abort.
+DNS antes de tener socket conserva los reintentos finitos de lwIP: no se afirma
+que ese tramo esté incluido en un deadline estricto de pared. Inicialización SDK,
+DNS y limpieza requieren medición física; no se promete WCET de todo el ciclo.
+
+Todos los resultados de red pasan por render condicional → parada Wi-Fi → Power
+Manager. Fallo del panel/HAL o negativa a dormir dejan radio apagada y aplicación
+detenida, sin reconexión continua. Los botones pueden despertar mediante M1; M2
+realiza una consulta por wake y no ejecuta el navegador interactivo de M1.

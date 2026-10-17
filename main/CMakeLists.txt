@@ -1,11 +1,19 @@
 # ESP-IDF expands requirements before CONFIG_* is available. Keep dependencies
 # unconditional; select only the application source after configuration is loaded.
-if(CONFIG_IB_M11_TIMER_DIAG)
+if(CONFIG_IB_M2_CONNECTIVITY)
+    set(app_source "m2_main.c")
+elseif(CONFIG_IB_M11_TIMER_DIAG)
     set(app_source "timer_diag_main.c")
 elseif(CONFIG_IB_M1_UI)
     set(app_source "ui_main.c")
 else()
     set(app_source "main.c")
 endif()
-idf_component_register(SRCS "${app_source}" INCLUDE_DIRS "."
-    PRIV_REQUIRES epaper render ib_core hal_waveshare_v2 ui display_manager power_manager esp_timer timer_diag)
+set(app_requirements epaper render ib_core hal_waveshare_v2 ui display_manager power_manager esp_timer timer_diag)
+# IDF early expansion runs in another CMake process: pass the opt-in as a build property.
+idf_build_get_property(build_m2 IB_BUILD_M2)
+# Legacy profiles never include the radio/HTTP dependency closure.
+if(build_m2)
+    list(APPEND app_requirements connectivity_core connectivity_ui device_config wifi_manager https_client nvs_flash)
+endif()
+idf_component_register(SRCS "${app_source}" INCLUDE_DIRS "." PRIV_REQUIRES ${app_requirements})

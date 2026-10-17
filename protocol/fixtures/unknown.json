@@ -1,0 +1,1 @@
+{"schema_version":1,"device_id":"badge-lab","revision":1,"simulated":true,"generated_at":1800000000,"expires_at":1800001800,"status":"UNKNOWN","counts":{"healthy":0,"warning":0,"critical":0,"unknown":12},"alerts":[{"title":"SIN DATOS","detail":"ESTADO DESCONOCIDO"}]}

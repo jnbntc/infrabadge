@@ -14,17 +14,16 @@
 - Physical success, battery calibration, sleep current and wakeup remain unverified
   until a human performs the documented checks on the actual board.
 - Do not run git push, create a release or merge without user authorization.
-- M1 and M1.1 are published together on feat/m1-ui. PR #1 was merged externally
-  during consolidation at 17:40:59 Argentina time, with M1 head 62b0556 only;
-  M1.1 is not in that merge. The user authorized publication, not another merge
-  or any device operation. The user chose complementary evidence in #1 and changes
-  left on the branch; do not open a continuation PR without a new request.
+- Current M2 request authorizes a separate M1.1 integration proposal and a draft M2
+  PR. feat/m1.1-integration preserves b2dcf7a in draft PR #2, base main. Work M2 on
+  feat/m2-connectivity, based on that commit; stack the M2 PR on the integration
+  branch while #2 remains unmerged. Do not rewrite/delete feat/m1-ui or merge PRs.
 - docs/M1-M11-VALIDATION.md is the consolidated evidence/limitations index; older
   milestone reports and build manifests keep their original validation scope.
 
 ## M1 UI
 
-- Work on feat/m1-ui; M0 physical baseline is local commit 910bf9f.
+- Historical M1 branch is feat/m1-ui; M0 physical baseline is local commit 910bf9f.
 - Keep M0 main/HAL/panel protocol unchanged unless a demonstrated fix is necessary.
 - M1 is offline and uses simulated infrastructure AND device diagnostics.
 - Do not trust the advancing RTC as wall time; always show unsynchronized state.
@@ -60,3 +59,27 @@
   docs/POWER-BASELINE.md for the recorded result.
 - Track procedure, limits and physical results in docs/POWER-BASELINE.md; keep raw
   board logs and private backups outside Git/CI.
+
+## M2 connectivity
+
+- M0/M1/M1.1 remain separate profiles. Reuse their HAL, panel, renderer and Power
+  Manager without source changes unless evidence requires a fix.
+- Run tools/build-m2.sh --all (six profiles), sanitizer/native/visual tests, locked
+  gateway pytest and tools/m2/generate_protocol.py --check. Backend uses a separate
+  venv, never SDK pip. CI tests are not physical Wi-Fi/TLS/sleep/current evidence.
+- Require verified CA, hostname AND certificate dates (MBEDTLS_HAVE_TIME_DATE=y).
+  Never permit TLS bypass or redirects with a device bearer. Explicit lab CA only.
+- Provision secrets at runtime through physical trusted USB. No secrets in code,
+  Kconfig, argv, fixtures, logs, commits or CI. Private configs/keys outside Git,
+  mode0600; NVS remains plaintext and outside physical extraction protection.
+- External RTC2056 is not trusted. A fresh UTC seed comes from the trusted host;
+  only valid deep-sleep RTC continuity preserves the lease. Fail closed after
+  unexpected reset/lease expiry; no old NVS timestamp as now, no insecure SNTP.
+- Show all gateway data as simulated. A failed query/expired snapshot is OFFLINE,
+  never a current historical CRITICAL/HEALTHY. Persist only last validated data.
+- Bounded retries and explicit Wi-Fi shutdown precede sleep. No continuous refresh
+  loops. Keep exact-frame cancellation across trusted RTC continuation.
+- M2 has no hardware authorization. The board retains the physically validated
+  terminal M1.1 diagnostic. Never run provisioning/flash/monitor hardware as part
+  of builds or tests. Follow docs/M2-PHYSICAL.md only after new authorization.
+- No production collectors, MQTT, database, eFuses or irreversible security changes.

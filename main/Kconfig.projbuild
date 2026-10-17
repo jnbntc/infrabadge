@@ -12,6 +12,8 @@ config IB_M1_UI
     bool "M1: offline display and button navigation"
 config IB_M11_TIMER_DIAG
     bool "M1.1: manual start, three autonomous timer-only cycles"
+config IB_M2_CONNECTIVITY
+    bool "M2: provisioned STA/verified HTTPS, conditional render and sleep"
 endchoice
 config IB_M0_SLEEP_SECONDS
     int "Deep sleep duration (seconds)"
