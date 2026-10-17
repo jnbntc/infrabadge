@@ -70,9 +70,18 @@ diagnóstico: se amplió sin cambiar el diseño. También se corrigió
 la declaración CMake de dependencias, que no puede depender de CONFIG antes de la
 fase de expansión temprana de ESP-IDF. Estos fallos no llegaron a la placa.
 
-El workflow existente `.github/workflows/m0.yml` ahora cubre los cuatro perfiles y
-los tests nativos/visuales con las mismas acciones e imagen fijadas. No se publicó
-código ni se ejecutó GitHub CI durante M1; la evidencia aquí es local.
+El workflow `.github/workflows/m0.yml` cubre los cuatro perfiles y los tests
+nativos/visuales con las mismas acciones e imagen fijadas. El 17 de octubre de 2026
+se publicaron la base M0 `910bf9f` en `main` y M1 `ff353a4` en `feat/m1-ui`, tras
+autorización del usuario. El [PR #1](https://github.com/jnbntc/infrabadge/pull/1)
+permanece en borrador, sin fusionar.
+
+La [ejecución GitHub Actions por push](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
+terminó con **success** para `ff353a494f760f4ef12933e3c28e384ca002e1ac`.
+El workflow compila M0 y M1 y ejecuta las pruebas nativas/visuales con sanitizadores
+en el contenedor fijado, sin red durante el build ni dispositivos. Esto valida CI,
+no el comportamiento físico de M1. Los binarios locales aprobados conservan sus
+hashes de manifiesto; no se reemplazan por los de CI para la prueba física.
 
 ## Pendiente físico
 

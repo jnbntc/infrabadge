@@ -121,9 +121,11 @@ python3 tools/generate_screen.py
 python3 tools/generate_screen.py --check
 ```
 
-El workflow `.github/workflows/m0.yml` deja preparada la misma compilación con
+El workflow `.github/workflows/m0.yml` compila los tres perfiles M0 y M1 con
 imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
-Se validó su sintaxis; GitHub CI aún no se ejecutó.
+La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
+pasó el 17 de octubre de 2026. M1 sigue en [PR #1 en borrador](https://github.com/jnbntc/infrabadge/pull/1),
+pendiente de validación física y sin fusionar con `main`.
 
 El PNG se compara por píxeles descomprimidos, no por su flujo de compresión zlib.
 La imagen es una simulación del diseño, no una captura de la placa.
