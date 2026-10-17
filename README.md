@@ -27,7 +27,7 @@ la prueba anterior no deben flashearse.
 M1 añade tres vistas offline (resumen, alertas y diagnóstico), cuatro estados
 HEALTHY/WARNING/CRITICAL/OFFLINE y navegación por BOOT/PWR. Los datos son simulados;
 el RTC se declara no sincronizado y no se modifica. Se reutilizan HAL y protocolo
-M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado; validación física parcial: 7 de 12 pantallas confirmadas.**
+M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado; 12 de 12 pantallas confirmadas; cierre de observaciones de suspensión pendiente.**
 
 - [Arquitectura, controles y decisiones de energía](docs/UI.md).
 - [Galería de 12 capturas simuladas](docs/ui/index.html).

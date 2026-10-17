@@ -86,11 +86,13 @@ hashes de manifiesto; no se reemplazan por los de CI para la prueba física.
 ## Validación física parcial
 
 M1 fue cargado con autorización explícita el 17 de octubre de 2026. Se confirmaron
-visualmente siete combinaciones de pantalla/estado. La primera sesión se interrumpió
+visualmente las doce combinaciones de pantalla/estado entre las dos sesiones. La primera sesión se interrumpió
 por la rigidez del recorrido del auxiliar, sin errores de panel/HAL ni desconexiones
 USB registrados. Se conserva el firmware instalado y se preparó una continuación
-sin flasheo. Ver [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md).
-Validar tipografía y orientación reales, los cuatro iconos, navegación con BUSY,
+sin flasheo. Reposo sin refrescos, agrupación de cambios, timer y retorno solicitado
+por BOOT tienen evidencia física. PWR tiene retorno EXT1 registrado y falta guardar
+las respuestas finales del operador. Ver [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md).
+La matriz original para revisar alcance y pendientes incluía: tipografía y orientación reales, los cuatro iconos, navegación con BUSY,
 intervalo entre refrescos, ausencia de refrescos en reposo, retención y wake por
 botones/timer, operación con batería y consumo de placa completa. El reloj sigue
 no sincronizado y no se ajustó automáticamente. Procedimiento futuro:
