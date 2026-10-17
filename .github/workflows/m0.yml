@@ -1,4 +1,4 @@
-name: InfraBadge M0 and M1
+name: InfraBadge M0, M1 and M1.1
 
 on:
   push:
@@ -18,19 +18,20 @@ jobs:
           persist-credentials: false
       - name: Pull pinned development image
         run: docker pull ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2
-      - name: Native/visual tests, M0 regressions and M1 UI, offline without hardware
+      - name: Native/visual tests and five firmware profiles, offline without hardware
         run: |
           docker run --rm --network none --cap-drop all --security-opt no-new-privileges \
             --user "$(id -u):$(id -g)" --env HOME=/tmp/infrabadge-home --env IB_SANITIZE=1 \
             --volume "$PWD:/project" --workdir /project \
             ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2 \
-            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/build-m1.sh --inside --all'
+            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/build-timer.sh --inside --all'
       - name: Build logs and verification manifests
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: m0-m1-build-results
+          name: m0-m1-m11-build-results
           path: |
             results/m0-build-*/
             results/m1-build-*/
+            results/m11-build-*/
           if-no-files-found: ignore

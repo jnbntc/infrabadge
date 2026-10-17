@@ -4,9 +4,9 @@
 #include "esp_log.h"
 #include <stdio.h>
 
-esp_err_t ib_power_sleep(unsigned seconds)
+esp_err_t ib_power_sleep_mode(unsigned seconds, bool button_wakeup)
 {
-    esp_err_t err = ib_hal_prepare_sleep(seconds, true);
+    esp_err_t err = ib_hal_prepare_sleep(seconds, button_wakeup);
     if (err != ESP_OK) {
         /* Preparation may have installed partial holds. Restore the validated
          * awake configuration before allowing further UI/display activity. */
@@ -17,9 +17,16 @@ esp_err_t ib_power_sleep(unsigned seconds)
         }
         return err;
     }
-    ESP_LOGI("power", "M1_SLEEP_ENTER: timer=%u s; BOOT/PWR wake; USB may disconnect", seconds);
+    if (button_wakeup) ESP_LOGI("power", "M1_SLEEP_ENTER: timer=%u s; BOOT/PWR wake; USB may disconnect", seconds);
+    else ESP_LOGI("power", "TIMER_ONLY_SLEEP_ENTER: timer=%u s; button wake disabled", seconds);
     fflush(stdout);
     ib_hal_delay_ms(100);
     esp_deep_sleep_start();
     return ESP_OK;
+}
+
+/* Preserve the validated M1 entry point and button-wakeup behavior. */
+esp_err_t ib_power_sleep(unsigned seconds)
+{
+    return ib_power_sleep_mode(seconds, true);
 }

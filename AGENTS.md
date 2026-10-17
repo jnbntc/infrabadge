@@ -30,3 +30,17 @@
   Consumption, battery-only operation, targeted identical-frame cancellation and
   other listed checks remain pending. Never reflash automatically.
 - docs/M1-PHYSICAL.md contains the future manual procedure; never run it as build.
+
+## M1.1 timer diagnostic
+
+- Work on feat/m1.1-timer-diag; keep normal M1 UI behavior and M0 HAL unchanged.
+- Build the separate timer profile with tools/build-timer.sh --all (five profiles).
+- Run native tests with sanitizers and tools/simulate_timer.py --check; inspect the
+  six synthetic references before deliberately updating them.
+- Require valid RTC record, armed sleep, deep-sleep reset and TIMER wake for each
+  increment. Three 60-second cycles only, no fourth sleep after terminal PASS.
+- The manual BOOT start is required after physically disconnecting USB. Firmware
+  does not establish the power source; simulated PASS never proves physical success.
+- No new flash authorization exists for M1.1. Leave installed M1 untouched.
+- Track procedure, limits and physical results in docs/POWER-BASELINE.md; keep raw
+  board logs and private backups outside Git/CI.

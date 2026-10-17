@@ -1,4 +1,4 @@
-# InfraBadge — M1
+# InfraBadge — M1 / diagnóstico M1.1
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -52,6 +52,26 @@ BOOT corto cambia de vista; PWR corto cambia de escenario; PWR mantenido ≥1,2 
 **y soltado** solicita deep sleep. Hay espera entre refrescos completos, sin envíos
 si el framebuffer no cambió. El panel es síncrono: esperar el refresco antes de pulsar.
 Dormido, los botones despiertan; no navegan hasta soltar y volver a pulsar.
+
+## Diagnóstico M1.1 de timer con batería
+
+Perfil temporal separado: inicio manual con BOOT tras retirar USB, tres deep sleeps
+de 60 s, contador en RTC RAM y resultado terminal sin cuarto ciclo. Sólo cuentan
+retornos con reset de deep sleep, causa TIMER y registro íntegro previamente armado.
+El HAL y el driver del panel se reutilizan; la UI M1 conserva sus controles.
+
+El usuario confirmó encendido y ambos botones sólo con batería LiPo AT 502535
+(3,7 V / 400 mAh nominales; 4,03 V medidos en circuito abierto). Los tres retornos
+autónomos **siguen pendientes**. M1.1 no se cargó: la placa conserva M1.
+
+```bash
+bash tools/build-timer.sh --all  # tests, tres perfiles M0, M1 UI y diagnóstico timer
+```
+
+Artefactos del diagnóstico: `build-m11/timer/`. [POWER-BASELINE.md](docs/POWER-BASELINE.md)
+incluye diseño, simulaciones, pruebas y procedimiento de carga controlada. Requiere
+autorización explícita nueva para flashear. Un PASS dibujado por el simulador o una
+imagen retenida no es evidencia física de la secuencia.
 
 ## Entorno fijado
 
@@ -124,12 +144,13 @@ python3 tools/generate_screen.py
 python3 tools/generate_screen.py --check
 ```
 
-El workflow `.github/workflows/m0.yml` compila los tres perfiles M0 y M1 con
+El workflow `.github/workflows/m0.yml` prepara los tres perfiles M0, M1 y M1.1 con
 imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
 La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
 pasó el 17 de octubre de 2026. M1 sigue en [PR #1 en borrador](https://github.com/jnbntc/infrabadge/pull/1),
 con la validación funcional física cerrada y sin fusionar con `main`.
 Los límites y mediciones pendientes están en el informe físico.
+La ampliación del workflow para M1.1 todavía no se ejecutó en GitHub.
 
 El PNG se compara por píxeles descomprimidos, no por su flujo de compresión zlib.
 La imagen es una simulación del diseño, no una captura de la placa.
