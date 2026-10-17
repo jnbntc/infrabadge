@@ -10,8 +10,8 @@ ningún commit M1 se duplica. `feat/m1.1-integration` conserva ese árbol en
 No se reescribió ni eliminó `feat/m1-ui`; no se fusionó nada.
 
 `feat/m2-connectivity` parte de `b2dcf7a`, base validada por CI y por las pruebas
-M1.1 documentadas. El PR M2 tendrá como base la rama de integración mientras #2
-esté pendiente: así su diff muestra únicamente M2. La integración de #2 en main
+M1.1 documentadas. El [PR M2 #3](https://github.com/jnbntc/infrabadge/pull/3) tiene como base
+la rama de integración mientras #2 está pendiente: así su diff muestra únicamente M2. La integración de #2 en main
 seguirá siendo una decisión humana. La placa conserva M1.1 y no se tocará aquí.
 
 ## Contrato primero

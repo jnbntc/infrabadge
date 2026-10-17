@@ -2,7 +2,8 @@
 
 Fecha: 2026-10-17. Rama feat/m2-connectivity, base M1.1 b2dcf7a.
 [PR #2](https://github.com/jnbntc/infrabadge/pull/2) propone integrar M1.1 en main;
-M2 tiene como base esa rama para separar su diff. feat/m1-ui se conserva intacta.
+M2 se propone en [PR #3](https://github.com/jnbntc/infrabadge/pull/3),
+con base en esa rama para separar su diff. feat/m1-ui se conserva intacta.
 No se realizó merge, carga, monitor, aprovisionamiento ni acceso a la placa M2.
 El diagnóstico M1.1 permanece instalado.
 
@@ -61,8 +62,21 @@ La librería de tests Starlette avisa que su adaptador httpx está deprecado; lo
 
 El workflow conserva los cinco perfiles previos y añade M2 en el mismo contenedor
 fijado por digest, sin red ni dispositivos durante la compilación. Job separado
-para backend, lock y HTTPS loopback. La ejecución de esta revisión se verificará
-al publicar la rama; no se presenta CI pendiente como aprobado.
+para backend, lock y HTTPS loopback. Ejecución del código `9c5ef57`: [CI M2](https://github.com/jnbntc/infrabadge/actions/runs/39070941214).
+**PASS** por push y pull_request para `9c5ef573254e0348b070bd0831d1222f9a57d77f`.
+Jobs gateway y build aprobados:29 tests/assets en Python3.12, seis perfiles,
+ASan/UBSan, referencias visuales y verificadores ELF/config. El renderer C confirmó
+las seis referencias M2 actualizadas y el core pasó el caso TTL menor que intervalo.
+App M2 CI:853296 bytes (0xd0530), margen195280 bytes en partición1 MiB. Logs y
+manifiestos descargables como artifact `m0-m1-m11-m2-build-results`, ID12115730436,
+SHA-256 del ZIP `6e3be42cd45652e6ffe010674d6f3be1a0e76c742a8a1c0b70e68d00fc5179a9`.
+Ese artifact contiene logs/manifiestos, no backups ni secretos ni imágenes flash.
+
+El manifiesto local conserva sus hashes anteriores; el bloque CI identifica la
+revisión posterior con TTL/footer. No son binarios intercambiables por nombre.
+Antes de una futura carga autorizada recompilar la revisión elegida y verificar
+sus propios hashes. Los commits posteriores de cierre sólo actualizan documentos;
+esta ejecución prueba los fuentes de firmware/backend `9c5ef57`, sin hardware.
 
 ## Pendientes físicos y operativos
 

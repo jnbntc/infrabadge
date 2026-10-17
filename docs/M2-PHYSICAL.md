@@ -7,7 +7,8 @@ hasta obtener autorización explícita para sustituir temporalmente M1.1 por M2.
 ## Preparación sin tocar la placa
 
 1. Revisar PR M2, manifiesto compilado y resultados CI de la revisión elegida.
-   Compilar `bash tools/build-m2.sh --all`. No usar el perfil diagnóstico timer
+   Compilar `bash tools/build-m2.sh --all`. El build local histórico es anterior
+   al ajuste final de footer/TTL; no cargarlo sin recompilar la revisión elegida. No usar el perfil diagnóstico timer
    como si fuera M2. Ver [M2-API.md](M2-API.md) y [SECURITY.md](SECURITY.md).
 2. Conservar backup completo privado de fábrica y los binarios/manifiesto M1.1
    previamente aprobados. Verificar tamaño/hash del backup en privado; no subirlo

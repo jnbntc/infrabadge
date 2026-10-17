@@ -17,7 +17,7 @@
     "gateway_pytest": 29,
     "gateway_real_loopback_https": "passed: trusted CA, untrusted CA, expired and wrong-host certificates; Python stack only",
     "firmware_config": "CA/hostname required, MBEDTLS_HAVE_TIME_DATE enabled, insecure options disabled",
-    "github_ci": "pending",
+    "github_ci": "passed for source revision 9c5ef573254e0348b070bd0831d1222f9a57d77f; see ci block; local profiles/hashes below remain historical",
     "physical_m2": "not_performed",
     "flash_performed": false,
     "hardware_io_performed": false
@@ -185,5 +185,26 @@
       "hardware_validation": "not_performed",
       "flash_performed": false
     }
+  },
+  "ci": {
+    "source_commit": "9c5ef573254e0348b070bd0831d1222f9a57d77f",
+    "pull_request_run": "https://github.com/jnbntc/infrabadge/actions/runs/39070941214",
+    "push_run": "https://github.com/jnbntc/infrabadge/actions/runs/39070938203",
+    "status": "passed",
+    "jobs": {
+      "gateway": "success",
+      "build": "success"
+    },
+    "profiles": 6,
+    "gateway_pytest": 29,
+    "gateway_python": "3.12",
+    "asan_ubsan": "passed",
+    "m2_visual_references": 6,
+    "m2_app_bytes": 853296,
+    "m2_app_partition_bytes": 1048576,
+    "artifact_id": 12115730436,
+    "artifact_zip_sha256": "6e3be42cd45652e6ffe010674d6f3be1a0e76c742a8a1c0b70e68d00fc5179a9",
+    "hardware_validation": "not_performed",
+    "flash_performed": false
   }
 }
