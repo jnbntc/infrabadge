@@ -18,3 +18,15 @@ fi
     -I components/hal_waveshare_v2/include -I components/ib_core/include \
     components/epaper/epaper.c tests/native/test_epaper.c -o "$native_dir/test-epaper"
 "$native_dir/test-epaper"
+
+python3 tools/generate_ui_font.py --check
+"${CC:-cc}" "${flags[@]}" -I components/ui/include -I components/ui/generated \
+    -I components/display_manager/include components/ui/model.c components/ui/input.c \
+    components/ui/render.c components/display_manager/display.c tests/native/test_ui.c \
+    -o "$native_dir/test-ui"
+"$native_dir/test-ui"
+python3 tools/simulate_ui.py --check
+"${CC:-cc}" "${flags[@]}" -I tests/native/stubs -I components/power_manager/include \
+    -I components/hal_waveshare_v2/include -I components/ib_core/include \
+    components/power_manager/power.c tests/native/test_power.c -o "$native_dir/test-power"
+"$native_dir/test-power"

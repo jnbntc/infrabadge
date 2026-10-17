@@ -8,5 +8,5 @@
 #define EPAPER_FRAME_BYTES (EPAPER_WIDTH * EPAPER_HEIGHT / 8)
 
 /* One full refresh, then panel deep sleep and power off. USB-powered V2 only.
- * Packed rows, MSB first, 1 = white. Not reentrant; invoke once at boot. */
+ * Packed rows, MSB first, 1 = white. Not reentrant; serialize calls and pace full refreshes. */
 esp_err_t epaper_show(const uint8_t *frame, size_t length);
