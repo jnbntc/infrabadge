@@ -1,4 +1,4 @@
-# InfraBadge — M0
+# InfraBadge — M1
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -21,6 +21,37 @@ retorno por temporizador y reconexión USB. La fecha del RTC es incorrecta y no 
 modificó. Consumo, precisión del ADC y operación sólo con batería siguen pendientes.
 Ver [el informe físico y sus límites](docs/PHYSICAL.md). Los binarios antiguos de
 la prueba anterior no deben flashearse.
+
+## Interfaz M1
+
+M1 añade tres vistas offline (resumen, alertas y diagnóstico), cuatro estados
+HEALTHY/WARNING/CRITICAL/OFFLINE y navegación por BOOT/PWR. Los datos son simulados;
+el RTC se declara no sincronizado y no se modifica. Se reutilizan HAL y protocolo
+M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado y su validación funcional por USB está cerrada:**
+12 pantallas, navegación, reposo y retorno de deep sleep por timer/BOOT/PWR.
+Consumo, operación sólo con batería y otras pruebas dirigidas siguen pendientes.
+
+- [Arquitectura, controles y decisiones de energía](docs/UI.md).
+- [Galería de 12 capturas simuladas](docs/ui/index.html).
+- [Resultados M1](docs/M1-VALIDATION.md).
+- [Evidencia física y pendientes](docs/M1-PHYSICAL-RESULTS.md).
+- [Procedimiento físico y carga manual](docs/M1-PHYSICAL.md).
+
+![Resumen M1 simulado](docs/ui/summary-HEALTHY.png)
+
+```bash
+# Tests, regresiones de los tres perfiles M0 y compilación M1; sin tocar la placa:
+bash /var/home/juanb/Proyectos/infrabadge/tools/build-m1.sh --all
+# Sólo M1, manteniendo los tests nativos y visuales:
+bash /var/home/juanb/Proyectos/infrabadge/tools/build-m1.sh
+```
+
+El binario M1 se genera en `build-m1/ui/infrabadge.bin`; no es una imagen fusionada:
+la carga manual necesita también el bootloader y la tabla de su mismo build.
+BOOT corto cambia de vista; PWR corto cambia de escenario; PWR mantenido ≥1,2 s
+**y soltado** solicita deep sleep. Hay espera entre refrescos completos, sin envíos
+si el framebuffer no cambió. El panel es síncrono: esperar el refresco antes de pulsar.
+Dormido, los botones despiertan; no navegan hasta soltar y volver a pulsar.
 
 ## Entorno fijado
 
@@ -93,9 +124,12 @@ python3 tools/generate_screen.py
 python3 tools/generate_screen.py --check
 ```
 
-El workflow `.github/workflows/m0.yml` deja preparada la misma compilación con
+El workflow `.github/workflows/m0.yml` compila los tres perfiles M0 y M1 con
 imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
-Se validó su sintaxis; GitHub CI aún no se ejecutó.
+La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
+pasó el 17 de octubre de 2026. M1 sigue en [PR #1 en borrador](https://github.com/jnbntc/infrabadge/pull/1),
+con la validación funcional física cerrada y sin fusionar con `main`.
+Los límites y mediciones pendientes están en el informe físico.
 
 El PNG se compara por píxeles descomprimidos, no por su flujo de compresión zlib.
 La imagen es una simulación del diseño, no una captura de la placa.
@@ -109,7 +143,7 @@ La imagen es una simulación del diseño, no una captura de la placa.
 - [Reglas para agentes](AGENTS.md).
 
 El backup privado de fábrica queda fuera de Git y CI. Se cargaron los tres perfiles
-M0 tras autorización explícita del usuario. La placa conserva el perfil sleep;
+M0 tras autorización explícita del usuario. La placa conserva M1 tras una carga posterior autorizada;
 fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
 cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. La licencia general del código
 original se elegirá antes de publicar; los avisos Waveshare ya están preservados.

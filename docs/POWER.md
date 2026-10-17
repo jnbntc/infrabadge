@@ -71,3 +71,13 @@ ni autonomía a partir de la compilación ni de los valores del chip aislado.
 
 Referencias: [matriz de hardware](HARDWARE.md) y
 [ESP-IDF 5.5.5 sleep modes](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/system/sleep_modes.html).
+
+## UI M1
+
+M1 separa Power Manager de UI, agrupa eventos y evita transmitir frames idénticos.
+No tiene refresco periódico ni sleep automático; la tarea consulta botones cada
+20 ms mientras está despierta. La pulsación larga de PWR solicita sleep al soltar,
+con timer de 60 s y wake por botones. El funcionamiento por USB se verificó:
+reposo sin refrescos, entrada/retorno por timer/BOOT/PWR y retención de imagen/vista.
+No se midió consumo ni se probó operación sólo con batería. Ver [UI.md](UI.md),
+[M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md) y [M1-PHYSICAL.md](M1-PHYSICAL.md).

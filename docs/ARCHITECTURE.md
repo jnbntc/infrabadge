@@ -65,3 +65,8 @@ No hay componentes gestionados descargados por IDF Component Manager. SDK, image
 de entorno y referencia Waveshare quedan fijados en `dependencies.lock.json` y
 `docs/upstream.json`. `THIRD_PARTY.md` identifica el material de terceros.
 Los recursos de pantalla se regeneran con Python estándar y se validan sin red.
+
+## Extensión M1
+
+La arquitectura UI nueva y sus contratos están en [UI.md](UI.md). M0 conserva sus
+perfiles originales; la selección M1 utiliza una entrada de aplicación separada.

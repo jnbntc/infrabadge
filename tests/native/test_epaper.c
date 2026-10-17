@@ -39,6 +39,9 @@ int main(void)
 {
     reset(); assert(epaper_show(frame, sizeof(frame)) == ESP_OK);
     assert(opens == 1 && closes == 1 && image_bytes == 5000 && refreshes == 1 && sleeps == 1);
+    /* M1 serializes multiple full updates through the same M0 driver. */
+    assert(epaper_show(frame, sizeof(frame)) == ESP_OK);
+    assert(opens == 2 && closes == 2 && image_bytes == 10000 && refreshes == 2 && sleeps == 2);
     reset(); fail_wait = 2;
     assert(epaper_show(frame, sizeof(frame)) == ESP_ERR_TIMEOUT);
     assert(closes == 1 && image_bytes == 0 && refreshes == 0);
