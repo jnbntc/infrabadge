@@ -83,9 +83,13 @@ en el contenedor fijado, sin red durante el build ni dispositivos. Esto valida C
 no el comportamiento físico de M1. Los binarios locales aprobados conservan sus
 hashes de manifiesto; no se reemplazan por los de CI para la prueba física.
 
-## Pendiente físico
+## Validación física parcial
 
-M1 no fue cargado. La placa conserva el firmware M0 sleep de la validación previa.
+M1 fue cargado con autorización explícita el 17 de octubre de 2026. Se confirmaron
+visualmente siete combinaciones de pantalla/estado. La primera sesión se interrumpió
+por la rigidez del recorrido del auxiliar, sin errores de panel/HAL ni desconexiones
+USB registrados. Se conserva el firmware instalado y se preparó una continuación
+sin flasheo. Ver [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md).
 Validar tipografía y orientación reales, los cuatro iconos, navegación con BUSY,
 intervalo entre refrescos, ausencia de refrescos en reposo, retención y wake por
 botones/timer, operación con batería y consumo de placa completa. El reloj sigue

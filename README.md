@@ -27,11 +27,12 @@ la prueba anterior no deben flashearse.
 M1 añade tres vistas offline (resumen, alertas y diagnóstico), cuatro estados
 HEALTHY/WARNING/CRITICAL/OFFLINE y navegación por BOOT/PWR. Los datos son simulados;
 el RTC se declara no sincronizado y no se modifica. Se reutilizan HAL y protocolo
-M0, sin añadir dependencias gráficas, radios ni red. **M1 no se flasheó.**
+M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado; validación física parcial: 7 de 12 pantallas confirmadas.**
 
 - [Arquitectura, controles y decisiones de energía](docs/UI.md).
 - [Galería de 12 capturas simuladas](docs/ui/index.html).
 - [Resultados M1](docs/M1-VALIDATION.md).
+- [Evidencia física y pendientes](docs/M1-PHYSICAL-RESULTS.md).
 - [Procedimiento físico pendiente y carga manual](docs/M1-PHYSICAL.md).
 
 ![Resumen M1 simulado](docs/ui/summary-HEALTHY.png)
@@ -139,7 +140,7 @@ La imagen es una simulación del diseño, no una captura de la placa.
 - [Reglas para agentes](AGENTS.md).
 
 El backup privado de fábrica queda fuera de Git y CI. Se cargaron los tres perfiles
-M0 tras autorización explícita del usuario. La placa conserva el perfil M0 sleep;
+M0 tras autorización explícita del usuario. La placa conserva M1 tras una carga posterior autorizada;
 fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
 cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. La licencia general del código
 original se elegirá antes de publicar; los avisos Waveshare ya están preservados.

@@ -25,5 +25,7 @@
 - Only full refreshes through the M0 epaper driver; no assumed partial update support.
 - Run tools/build-m1.sh --all, native tests and tools/simulate_ui.py --check.
 - Review the 12 visual references before deliberate --update changes.
-- M1 firmware has no physical validation or flashing authorization yet.
+- One M1 load was explicitly authorized and performed on 2026-10-17. Physical
+  validation is partial: see docs/M1-PHYSICAL-RESULTS.md. Continue diagnostics using
+  the installed firmware; never reflash automatically.
 - docs/M1-PHYSICAL.md contains the future manual procedure; never run it as build.
