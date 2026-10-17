@@ -1,0 +1,17 @@
+{
+  "esp_idf": {
+    "version": "v5.5.5",
+    "commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f"
+  },
+  "build_image": "ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2",
+  "toolchain": "xtensa-esp-elf esp-14.2.0_20260121, GCC 14.2.0",
+  "managed_components": {},
+  "waveform_commit": "a794fbc39656b0f93938d1ffb3fdc77eaed9e9fc",
+  "python_build_tools": {
+    "esp-idf-monitor": "1.10.0",
+    "esptool": "4.12.0",
+    "idf-component-manager": "2.5.2",
+    "esp-idf-kconfig": "2.5.4"
+  },
+  "note": "SDK tools and Python dependency locks supplied by the pinned iot-dev image; no host toolchain installation."
+}

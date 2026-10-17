@@ -1,0 +1,39 @@
+{
+  "board_reference": {
+    "url": "https://github.com/waveshareteam/ESP32-S3-ePaper-1.54",
+    "commit": "aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956",
+    "example": "02_Example/ESP-IDF/V2/09_LVGL_V8_Test",
+    "usage": "V2 GPIO, power polarity and initialization cross-check; no source copied"
+  },
+  "waveform": {
+    "url": "https://raw.githubusercontent.com/waveshareteam/e-Paper/a794fbc39656b0f93938d1ffb3fdc77eaed9e9fc/RaspberryPi_JetsonNano/c/lib/e-Paper/EPD_1in54_V2.c",
+    "commit": "a794fbc39656b0f93938d1ffb3fdc77eaed9e9fc",
+    "file_sha256": "5000555ab880b349af59b24c88a69857faa382860ba62a187e4d2b72007129de",
+    "license_notice": "third_party/Waveshare-NOTICE.txt",
+    "matches_board_v2": true
+  },
+  "sdk": {
+    "version": "v5.5.5",
+    "commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f"
+  },
+  "schematic": {
+    "url": "https://github.com/waveshareteam/ESP32-S3-ePaper-1.54/blob/aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956/04_Hardware/Schematics/ESP32-S3-Touch-ePaper-1.54-Schematic.pdf",
+    "sha256": "be6871527a397606189fff060750326003197ac828e2f0e499ad1206104aee2e",
+    "scope": "Official shared Touch schematic, N8R8 chip; common nets cross-checked against ESP-IDF/V2 examples"
+  },
+  "rtc_datasheet": {
+    "url": "https://files.waveshare.com/wiki/common/Pcf85063atl1118-NdPQpTGE-loeW7GbZ7.pdf",
+    "version": "NXP PCF85063A Rev. 6, 18 November 2015",
+    "sha256": "93b384873539e770305b8982bcfa6387eac695650063b6a11279beae7a20602a"
+  },
+  "shtc3_datasheet": {
+    "url": "https://files.waveshare.com/wiki/common/SHTC3_Datasheet.pdf",
+    "version": "Sensirion SHTC3 Version 1.1, January 2019",
+    "sha256": "d315fe3d00282ece1d8901c0936f8bcbaa87b159bcd0e71f9002d1f03b57a8f1"
+  },
+  "panel_datasheet": {
+    "url": "https://files.waveshare.com/wiki/common/1.54inch_e-paper_V2_Datasheet.pdf",
+    "version": "Waveshare 1.54inch e-paper V2",
+    "sha256": "7de0d12a56ef5a64fcb86304905e23af80463412b64c7e8b68adf09cd1845150"
+  }
+}

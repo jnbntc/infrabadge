@@ -1,0 +1,19 @@
+menu "InfraBadge M0"
+choice IB_M0_PROFILE
+    prompt "Hardware bring-up profile"
+    default IB_M0_DISPLAY
+config IB_M0_DISPLAY
+    bool "1: Display InfraBadge M0 once"
+config IB_M0_SENSORS
+    bool "2: Battery, read-only RTC and SHTC3"
+config IB_M0_SLEEP
+    bool "3: One deep-sleep/wake cycle"
+endchoice
+config IB_M0_SLEEP_SECONDS
+    int "Deep sleep duration (seconds)"
+    range 1 3600
+    default 10
+config IB_M0_WAKE_BUTTONS
+    bool "Allow BOOT/PWR wake in addition to timer"
+    default y
+endmenu

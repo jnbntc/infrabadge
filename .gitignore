@@ -1,0 +1,13 @@
+/build/
+/build-m0/
+/sdkconfig
+/sdkconfig.old
+/managed_components/
+__pycache__/
+*.pyc
+.env
+.env.*
+*.bin
+*.elf
+*.map
+/results/

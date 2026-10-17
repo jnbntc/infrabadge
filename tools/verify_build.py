@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""Validate compiled artifacts/configuration; never accesses a device."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import struct
+
+
+def inspect(build, profile):
+    config = json.loads((build / 'config/sdkconfig.json').read_text())
+    assert config['IDF_TARGET'] == 'esp32s3', 'Unexpected target'
+    assert config['ESPTOOLPY_FLASHSIZE'] == '8MB', 'Flash size must be 8MB'
+    assert config.get('ESP_CONSOLE_USB_SERIAL_JTAG'), 'USB Serial/JTAG console required'
+    assert not config.get('SPIRAM'), 'M0 does not use PSRAM'
+    for key in ['SECURE_BOOT', 'SECURE_BOOT_V2_ENABLED', 'SECURE_FLASH_ENC_ENABLED', 'BT_ENABLED', 'ESP_WIFI_ENABLED']:
+        assert not config.get(key), f'Forbidden feature: {key}'
+    modes = [name for name in ['display', 'sensors', 'sleep'] if config.get(f'IB_M0_{name.upper()}')]
+    assert modes == [profile], f'Wrong M0 profile: {modes}'
+    description = json.loads((build / 'project_description.json').read_text())
+    assert description['git_revision'] in ['v5.5.5', '5.5.5'], 'Unexpected IDF version'
+    artifacts = {}
+    for name in ['infrabadge.elf', 'infrabadge.bin', 'bootloader/bootloader.bin', 'partition_table/partition-table.bin']:
+        data = (build / name).read_bytes()
+        assert data, f'Empty artifact: {name}'
+        artifacts[name] = {'bytes': len(data), 'sha256': hashlib.sha256(data).hexdigest()}
+        if name.endswith('.elf'):
+            assert data[:4] == b'\x7fELF' and struct.unpack_from('<H', data, 18)[0] == 94, 'Expected Xtensa ELF'
+    flash = json.loads((build / 'flasher_args.json').read_text())
+    assert set(flash['flash_files']) == {'0x0', '0x8000', '0x10000'}, 'Unexpected flash offsets'
+    # Exclude radio stacks from the minimal dependency closure as well as runtime use.
+    forbidden = {'esp_wifi', 'bt', 'mqtt', 'openthread'} & set(description['build_components'])
+    assert not forbidden, f'Unexpected linked component closure: {forbidden}'
+    return {'profile': profile, 'status': 'passed', 'target': 'esp32s3', 'esp_idf': 'v5.5.5',
+            'flash_size': '8MB', 'artifacts': artifacts, 'hardware_validation': 'not_performed',
+            'flash_performed': False}
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--build', type=Path, required=True)
+    parser.add_argument('--profile', choices=['display', 'sensors', 'sleep'], required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    result = inspect(args.build, args.profile)
+    args.output.write_text(json.dumps(result, indent=2) + '\n')
+    print(f'PASS: {args.profile}, ESP32-S3 Xtensa, 8MB flash, USB logging, security/radios disabled; no hardware I/O')
+
+
+if __name__ == '__main__':
+    main()

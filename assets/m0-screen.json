@@ -1,0 +1,26 @@
+[
+  {
+    "text": "ESP32-S3",
+    "x": 76,
+    "y": 17,
+    "scale": 1
+  },
+  {
+    "text": "InfraBadge M0",
+    "x": 23,
+    "y": 46,
+    "scale": 2
+  },
+  {
+    "text": "Hardware bring-up",
+    "x": 49,
+    "y": 96,
+    "scale": 1
+  },
+  {
+    "text": "Waveshare V2",
+    "x": 29,
+    "y": 139,
+    "scale": 2
+  }
+]
