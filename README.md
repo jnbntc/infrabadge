@@ -12,6 +12,11 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ## Estado
 
+M1 y M1.1 se consolidan en el [PR #1](https://github.com/jnbntc/infrabadge/pull/1),
+en borrador y sin fusionar. [El informe consolidado](docs/M1-M11-VALIDATION.md)
+distingue tests/CI, validación M1 por USB, tres retornos M1.1 sólo con batería y
+mediciones pendientes. La placa conserva el diagnóstico M1.1 instalado.
+
 La matriz de conexiones se contrastó con el esquemático oficial N8R8 y los ejemplos
 ESP-IDF **V2**. [HARDWARE.md](docs/HARDWARE.md) documenta señales, polaridades,
 referencias fijadas y los límites del esquemático compartido con la variante Touch.
@@ -156,7 +161,8 @@ La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs
 pasó el 17 de octubre de 2026. M1 sigue en [PR #1 en borrador](https://github.com/jnbntc/infrabadge/pull/1),
 con la validación funcional física cerrada y sin fusionar con `main`.
 Los límites y mediciones pendientes están en el informe físico.
-La ampliación del workflow para M1.1 todavía no se ejecutó en GitHub.
+El estado de CI de la revisión consolidada se consulta en los checks del PR #1;
+la ejecución histórica M1 no sustituye la validación de la revisión vigente.
 
 El PNG se compara por píxeles descomprimidos, no por su flujo de compresión zlib.
 La imagen es una simulación del diseño, no una captura de la placa.
@@ -166,7 +172,8 @@ La imagen es una simulación del diseño, no una captura de la placa.
 - [Arquitectura y contratos](docs/ARCHITECTURE.md).
 - [Alimentación, ADC y deep sleep](docs/POWER.md).
 - [Flashing manual, monitor y rollback](docs/FLASHING.md).
-- [Resultados de validación](docs/VALIDATION.md).
+- [Validación consolidada M1 + M1.1](docs/M1-M11-VALIDATION.md).
+- [Resultados históricos M0](docs/VALIDATION.md).
 - [Reglas para agentes](AGENTS.md).
 
 El backup privado de fábrica queda fuera de Git y CI. Se cargaron los tres perfiles

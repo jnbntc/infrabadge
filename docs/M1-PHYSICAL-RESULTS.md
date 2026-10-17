@@ -1,5 +1,10 @@
 # M1 — cierre de validación funcional por USB
 
+Informe del binario M1 original, conservado como evidencia de esa prueba. Después
+se cargó M1.1 con autorización y se validaron tres retornos sólo con batería:
+[POWER-BASELINE.md](POWER-BASELINE.md). El alcance conjunto y estado actual de la
+placa están en [M1-M11-VALIDATION.md](M1-M11-VALIDATION.md).
+
 Fecha: 17 de octubre de 2026. Placa Waveshare ESP32-S3-ePaper-1.54 V2, por USB.
 **Validación funcional cerrada:** 12 pantallas, navegación, reposo sin refrescos,
 agrupación, deep sleep y retorno por timer/BOOT/PWR con confirmación visual.

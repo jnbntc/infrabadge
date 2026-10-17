@@ -1,9 +1,11 @@
 # M1 — procedimiento de validación física
 
-**M1 está instalado y su validación funcional por USB está cerrada.** La primera
+**La validación funcional M1 por USB está cerrada.** Actualmente está instalado el
+diagnóstico M1.1: ver [POWER-BASELINE.md](POWER-BASELINE.md). Volver a cargar M1
+requiere autorización nueva y revisión de sus artefactos. La primera
 carga se realizó con autorización explícita el 17 de octubre de 2026; ver
 [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md). Para retomar las comprobaciones se
-utiliza el firmware instalado, sin volver a cargarlo. Los comandos de escritura de
+utilizó entonces el mismo firmware M1, sin volver a cargarlo. Los comandos de escritura de
 este documento son un procedimiento para futuras cargas y no autorizan ejecutarlas.
 No ejecutarlo automáticamente al compilar. No se usa erase_flash, no se escriben
 eFuses y no se modifica Secure Boot/Flash Encryption.
@@ -44,7 +46,7 @@ python -m esptool --chip esp32s3 --port "$ESPPORT" --baud 115200 \
   --before default_reset --after hard_reset write_flash @flash_args
 ```
 
-Reemplaza el firmware actualmente instalado, M0 sleep. Sólo escribe los sectores
+Reemplaza el firmware instalado (actualmente M1.1). Sólo escribe los sectores
 necesarios de bootloader/tabla/aplicación; no borra toda la flash. Si cualquier
 verificación falla, detenerse. La restitución de fábrica no se hace automáticamente.
 

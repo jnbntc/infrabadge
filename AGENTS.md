@@ -14,6 +14,10 @@
 - Physical success, battery calibration, sleep current and wakeup remain unverified
   until a human performs the documented checks on the actual board.
 - Do not run git push, create a release or merge without user authorization.
+- M1 and M1.1 are consolidated on feat/m1-ui for PR #1. The user authorized this
+  publication, not merging the PR or any further device operation. Keep the PR draft.
+- docs/M1-M11-VALIDATION.md is the consolidated evidence/limitations index; older
+  milestone reports and build manifests keep their original validation scope.
 
 ## M1 UI
 
@@ -33,7 +37,8 @@
 
 ## M1.1 timer diagnostic
 
-- Work on feat/m1.1-timer-diag; keep normal M1 UI behavior and M0 HAL unchanged.
+- M1.1 originated on feat/m1.1-timer-diag and is now included in feat/m1-ui / PR #1;
+  keep normal M1 UI behavior and M0 HAL unchanged.
 - Build the separate timer profile with tools/build-timer.sh --all (five profiles).
 - Run native tests with sanitizers and tools/simulate_timer.py --check; inspect the
   six synthetic references before deliberately updating them.

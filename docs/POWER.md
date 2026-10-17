@@ -1,7 +1,8 @@
 # Alimentación y deep sleep en M0
 
-El diagnóstico temporal M1.1, la batería comunicada por el usuario y la prueba
-pendiente de tres ciclos sin USB se documentan en [POWER-BASELINE.md](POWER-BASELINE.md).
+El diagnóstico temporal M1.1, la batería comunicada por el usuario y los tres
+retornos sin USB confirmados por el operador se documentan en
+[POWER-BASELINE.md](POWER-BASELINE.md).
 Las observaciones M0/M1 de este documento conservan su alcance histórico.
 
 ## Redes verificadas
