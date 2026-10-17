@@ -1,6 +1,9 @@
-# M1 — evidencia física y cierre de observaciones pendiente
+# M1 — cierre de validación funcional por USB
 
 Fecha: 17 de octubre de 2026. Placa Waveshare ESP32-S3-ePaper-1.54 V2, por USB.
+**Validación funcional cerrada:** 12 pantallas, navegación, reposo sin refrescos,
+agrupación, deep sleep y retorno por timer/BOOT/PWR con confirmación visual.
+La caracterización eléctrica y las pruebas fuera de este alcance siguen pendientes.
 Firmware: código `ff353a494f760f4ef12933e3c28e384ca002e1ac`, aplicación de 214.128 bytes,
 contrastada con `m1-build-manifest.json`. La carga M1 se autorizó expresamente al
 iniciar el auxiliar con `--authorized-m1`. Reemplazó M0 sleep; no se restauró fábrica.
@@ -81,8 +84,10 @@ combinaciones** de vista/estado tienen confirmación visual positiva:
   entrada registrada. Diagnóstico/HEALTHY antes y después según la traza completa;
   el operador confirmó imagen/vista y el uso del botón indicado.
 - **PWR:** se registró otra entrada en t=383,708 s, retorno reset=8/wake=3
-  en t=394,826 s y refresco en t=396,828 s con diagnóstico/HEALTHY. Sus dos
-  confirmaciones finales del operador todavía no están guardadas en result.json.
+  en t=394,826 s y refresco en t=396,828 s con diagnóstico/HEALTHY. El operador
+  confirmó el uso exclusivo de PWR y la retención de imagen/vista. Ambas respuestas
+  finales quedaron guardadas. El intervalo observado entrada→log de retorno fue
+  de 11,118 s; incluye la espera hasta pulsar y la reconexión USB.
 - **USB:** desapareció al dormir y volvió a abrirse al despertar. Los retornos
   registrados son de deep sleep, no reinicios USB del monitor.
 
@@ -102,14 +107,17 @@ inmediatamente anterior a la entrada real con el posterior al retorno. Los datos
 crudos se conservaron sin corregirlos ni sobrescribirlos.
 
 Evidencia privada adicional:
-`results/m1-physical-resume-20261017T192239Z-b30s9_mj/`. El cierre de la captura sigue
-pendiente de las últimas respuestas del operador; no se declara un passed global
-basado en un archivo result.json todavía marcado running.
+`results/m1-physical-resume-20261017T192239Z-b30s9_mj/`. El auxiliar terminó con
+estado **diagnostic_collected**, que significa captura completa, no un aprobado
+automático. Se revisaron las 12 confirmaciones, el reposo, las tres causas de wake,
+las respuestas del operador y la coherencia entre result.json, events.json y el
+log final. El cierre funcional se basa en esa revisión, sin convertir las pruebas
+pendientes en aprobadas. Los tiempos de BOOT/PWR incluyen la intervención humana
+y la enumeración USB; no representan una medición de latencia de despertar.
 
 ## Pendientes
 
-Guardar la confirmación final de la fase PWR y el cierre del auxiliar. La cancelación
-física de un frame idéntico tras navegar y volver antes de un envío sigue sin una
+La cancelación física de un frame idéntico tras navegar y volver antes de un envío sigue sin una
 prueba dirigida válida; está cubierta por los tests nativos, incluida la omisión de
 100 frames idénticos. Consumo real, contraste con instrumentos, funcionamiento sin
 USB, PSRAM y rollback físico permanecen fuera de esta validación.

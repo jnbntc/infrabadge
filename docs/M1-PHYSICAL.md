@@ -1,7 +1,7 @@
 # M1 — procedimiento de validación física
 
-**M1 está instalado y su validación física es parcial.** La primera carga se
-realizó con autorización explícita el 17 de octubre de 2026; ver
+**M1 está instalado y su validación funcional por USB está cerrada.** La primera
+carga se realizó con autorización explícita el 17 de octubre de 2026; ver
 [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md). Para retomar las comprobaciones se
 utiliza el firmware instalado, sin volver a cargarlo. Los comandos de escritura de
 este documento son un procedimiento para futuras cargas y no autorizan ejecutarlas.

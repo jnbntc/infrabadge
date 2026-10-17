@@ -53,7 +53,8 @@ flowchart TD
 Cada vista identifica **SIM**, número de página y **RELOJ NO SINCRONIZADO**. El
 estado se diferencia por forma y texto: check, triángulo, cruz y enlace interrumpido;
 no depende de color, sombreado o animación. Los títulos principales usan 14 píxeles
-de alto; los conteos, 21; los detalles, 7. La legibilidad física de M1 sigue pendiente.
+de alto; los conteos, 21; los detalles, 7. La legibilidad de las
+12 combinaciones se confirmó físicamente con USB; ver M1-PHYSICAL-RESULTS.md.
 
 Todos los datos de infraestructura **y diagnóstico** son simulados, incluidos
 batería y SHTC3. Los valores de ejemplo no son nuevas mediciones. M1 no consulta ni
@@ -100,7 +101,8 @@ no cuentan páginas ni garantizan conservar una pulsación. Es necesario soltar 
 pulsar de nuevo para navegar. USB puede desaparecer; la imagen e-paper permanece
 congelada y no indica que la CPU esté despierta. El circuito PWR también tiene efecto
 eléctrico, y BOOT es un pin de arranque: no mantenerlo durante un reset normal.
-Wake por botones y operación sólo con batería requieren validación M1 específica.
+El wake por ambos botones se verificó con USB. La operación sólo con batería
+requiere una prueba específica.
 
 ## Simulador y referencias
 

@@ -27,13 +27,15 @@ la prueba anterior no deben flashearse.
 M1 añade tres vistas offline (resumen, alertas y diagnóstico), cuatro estados
 HEALTHY/WARNING/CRITICAL/OFFLINE y navegación por BOOT/PWR. Los datos son simulados;
 el RTC se declara no sincronizado y no se modifica. Se reutilizan HAL y protocolo
-M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado; 12 de 12 pantallas confirmadas; cierre de observaciones de suspensión pendiente.**
+M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado y su validación funcional por USB está cerrada:**
+12 pantallas, navegación, reposo y retorno de deep sleep por timer/BOOT/PWR.
+Consumo, operación sólo con batería y otras pruebas dirigidas siguen pendientes.
 
 - [Arquitectura, controles y decisiones de energía](docs/UI.md).
 - [Galería de 12 capturas simuladas](docs/ui/index.html).
 - [Resultados M1](docs/M1-VALIDATION.md).
 - [Evidencia física y pendientes](docs/M1-PHYSICAL-RESULTS.md).
-- [Procedimiento físico pendiente y carga manual](docs/M1-PHYSICAL.md).
+- [Procedimiento físico y carga manual](docs/M1-PHYSICAL.md).
 
 ![Resumen M1 simulado](docs/ui/summary-HEALTHY.png)
 
@@ -126,7 +128,8 @@ El workflow `.github/workflows/m0.yml` compila los tres perfiles M0 y M1 con
 imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
 La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
 pasó el 17 de octubre de 2026. M1 sigue en [PR #1 en borrador](https://github.com/jnbntc/infrabadge/pull/1),
-pendiente de validación física y sin fusionar con `main`.
+con la validación funcional física cerrada y sin fusionar con `main`.
+Los límites y mediciones pendientes están en el informe físico.
 
 El PNG se compara por píxeles descomprimidos, no por su flujo de compresión zlib.
 La imagen es una simulación del diseño, no una captura de la placa.

@@ -26,6 +26,7 @@
 - Run tools/build-m1.sh --all, native tests and tools/simulate_ui.py --check.
 - Review the 12 visual references before deliberate --update changes.
 - One M1 load was explicitly authorized and performed on 2026-10-17. Physical
-  validation is partial: see docs/M1-PHYSICAL-RESULTS.md. Continue diagnostics using
-  the installed firmware; never reflash automatically.
+  functional validation over USB is complete: see docs/M1-PHYSICAL-RESULTS.md.
+  Consumption, battery-only operation, targeted identical-frame cancellation and
+  other listed checks remain pending. Never reflash automatically.
 - docs/M1-PHYSICAL.md contains the future manual procedure; never run it as build.

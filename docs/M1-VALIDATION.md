@@ -83,17 +83,23 @@ en el contenedor fijado, sin red durante el build ni dispositivos. Esto valida C
 no el comportamiento físico de M1. Los binarios locales aprobados conservan sus
 hashes de manifiesto; no se reemplazan por los de CI para la prueba física.
 
-## Validación física parcial
+## Validación funcional física cerrada
 
-M1 fue cargado con autorización explícita el 17 de octubre de 2026. Se confirmaron
-visualmente las doce combinaciones de pantalla/estado entre las dos sesiones. La primera sesión se interrumpió
-por la rigidez del recorrido del auxiliar, sin errores de panel/HAL ni desconexiones
-USB registrados. Se conserva el firmware instalado y se preparó una continuación
-sin flasheo. Reposo sin refrescos, agrupación de cambios, timer y retorno solicitado
-por BOOT tienen evidencia física. PWR tiene retorno EXT1 registrado y falta guardar
-las respuestas finales del operador. Ver [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md).
-La matriz original para revisar alcance y pendientes incluía: tipografía y orientación reales, los cuatro iconos, navegación con BUSY,
-intervalo entre refrescos, ausencia de refrescos en reposo, retención y wake por
-botones/timer, operación con batería y consumo de placa completa. El reloj sigue
-no sincronizado y no se ajustó automáticamente. Procedimiento futuro:
-[M1-PHYSICAL.md](M1-PHYSICAL.md).
+M1 se cargó con autorización explícita el 17 de octubre de 2026. Se confirmaron
+visualmente las doce combinaciones de pantalla/estado entre las dos sesiones. La
+primera se interrumpió por la rigidez del auxiliar; se continuó usando el mismo
+firmware, sin otra carga. La continuación terminó con diagnostic_collected y sus
+resultados finales fueron revisados, no interpretados como un passed automático.
+
+Se verificaron navegación por ambos botones, 60,05 s sin refrescos en reposo,
+agrupación de cambios y retorno de deep sleep por timer, BOOT y PWR, con retención
+de imagen/vista y reconexión USB. Los tres retornos tienen reset=8 y causa esperada
+(timer=4, EXT1=3); el operador confirmó los botones indicados. El firmware registra
+EXT1 sin máscara GPIO, por lo que la atribución individual se apoya también en
+la observación humana. Ver [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md).
+
+Permanecen pendientes la prueba física dirigida de cancelar un frame idéntico,
+consumo de placa completa, contraste con instrumentos, operación sólo con batería,
+PSRAM y rollback físico. La omisión/cancelación de frames idénticos está probada en
+los tests nativos. El reloj continúa explícitamente no sincronizado y no se ajustó.
+Procedimiento para futuras pruebas/cargas: [M1-PHYSICAL.md](M1-PHYSICAL.md).
