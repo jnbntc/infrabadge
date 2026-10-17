@@ -43,7 +43,10 @@
   does not establish the power source; simulated PASS never proves physical success.
 - On 2026-10-17 the user authorized proceeding with the M1.1 physical test. This
   covers one controlled load of the approved diagnostic and the battery-only
-  observations. The one load completed; battery-only observations are pending.
+  observations. The one load completed; the operator confirmed a fresh 0/3 through
+  PASS 3/3 sequence exclusively on battery, USB removed and no intervention.
+  Functional timer validation is closed; current, autonomy and timer accuracy
+  remain unmeasured. The board retains the terminal M1.1 diagnostic.
   Do not repeat a load or restore firmware automatically. Check
   docs/POWER-BASELINE.md for the recorded result.
 - Track procedure, limits and physical results in docs/POWER-BASELINE.md; keep raw

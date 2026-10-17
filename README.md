@@ -18,7 +18,8 @@ referencias fijadas y los límites del esquemático compartido con la variante T
 Los tres perfiles M0 compilaron y pasaron los tests sin hardware. Se validaron
 físicamente pantalla, lecturas RTC/SHTC3, ADC, botones y un ciclo de deep sleep con
 retorno por temporizador y reconexión USB. La fecha del RTC es incorrecta y no se
-modificó. Consumo, precisión del ADC y operación sólo con batería siguen pendientes.
+modificó. Consumo y precisión del ADC siguen pendientes; M1.1 confirmó posteriormente
+tres retornos por timer sólo con batería, como se detalla más abajo.
 Ver [el informe físico y sus límites](docs/PHYSICAL.md). Los binarios antiguos de
 la prueba anterior no deben flashearse.
 
@@ -29,7 +30,8 @@ HEALTHY/WARNING/CRITICAL/OFFLINE y navegación por BOOT/PWR. Los datos son simul
 el RTC se declara no sincronizado y no se modifica. Se reutilizan HAL y protocolo
 M0, sin añadir dependencias gráficas, radios ni red. **La validación funcional M1 por USB está cerrada:**
 12 pantallas, navegación, reposo y retorno de deep sleep por timer/BOOT/PWR.
-Consumo, operación sólo con batería y otras pruebas dirigidas siguen pendientes.
+Consumo y otras pruebas dirigidas siguen pendientes. La prueba posterior M1.1
+cerró tres retornos por timer sólo con batería, con su perfil de diagnóstico.
 
 - [Arquitectura, controles y decisiones de energía](docs/UI.md).
 - [Galería de 12 capturas simuladas](docs/ui/index.html).
@@ -62,17 +64,20 @@ El HAL y el driver del panel se reutilizan; la UI M1 conserva sus controles.
 
 El usuario confirmó encendido y ambos botones sólo con batería LiPo AT 502535
 (3,7 V / 400 mAh nominales; 4,03 V medidos en circuito abierto). Los tres retornos
-autónomos **siguen pendientes**. M1.1 fue cargado con autorización para esta prueba
-temporal; reemplazó M1. No se realizó restauración de M1 ni de fábrica.
+autónomos **están confirmados funcionalmente**: el operador observó un RUN 0/3
+nuevo y 1/3 → 2/3 → PASS 3/3 sólo con batería, sin USB ni intervención, con
+RESET:8 / WAKE:4 comunicados en el resultado. M1.1 fue cargado con autorización
+para esta prueba temporal; reemplazó M1 y permanece instalado. No se realizó
+restauración de M1 ni de fábrica. Consumo y autonomía siguen sin medirse.
 
 ```bash
 bash tools/build-timer.sh --all  # tests, tres perfiles M0, M1 UI y diagnóstico timer
 ```
 
 Artefactos del diagnóstico: `build-m11/timer/`. [POWER-BASELINE.md](docs/POWER-BASELINE.md)
-incluye diseño, simulaciones, pruebas y procedimiento de carga controlada. Requiere
-autorización explícita nueva para flashear. Un PASS dibujado por el simulador o una
-imagen retenida no es evidencia física de la secuencia.
+incluye diseño, simulaciones, pruebas, cierre físico y procedimiento de carga
+controlada. Cualquier otra carga requiere autorización explícita nueva. Un PASS
+dibujado por el simulador o una imagen retenida no es evidencia física de la secuencia.
 
 ## Entorno fijado
 

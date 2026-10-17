@@ -5,7 +5,8 @@
 Este perfil temporal comprueba una secuencia de **tres deep sleeps de 60 segundos**
 usando el temporizador interno del ESP32-S3. Está separado del perfil UI M1.
 **M1.1 fue cargado con autorización el 17 de octubre de 2026.** Reemplazó
-temporalmente M1; la secuencia física con batería todavía está pendiente de cierre.
+temporalmente M1. **Validación funcional con batería aprobada:** el operador confirmó
+un RUN 0/3 nuevo y la secuencia 1/3 → 2/3 → PASS 3/3, sin USB ni intervención.
 La compilación, los tests y las imágenes sintéticas no prueban funcionamiento con
 batería ni autorizan otras cargas.
 
@@ -19,7 +20,7 @@ Se reutilizan el HAL y el driver e-paper validados en M0 y el Power Manager de M
 | Encendido, BOOT y PWR sin USB | Observación comunicada por el operador para M1.1 | Confirmados por el usuario; sin nueva captura instrumental |
 | LiPo AT 502535, 3,7 V, 400 mAh | Datos nominales comunicados por el usuario | No es una medición de capacidad ni de autonomía |
 | 4,03 V en circuito abierto | Medición comunicada por el usuario | No es lectura ADC bajo carga, porcentaje de carga ni consumo |
-| Tres retornos consecutivos por timer sólo con batería | Pendiente | Requiere el procedimiento físico siguiente |
+| Tres retornos consecutivos por timer sólo con batería | Secuencia nueva observada y confirmada por el operador | Validación funcional aprobada; sin medición de corriente o tiempos individuales |
 
 El RTC externo PCF85063 avanza con fecha incorrecta de 2056. Sigue **no
 sincronizado**: no se lee para decidir el resultado, no se corrige y no se usa NTP.
@@ -135,7 +136,7 @@ las seis referencias definitivas.
 | Registro del diagnóstico en ELF Xtensa | 28 bytes en `.rtc_noinit`, tipo SHT_NOBITS |
 | Actionlint y revisión de espacios del diff | Pasaron |
 | Workflow ampliado en GitHub | Preparado; no ejecutado para M1.1 |
-| Carga física M1.1 | Completada con autorización posterior; secuencia con batería pendiente |
+| Carga física M1.1 y secuencia con batería | Carga autorizada completada; tres retornos confirmados por el operador |
 
 | Perfil | Aplicación compilada (bytes) |
 | --- | ---: |
@@ -170,8 +171,8 @@ los logs físicos anteriores y el respaldo privado siguen excluidos de Git/CI.
 El usuario indicó «avanza con la prueba fisica», después de revisar el perfil y su
 procedimiento. Esto autoriza **una carga controlada del M1.1 aprobado**, seguida de
 las observaciones con batería. No autoriza repetir cargas automáticamente, cambiar
-el diagnóstico ni restaurar M1/fábrica al terminar. **La carga terminó; el resultado
-de la secuencia física todavía está pendiente**. No se declara PASS.
+el diagnóstico ni restaurar M1/fábrica al terminar. **La carga y la validación
+funcional de los tres retornos con batería están cerradas.**
 
 Se preparó un auxiliar interactivo fuera del repositorio. Antes de iniciar se
 ejecutaron sus tests sin hardware y la comprobación de fuentes, binarios, sección
@@ -199,8 +200,9 @@ continuación se reciben por el chat y se distinguen de capturas instrumentales.
 
 ### Procedimiento general
 
-Este documento prepara la operación; **no autoriza ejecutarla**. No se cambia el
-M1 instalado durante el desarrollo. La carga reemplazará temporalmente M1.
+Este procedimiento queda como referencia para futuras sesiones; **no autoriza
+otra carga**. Actualmente la placa conserva M1.1. Cualquier nueva escritura debe
+revisarse y autorizarse expresamente.
 
 1. Conservar y verificar localmente el backup privado de fábrica de 8 MiB según
    [FLASHING.md](FLASHING.md). Conservar también los artefactos del M1 validado y su
@@ -277,21 +279,55 @@ Ni la imagen retenida ni la desconexión USB miden consumo o demuestran deep sle
 Corriente, capacidad efectiva, ADC bajo carga, autonomía y precisión del timer
 requieren pruebas e instrumentos separados.
 
-## Registro físico pendiente
+## Cierre de validación física — 17 de octubre de 2026
 
-**Resultado actual: carga completada; ciclos con batería pendientes de revisión.
-No existe PASS físico M1.1 confirmado.**
+**Resultado: PASS funcional observado por el operador, exclusivamente con batería.**
+
+Firmware cargado: fuentes `a1c7294`, aplicación de **213.104 bytes**, SHA-256
+`eed151751d100137432cebfe44a70b9e4d1bd2d067b2380a1c45c0d6fb51711b`.
+Se utilizó el build aprobado en `m11-build-manifest.json`, sin recompilarlo ni
+cargarlo nuevamente para continuar.
+
+El usuario comunicó que observó la secuencia indicada y los textos **3 TIMER
+CONFIRMADOS**, **SIN CUARTO CICLO**, **RESULTADO SOLO TIMER**, **RESET:8 / WAKE:4**
+y **USB FUERA: VERIFICAR**. Confirmó expresamente haber observado desde un
+**RUN 0/3 nuevo** hasta **PASS 3/3**, sólo con batería, con el cable USB completamente
+retirado y sin pulsaciones, reinicios ni cortes de alimentación desde ese 0/3.
+
+La progresión nueva confirma actividad entre ciclos; el resultado no se basa en
+una imagen PASS previamente retenida. El firmware sólo aumenta el contador con
+registro RTC íntegro y armado, reset de deep sleep y causa TIMER. El operador
+comunicó los valores 8/4 al describir el resultado; no se aportó un registro
+independiente de causas o tiempos por ciclo. La fuente de alimentación y la
+continuidad se basan en su confirmación física, no en detección de USB por firmware.
 
 | Paso | Imagen nueva | Reset / wake | Tiempo observado | USB físicamente ausente | Evidencia / observación |
 | --- | --- | --- | --- | --- | --- |
-| Inicio manual | 0/3 | Según arranque inicial | Pendiente | Pendiente | Pendiente |
-| Ciclo 1 | 1/3 | Esperado 8 / 4 | Pendiente | Pendiente | Pendiente |
-| Ciclo 2 | 2/3 | Esperado 8 / 4 | Pendiente | Pendiente | Pendiente |
-| Ciclo 3 | PASS 3/3 | Esperado 8 / 4 | Pendiente | Pendiente | Pendiente |
+| Inicio manual | RUN 0/3 nuevo confirmado | No registrado | No medido | Confirmado | Inicio nuevo tras BOOT y liberación |
+| Ciclo 1 | 1/3 observado | 8 / 4 exigidos por firmware; sin lectura separada aportada | No medido | Confirmado | Continuidad confirmada por el operador |
+| Ciclo 2 | 2/3 observado | 8 / 4 exigidos por firmware; sin lectura separada aportada | No medido | Confirmado | Continuidad confirmada por el operador |
+| Ciclo 3 | PASS 3/3 observado | 8 / 4 comunicados | No medido | Confirmado | Resultado terminal comunicado |
 
-Registrar fecha, versión/commit y hashes del binario realmente cargado, etiqueta
-de batería y cualquier intervención. El aprobado corresponde sólo a la secuencia
-observada, no a una caracterización de corriente o autonomía.
+**USB FUERA: VERIFICAR es un recordatorio fijo**, no una lectura de presencia USB.
+La confirmación humana de cable retirado es la evidencia para ese punto.
+
+No se programa un cuarto sleep en el código y la prueba nativa de la entrada real
+exige exactamente tres llamadas al Power Manager. El usuario observó el resultado
+terminal. Una pantalla inmóvil no demuestra por sí sola ausencia de actividad del
+microcontrolador ni mide consumo; no se atribuye esa medición a esta prueba.
+
+Las respuestas y la revisión están guardadas en
+`results/m11-physical-resume-20261017T202047Z-jzy_36cl/` (`operator-report.json` y
+`result.json`, veredicto `passed_operator_observed`). La sesión original de carga
+con `partial` se conserva intacta: la continuación la complementa. No hubo monitor
+USB durante los ciclos, fotos aportadas ni registro instrumental de tiempos.
+No se repitió la carga, no se solicitó reset y no se restauró M1 ni fábrica.
+
+El aprobado corresponde a **tres retornos funcionales consecutivos por temporizador
+con la LiPo AT 502535**. Corriente de la placa, autonomía, capacidad efectiva,
+ADC bajo carga y precisión temporal siguen pendientes de medición. El RTC externo
+permanece no sincronizado; no se modificó su fecha. La placa conserva el diagnóstico
+M1.1 instalado, que deja de programar sleep al terminar.
 
 ## Volver a M1 o fábrica
 
