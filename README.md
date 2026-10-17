@@ -19,6 +19,7 @@ La placa conserva **M1.1**: M2 no se ha flasheado ni validado físicamente.
 
 M1.1 se propone por separado en [PR #2](https://github.com/jnbntc/infrabadge/pull/2),
 base main; M2 parte de esa misma base estable y usa feat/m2-connectivity.
+M2 se propone en [PR #3](https://github.com/jnbntc/infrabadge/pull/3), basado en #2.
 Ninguna rama anterior se reescribió y no se fusionó nada automáticamente.
 
 ```sh

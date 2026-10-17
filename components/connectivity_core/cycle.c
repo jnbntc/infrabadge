@@ -46,5 +46,13 @@ void ib_cycle_run(ib_cycle_t *s,const char *device_id,bool configured,unsigned i
     if(interval<60||interval>3600)interval=900;
     s->sleep_seconds=interval;
     for(unsigned i=0;i<s->failures&&s->sleep_seconds<3600;++i)s->sleep_seconds=s->sleep_seconds>1800?3600:s->sleep_seconds*2;
+    /* Never intentionally schedule a successful snapshot past its expiry. The
+     * e-paper also labels the last query and its UTC deadline: retained pixels
+     * cannot establish freshness after power loss or a missed wake. */
+    if(s->live){
+        uint32_t current=ops->now(ctx);
+        unsigned remaining=s->last.expires_at>current?s->last.expires_at-current:1;
+        if(s->sleep_seconds>remaining)s->sleep_seconds=remaining;
+    }
     ops->render(ctx,s);ops->wifi_stop(ctx);ops->sleep(ctx,s->sleep_seconds);
 }

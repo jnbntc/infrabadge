@@ -118,3 +118,9 @@ Todos los resultados de red pasan por render condicional → parada Wi-Fi → Po
 Manager. Fallo del panel/HAL o negativa a dormir dejan radio apagada y aplicación
 detenida, sin reconexión continua. Los botones pueden despertar mediante M1; M2
 realiza una consulta por wake y no ejecuta el navegador interactivo de M1.
+
+El footer M2 identifica siempre «ULTIMA CONSULTA / SIM» y, sólo con respuesta
+vigente y reloj confiable, su vencimiento HH:MM UTC. Ante fallo indica NO VIGENTE.
+Así una imagen retenida tras corte de energía no afirma actividad ni vigencia
+indefinida. Un ciclo exitoso limita el sueño al TTL restante si es menor que el
+intervalo configurado; la imagen no puede borrarse sola si falta alimentación.

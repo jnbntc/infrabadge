@@ -39,6 +39,9 @@ Precedencia: critical > warning > unknown > healthy. UNKNOWN y OFFLINE represent
 salud desconocida; el firmware los dibuja como OFFLINE. Alertas permiten letras
 A-Z, dígitos, espacio y `.:/_%+-`. JSON máximo profundidad 8; se rechazan escapes
 Unicode para impedir alias con NUL y mantener el contrato ASCII en el firmware.
+La pantalla etiqueta la última consulta y su hora de caducidad UTC; no es un
+reloj en movimiento ni prueba de que el MCU siga activo. El sueño exitoso se limita
+al TTL restante aunque el intervalo configurado sea mayor.
 El parser C acepta números JSON matemáticamente enteros; Pydantic exige tipo entero.
 
 Vigencia: `generated_at <= ahora_confiable < expires_at`. Se rechazan fechas de

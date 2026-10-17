@@ -11,7 +11,9 @@ El diagnóstico M1.1 permanece instalado.
 Supervisor iniciado por el usuario en su terminal normal, dentro de iot-dev:
 `m2-supervised-20261017T211121Z-j3azaa61`, intento11 PASS, exit codes0/0. La sesión
 Codex no puede iniciar Podman rootless; ese límite no se atribuye a la placa.
-El fingerprint final coincide con los fuentes probados. Logs locales en results/;
+El fingerprint del manifiesto identifica exactamente los fuentes locales probados
+en ese intento. La revisión posterior añade etiqueta de última consulta/caducidad
+y acota el sueño por TTL; se valida por separado en CI. Logs locales en results/;
 sólo se publica [el manifiesto](m2-build-manifest.json), sin respaldos ni logs USB.
 
 - Seis builds ESP32-S3 con ESP-IDF v5.5.5/commit b774170 y toolchain fijado:
@@ -30,7 +32,7 @@ sólo se publica [el manifiesto](m2-build-manifest.json), sin respaldos ni logs 
 - ELF/config: Xtensa ESP32-S3, flash8 MB, consola USB, PSRAM desactivada, seguridad
   irreversible desactivada. Wi-Fi y símbolos de red presentes sólo en M2;
   diagnóstico timer separado. `MBEDTLS_HAVE_TIME_DATE=y` explícito y verificado.
-- App M2 local:853120 bytes, partición app1048576 bytes, margen195456 bytes
+- App M2 local anterior al ajuste de caducidad:853120 bytes, partición app1048576 bytes, margen195456 bytes
   (18,6%). SHA-256 en manifiesto. No es imagen fusionada ni binario instalado.
 
 Las primeras iteraciones detectaron una advertencia C, dependencia temprana CMake

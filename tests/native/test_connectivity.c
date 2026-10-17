@@ -22,7 +22,7 @@ static bool clock_valid(void *ctx){(void)ctx;return clock_ok;}
 static bool persist(void *ctx,const ib_snapshot_t *s,const char *tag){(void)ctx;assert(s->valid&&ib_etag_valid(tag));++persists;return persist_ok;}
 static void render(void *ctx,const ib_cycle_t *s){(void)ctx;++renders;assert(s->live==(s->error==IB_NET_OK));}
 static void stop(void *ctx){(void)ctx;++stops;}
-static void sleep_for(void *ctx,unsigned seconds){(void)ctx;assert(stops==sleeps+1);assert(seconds>=900&&seconds<=3600);++sleeps;}
+static void sleep_for(void *ctx,unsigned seconds){(void)ctx;assert(stops==sleeps+1);assert(seconds>=1&&seconds<=3600);++sleeps;}
 static const ib_cycle_ops_t ops={wifi,fetch,now,clock_valid,persist,render,stop,sleep_for};
 static void read_fixture(const char *name,char *out)
 {
@@ -103,6 +103,7 @@ int main(void)
     payload="{invalid";ib_cycle_run(&state,"badge-lab",true,900,&ops,NULL);assert(state.error==IB_NET_JSON);
     payload=critical;epoch=1800001800u;ib_cycle_run(&state,"badge-lab",true,900,&ops,NULL);assert(state.error==IB_NET_EXPIRED);
     epoch=1800000000u;http_status=401;ib_cycle_run(&state,"badge-lab",true,900,&ops,NULL);assert(state.error==IB_NET_AUTH);
+    http_status=200;epoch=1800001790u;ib_cycle_run(&state,"badge-lab",true,3600,&ops,NULL);assert(state.live&&state.sleep_seconds==10);
     http_status=304;epoch=1800001800u;ib_cycle_run(&state,"badge-lab",true,900,&ops,NULL);assert(state.error==IB_NET_EXPIRED);
     ib_cycle_t empty={0};epoch=1800000000u;ib_cycle_run(&empty,"badge-lab",true,900,&ops,NULL);assert(empty.error==IB_NET_EXPIRED);
     http_status=200;persist_ok=false;expected_etag[2]='c';ib_cycle_run(&state,"badge-lab",true,900,&ops,NULL);assert(state.error==IB_NET_STORE&&!state.live);

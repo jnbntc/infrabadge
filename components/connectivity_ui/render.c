@@ -33,6 +33,11 @@ bool ib_connectivity_render(const ib_cycle_t *s,uint8_t *frame,size_t size)
     for(unsigned py=5;py<20;++py)for(unsigned px=170;px<196;++px)frame[py*25+px/8]&=(uint8_t)~(0x80u>>(px&7));
     text(frame,174,9,"M2",true);clear(frame,164,15,false);
     text(frame,s->clock_synced?46:28,168,s->clock_synced?"HORA VERIFICADA":"RELOJ NO SINCRONIZADO",true);
-    clear(frame,180,20,true);text(frame,8,187,"SIM / WIFI OFF AL DORMIR",false);
+    clear(frame,180,20,true);text(frame,8,181,"ULTIMA CONSULTA / SIM",false);
+    if(s->live&&s->clock_synced){
+        char expiry[25];unsigned minute=(s->last.expires_at/60u)%1440u;
+        snprintf(expiry,sizeof(expiry),"VENCE: %02u:%02uZ",minute/60u,minute%60u);
+        text(frame,8,191,expiry,false);
+    }else text(frame,8,191,"NO VIGENTE",false);
     return true;
 }

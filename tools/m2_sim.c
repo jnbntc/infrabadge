@@ -14,7 +14,7 @@ int main(int argc,char **argv)
     uint8_t *frame=guarded+1;ib_display_cache_t cache={0};
     for(unsigned i=0;i<6;++i){
         ib_cycle_t s={0};s.clock_synced=i!=5;s.live=i<4;s.error=i<4?IB_NET_OK:i==4?IB_NET_DNS:IB_NET_CLOCK;
-        s.last.valid=true;s.last.status=i<4?(ib_status_t)i:IB_CRITICAL;
+        s.last.expires_at=1800001800u;s.last.valid=true;s.last.status=i<4?(ib_status_t)i:IB_CRITICAL;
         s.last.healthy=i==0?12:10;s.last.warning=i==1?2:0;s.last.critical=i==2?2:0;s.last.unknown=i==3?2:0;
         if(i==2){s.last.alert_count=1;strcpy(s.last.titles[0],"HOST CAIDO");strcpy(s.last.details[0],"DATOS SIMULADOS");}
         assert(ib_connectivity_render(&s,frame,5000));assert(guarded[0]==0x23&&guarded[5001]==0xa7);

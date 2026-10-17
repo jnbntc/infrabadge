@@ -91,6 +91,7 @@ No se midió consumo ni se probó operación sólo con batería. Ver [UI.md](UI.
 
 M2 añade asociación Wi-Fi y handshake/consulta TLS a cada wake. El intervalo
 inicial es 900 s de sueño DESPUÉS del tiempo activo; configurable 60..3600 s.
+Un éxito limita además el sueño al TTL restante, si es menor que el intervalo.
 Tras fallos la espera se duplica, como máximo3600 s; un éxito restaura el intervalo
 base. Máximo tres intentos STA por ciclo, con 1/2 s entre intentos, presupuesto
 configurable hasta15 s desde radio iniciada. HTTPS hasta10 s configurables para
