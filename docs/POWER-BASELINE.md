@@ -4,9 +4,10 @@
 
 Este perfil temporal comprueba una secuencia de **tres deep sleeps de 60 segundos**
 usando el temporizador interno del ESP32-S3. Está separado del perfil UI M1.
-**Todavía no se ha cargado ni validado físicamente M1.1.** La placa conserva M1;
-la compilación, los tests y las imágenes sintéticas no prueban funcionamiento con
-batería ni autorizan una carga.
+**M1.1 fue cargado con autorización el 17 de octubre de 2026.** Reemplazó
+temporalmente M1; la secuencia física con batería todavía está pendiente de cierre.
+La compilación, los tests y las imágenes sintéticas no prueban funcionamiento con
+batería ni autorizan otras cargas.
 
 Base: Waveshare ESP32-S3-ePaper-1.54 **V2**, ESP-IDF **v5.5.5** en el commit de
 `dependencies.lock.json`. No se añaden GPIO, dependencias, radios ni servicios.
@@ -134,7 +135,7 @@ las seis referencias definitivas.
 | Registro del diagnóstico en ELF Xtensa | 28 bytes en `.rtc_noinit`, tipo SHT_NOBITS |
 | Actionlint y revisión de espacios del diff | Pasaron |
 | Workflow ampliado en GitHub | Preparado; no ejecutado para M1.1 |
-| Prueba física M1.1 | No ejecutada |
+| Carga física M1.1 | Completada con autorización posterior; secuencia con batería pendiente |
 
 | Perfil | Aplicación compilada (bytes) |
 | --- | ---: |
@@ -163,6 +164,40 @@ Resultados locales sin versionar:
 los logs físicos anteriores y el respaldo privado siguen excluidos de Git/CI.
 
 ## Carga controlada — requiere autorización nueva
+
+### Sesión autorizada el 17 de octubre de 2026
+
+El usuario indicó «avanza con la prueba fisica», después de revisar el perfil y su
+procedimiento. Esto autoriza **una carga controlada del M1.1 aprobado**, seguida de
+las observaciones con batería. No autoriza repetir cargas automáticamente, cambiar
+el diagnóstico ni restaurar M1/fábrica al terminar. **La carga terminó; el resultado
+de la secuencia física todavía está pendiente**. No se declara PASS.
+
+Se preparó un auxiliar interactivo fuera del repositorio. Antes de iniciar se
+ejecutaron sus tests sin hardware y la comprobación de fuentes, binarios, sección
+RTC y backup privado: pasaron. El auxiliar conserva los artefactos aprobados en el
+directorio local de esa sesión, carga una vez, no abre un monitor serie y pide
+retirar físicamente USB antes del inicio manual. Registra por separado las lecturas
+de pantalla y las confirmaciones del operador. Sus marcas de tiempo corresponden
+a las respuestas humanas, no a medidas instrumentales del tiempo dormido. El
+estado `diagnostic_collected` deja el veredicto pendiente de revisión.
+
+La sesión local `results/m11-physical-20261017T201841Z-62tkzs1t/` completó la carga
+entre 17:18:42 y 17:18:58 (Argentina, UTC−3). Esptool terminó con salida 0 y tres
+mensajes de verificación de hash. Se contrastaron las copias de los cuatro
+artefactos (ELF y tres binarios) con el manifiesto aprobado. El respaldo privado
+también pasó su comprobación; no se copió ni publicó su contenido o hash.
+
+El auxiliar se detuvo con `partial` al responderse «no» a la confirmación de la
+pantalla inicial. El operador aclaró después en el chat que veía **INVALID 0/3**:
+es un estado inicial previsto antes de armar la primera secuencia. Esta respuesta
+no demuestra un fallo de hardware ni confirma todavía un despertar. El registro
+original se conserva sin modificar. Se continúa manualmente con el mismo firmware,
+sin nueva carga, monitor ni reset solicitado, en
+`results/m11-physical-resume-20261017T202047Z-jzy_36cl/`. Las observaciones de esta
+continuación se reciben por el chat y se distinguen de capturas instrumentales.
+
+### Procedimiento general
 
 Este documento prepara la operación; **no autoriza ejecutarla**. No se cambia el
 M1 instalado durante el desarrollo. La carga reemplazará temporalmente M1.
@@ -244,7 +279,8 @@ requieren pruebas e instrumentos separados.
 
 ## Registro físico pendiente
 
-**Resultado actual: NO EJECUTADO. No existe PASS físico M1.1.**
+**Resultado actual: carga completada; ciclos con batería pendientes de revisión.
+No existe PASS físico M1.1 confirmado.**
 
 | Paso | Imagen nueva | Reset / wake | Tiempo observado | USB físicamente ausente | Evidencia / observación |
 | --- | --- | --- | --- | --- | --- |

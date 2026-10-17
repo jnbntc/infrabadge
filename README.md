@@ -27,7 +27,7 @@ la prueba anterior no deben flashearse.
 M1 añade tres vistas offline (resumen, alertas y diagnóstico), cuatro estados
 HEALTHY/WARNING/CRITICAL/OFFLINE y navegación por BOOT/PWR. Los datos son simulados;
 el RTC se declara no sincronizado y no se modifica. Se reutilizan HAL y protocolo
-M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado y su validación funcional por USB está cerrada:**
+M0, sin añadir dependencias gráficas, radios ni red. **La validación funcional M1 por USB está cerrada:**
 12 pantallas, navegación, reposo y retorno de deep sleep por timer/BOOT/PWR.
 Consumo, operación sólo con batería y otras pruebas dirigidas siguen pendientes.
 
@@ -62,7 +62,8 @@ El HAL y el driver del panel se reutilizan; la UI M1 conserva sus controles.
 
 El usuario confirmó encendido y ambos botones sólo con batería LiPo AT 502535
 (3,7 V / 400 mAh nominales; 4,03 V medidos en circuito abierto). Los tres retornos
-autónomos **siguen pendientes**. M1.1 no se cargó: la placa conserva M1.
+autónomos **siguen pendientes**. M1.1 fue cargado con autorización para esta prueba
+temporal; reemplazó M1. No se realizó restauración de M1 ni de fábrica.
 
 ```bash
 bash tools/build-timer.sh --all  # tests, tres perfiles M0, M1 UI y diagnóstico timer
@@ -164,7 +165,7 @@ La imagen es una simulación del diseño, no una captura de la placa.
 - [Reglas para agentes](AGENTS.md).
 
 El backup privado de fábrica queda fuera de Git y CI. Se cargaron los tres perfiles
-M0 tras autorización explícita del usuario. La placa conserva M1 tras una carga posterior autorizada;
-fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
+M0 tras autorización explícita del usuario. Después se cargó M1 y, para el diagnóstico
+actual, M1.1 con autorización nueva; fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
 cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. La licencia general del código
 original se elegirá antes de publicar; los avisos Waveshare ya están preservados.

@@ -41,6 +41,10 @@
   increment. Three 60-second cycles only, no fourth sleep after terminal PASS.
 - The manual BOOT start is required after physically disconnecting USB. Firmware
   does not establish the power source; simulated PASS never proves physical success.
-- No new flash authorization exists for M1.1. Leave installed M1 untouched.
+- On 2026-10-17 the user authorized proceeding with the M1.1 physical test. This
+  covers one controlled load of the approved diagnostic and the battery-only
+  observations. The one load completed; battery-only observations are pending.
+  Do not repeat a load or restore firmware automatically. Check
+  docs/POWER-BASELINE.md for the recorded result.
 - Track procedure, limits and physical results in docs/POWER-BASELINE.md; keep raw
   board logs and private backups outside Git/CI.
