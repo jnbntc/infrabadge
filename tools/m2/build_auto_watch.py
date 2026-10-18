@@ -15,9 +15,9 @@ ROOT=Path(__file__).resolve().parents[2]
 
 def inputs():
     paths=[]
-    for folder in ('components','main','config'):
+    for folder in ('components','main','config','tests/native'):
         paths.extend(p for p in (ROOT/folder).rglob('*') if p.is_file() and '__pycache__' not in p.parts)
-    paths.extend(ROOT/name for name in ('CMakeLists.txt','sdkconfig.defaults','tools/build-m2-auto.sh','tools/test-m2-auto.sh','tools/verify_build.py','tests/native/test_m2_auto.c'))
+    paths.extend(ROOT/name for name in ('CMakeLists.txt','sdkconfig.defaults','tools/build-m2-auto.sh','tools/test-m2-auto.sh','tools/test-m2.sh','tools/verify_build.py'))
     return {str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(paths)}
 
 

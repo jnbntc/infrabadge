@@ -15,8 +15,8 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 Perfil separado: STA → HTTPS con CA/hostname/fechas → snapshot validado → pantalla
 condicional → deep sleep. Gateway FastAPI/Pydantic con estados simulados, tokens
 individuales y ETag/304. Sin collectors de producción, MQTT ni base de datos.
-La placa conserva el **diagnóstico autónomo M2 SHA d4e7b93c**, cargado en un
-ensayo interrumpido antes de completar la matriz; no hay PASS de ese grupo.
+La placa conserva el **diagnóstico autónomo M2 SHA93277e2e, con corrección401**, cuyo grupo final está en marcha; los intentos anteriores conservan su estado
+incompleto. No hay PASS del grupo hasta validar su journal terminal.
 Con la aplicación anterior SHA733f7b9b se confirmaron
 físicamente HTTPS200/pantalla, consulta autónoma ETag/304, cuatro estados y
 recuperación tras HTTP503. Las excepciones temporales de ruta se retiraron.

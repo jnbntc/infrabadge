@@ -123,7 +123,7 @@ La confianza de hora dura3600 s desde su ancla y se renueva sólo por HTTPS ya
 verificado. Una interrupción larga puede requerir intervención USB, aunque todavía
 exista batería. El RTC externo2056 no se usa para desbloquear TLS.
 
-La placa conserva ahora el diagnóstico autónomo M2 d4e7b93c, cuyo primer ensayo
+La placa conserva ahora el diagnóstico autónomo M2 93277e2e (corrección401), cuyo primer ensayo
 se interrumpió y no valida consumo. La evidencia anterior con733f7b9b de consultas,
 estados y recuperación está en [M2-PHYSICAL-RESULTS.md](M2-PHYSICAL-RESULTS.md).
 No son mediciones energéticas. El2026-10-18 el operador decidió «Deja las

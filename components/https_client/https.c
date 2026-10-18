@@ -80,7 +80,8 @@ ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,
             if(error==ESP_ERR_HTTP_EAGAIN)vTaskDelay(pdMS_TO_TICKS(10));
         }while(error==ESP_ERR_HTTP_EAGAIN);
     }
-    if(esp_timer_get_time()>=context.deadline)error=ESP_FAIL;
+    bool timed_out=esp_timer_get_time()>=context.deadline;
+    if(timed_out)error=ESP_FAIL;
     reply->status=esp_http_client_get_status_code(client);
     int tls_error=0,flags=0;esp_err_t tls=esp_http_client_get_and_clear_last_tls_error(client,&tls_error,&flags);
     ESP_LOGI(TAG,"M2_HTTP: stage=%s esp=%d tls=%d detail=%d flags=%d http=%d timeout=%u",
@@ -90,6 +91,12 @@ ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,
     esp_http_client_cleanup(client);memset(authorization,0,sizeof(authorization));
     if(context.limits.overflow)return IB_NET_OVERSIZE;
     if(context.limits.bad_header)return IB_NET_HTTP;
+    /* IDF handles401 via its Basic/Digest auth machinery. With our explicit
+     * bearer it can return NOT_SUPPORTED after parsing the401 headers instead
+     * of ESP_OK. Preserve that verified rejection as AUTH, while keeping TLS,
+     * deadline and malformed/oversized response failures authoritative. */
+    if(reply->status==401&&error==ESP_ERR_NOT_SUPPORTED&&!timed_out&&
+       tls==ESP_OK&&!tls_error&&!flags)return IB_NET_AUTH;
     if(error!=ESP_OK){
         if(tls==ESP_ERR_ESP_TLS_CANNOT_RESOLVE_HOSTNAME||tls_error==ESP_ERR_ESP_TLS_CANNOT_RESOLVE_HOSTNAME)return IB_NET_DNS;
         return (tls!=ESP_OK||tls_error||flags)?IB_NET_TLS:IB_NET_HTTP;

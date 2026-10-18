@@ -115,3 +115,12 @@ su guardia de TTL o TLS. Tests explícitos cubren la recuperación después de30
 Protocolo y84 tests PASS en `results/m2-host-checks-20261018T142619Z-0dj0zmby`.
 El runner guarda progress.json y gateway-events.json cada15s; son progreso del
 host, no sustituyen la aceptación del journal del dispositivo.
+
+## Corrección física del adaptador401
+
+La siguiente ejecución detectó401 de autenticación clasificado como HTTP por
+la salida NOT_SUPPORTED del SDK. Nueva imagen93277e2e corrige esa ruta y pasa
+7 builds, ASan/UBSan y una regresión que falla con el adaptador anterior y pasa
+con el nuevo. TLS/fecha/deadline/headers/oversize siguen teniendo precedencia.
+[Manifiesto](m2-authfix-build-manifest.json); no asumir que los resultados de
+d4e7b93c pertenecen a este binario antes de su propio ensayo.

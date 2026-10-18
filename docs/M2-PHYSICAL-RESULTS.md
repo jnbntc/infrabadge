@@ -343,3 +343,22 @@ idéntico en el caso1. No equivale a una medición óptica ni eléctrica.
 El nuevo grupo aprobado, sin flasheo y con TTL diagnóstico3600s, está en
 `results/m2-auto-physical-20261018T142731Z-c7m7ih7r`. No afirmar sus resultados
 hasta recuperar y verificar su journal terminal. La app sigue siendo d4e7b93c.
+
+## Grupo con TTL corregido: rechazo401 mal clasificado
+
+`results/m2-auto-physical-20261018T142731Z-c7m7ih7r` terminó automáticamente
+INCOMPLETE/INVALID-RESULT tras9 eventos y8 retornos por timer. Eventos0–7
+aceptados:200,304 sin transferencia, estados,503 y recuperación304. Caso8
+recibió401 con reloj confiable, pero el adaptador devolvió HTTP6 en vez deAUTH7.
+No hubo PASS del grupo. Exportación y retirada de regla/cierre del gateway
+temporal completados; prioridad5100 ausente en comprobación independiente.
+
+La revisión de ESP-IDF5.5.5 confirmó que su manejo de401 llama a add_auth y puede
+retornar ESP_ERR_NOT_SUPPORTED para el desafío Bearer o ausente. Se corrigió
+únicamente esa salida, conservando prioridad de fallo TLS/fecha, deadline,
+headers inválidos y límite de cuerpo. Nueva regresión compila el adaptador
+HTTPS de producción con transporte IDF simulado: falla con el código anterior
+y pasa con el corregido bajo ASan/UBSan. No se reemplazó la evidencia física
+anterior por una simulación. Ver manifest del binario corregido93277e2e,879920B,
+compilado en los7 perfiles sin tocar HAL ni drivers. Su carga/ensayo posterior
+queda registrado por separado; todavía no se atribuyen resultados a esa imagen.

@@ -1,5 +1,8 @@
 # M2 — diagnóstico autónomo y recuperación de ensayo interrumpido
 
+**Estado actual:** aplicación corregida93277e2e cargada/aprovisionada; grupo
+`m2-auto-physical-20261018T144846Z-oi1a2ccu` en curso. Esperar su journal y cleanup.
+
 2026-10-18. Rama `feat/m2-connectivity`, Waveshare V2, ESP-IDF5.5.5 bloqueado.
 **La preparación pasó compilación y pruebas sin placa. El usuario autorizó «Autorizo cargar y ejecutar»
 para el manifiesto descrito abajo. La carga/setup se completaron; el primer
@@ -11,7 +14,7 @@ detenido. La sesión no tiene sudo autenticado y no detectó ninguna placa USB
 303a:1001; iniciar el runner en la terminal normal con la placa conectada.
 No se intentó escribir firmware, provisionar ni agregar rutas en este preflight.
 
-## Identidad y alcance propuesto
+## Identidad y alcance del primer diagnóstico (histórico)
 
 - Aplicación:879840bytes, offset0x10000.
 - SHA-256: `d4e7b93c702e6048c88bf4b96c762fe1487788a3a30f80d5165a2f82a00cd167`.
@@ -184,3 +187,18 @@ El operador autorizó posteriormente todo el trabajo necesario para finalizar M2
 incluido este nuevo reset/setup y su ventana acotada. No se repite la solicitud
 de aprobación para cada paso reversible necesario; se preservan manifiestos,
 resultados y límites de seguridad. La ejecución necesita sudo en su terminal.
+
+## Aplicación corregida para rechazo401
+
+La prueba física del grupo anterior descubrió401 clasificado comoHTTP cuando
+ESP-IDF devuelve NOT_SUPPORTED desde su manejo de autenticación. El adaptador
+ahora conserva AUTH para ese401 ya recibido, sólo sin error TLS, sin timeout
+y sin headers/cuerpo inválidos. La prueba de regresión ejercita el adaptador
+completo con SDK simulado, incluida prioridad de errores y cleanup.
+
+[Manifiesto corregido](m2-authfix-build-manifest.json):93277e2e,879920B, offset
+0x10000, margen168656B. Siete builds y pruebas C/sanitizadores/visuales PASS.
+El nuevo ensayo autorizado por el permiso general M2 prevé una carga de app,
+un setup y una exportación; conserva bootloader/tabla, ib_m2 y backups. Sigue
+26 casos/25 timer, TTL de lab3600s y regla temporal máxima50min. No se altera
+la seguridad irreversible ni se restaura fábrica.

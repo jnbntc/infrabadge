@@ -27,8 +27,8 @@
 - M0 physically validated. M1 UI/button/sleep validation over USB and M1.1 three
   timer wakes solely on battery are recorded in docs/M1-M11-VALIDATION.md and
   docs/POWER-BASELINE.md. Those results do not imply M2 electrical measurements.
-- Current installed app is autonomous diagnostic SHA d4e7b93c (879840B at0x10000).
-  Exact identity: docs/m2-auto-build-manifest.json. The image is frozen locally;
+- Current installed app is corrected autonomous diagnostic SHA93277e2e (879920B at0x10000).
+  Exact identity: docs/m2-authfix-build-manifest.json. The image is frozen locally;
   CI rebuild metadata/hashes need not equal that physical binary.
 - docs/M2-PHYSICAL-RESULTS.md is the physical evidence index. Other trial reports
   retain their original scopes. Software/CI: docs/M2-VALIDATION.md. Never convert
@@ -88,7 +88,9 @@
   for the lab TTL correction. Seven recorded cases accepted, including304 with
   UNCHANGED/zero transfers, states and503. Final INVALID/WAKE after interruption/
   USB read; no25-wake PASS. Cleanup confirmed and journal preserved.
-- Corrected setup-only run m2-auto-physical-20261018T142731Z-c7m7ih7r is active.
+- TTL-corrected run m2-auto-physical-20261018T142731Z-c7m7ih7r stopped at case8:401
+  was classified HTTP instead ofAUTH. Nine events/eight timer returns; no group PASS.
+  Exact cleanup and export confirmed. Its app was still d4e7b93c.
   Read progress.json/gateway-events.json without USB; they are host progress, not
   final case acceptance. Do not open serial or touch buttons during the group.
   Read the terminal journal only after notification, then verify CRC/run,26 cases,
@@ -99,3 +101,13 @@
 - The user explicitly deferred consumption/energy/battery/autonomy measurements.
   Mark DEFERRED, never PASS or estimate from400mAh. External phone/client test was
   explicitly omitted; do not request it again or infer it from loopback testing.
+
+- Fixed the401 NOT_SUPPORTED adapter path with error precedence preserved; new
+  image93277e2e (879920B) compiled/verified in7 profiles. Full-adapter native test
+  with simulated IDF transport fails on old source and passes on fixed source with
+  ASan/UBSan. See docs/m2-authfix-build-manifest.json; no new GPIO/driver changes.
+  User broad M2 consent authorizes the needed one app-only corrected load/setup
+  and bounded50min trial. Private plan m2-auto-authfix-20261018 is prepared.
+  It was subsequently loaded/provisioned successfully in
+  m2-auto-physical-20261018T144846Z-oi1a2ccu, now active. Do not open USB; read
+  progress.json/gateway-events.json until terminal notification/export by runner.
