@@ -34,6 +34,10 @@ def lines(channel,deadline):
             yield line.decode('ascii',errors='replace').strip()
 
 
+def wait_export_ready(channel):
+    return any(line=='IBAUTO_READY' for line in lines(channel,time.monotonic()+15))
+
+
 def port_wait(list_ports):
     print('Esperando la única Waveshare USB. Si está dormida, pulsá BOOT brevemente una vez; después no tocar botones.',flush=True)
     end=time.monotonic()+30
@@ -98,6 +102,12 @@ def main():
                 port=port_wait(list_ports)
                 channel=serial.Serial(port=None,baudrate=115200,timeout=.2,write_timeout=3,exclusive=True)
                 channel.port=port;channel.dtr=False;channel.rts=False;channel.open()
+            if a.action=='collect':
+                # Terminal notification precedes Wi-Fi shutdown/USB driver setup.
+                # Wait for readiness before TX; if READY was emitted before open,
+                # the finite grace also avoids racing that handover. No reset/retry.
+                state['export_ready_observed']=wait_export_ready(channel)
+                save(record,state)
             channel.write(b'IBAUTO_EXPORT\n');channel.flush();previous_requested=True
             done=False
             for line in lines(channel,time.monotonic()+45):

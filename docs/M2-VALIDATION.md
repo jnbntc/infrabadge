@@ -119,3 +119,14 @@ La corrección posterior de TTL de fixtures tiene su propia revisión y CI; no
 se atribuye a este commit. Los hashes del binario físico d4e7b93c siguen siendo
 los del paquete local congelado; no intercambiar imágenes por nombre ni por
 compilar fuentes equivalentes con otro git describe/app metadata.
+
+## Correcciones401 y propagaciónTLS
+
+54695ee: CI push39137848673 y PR39137843306 aprobados,7 perfiles y84 tests.
+Su imagen93277e2e confirmó401→AUTH en placa, pero no completó el grupoTLS.
+Corrección posterior: transporte síncrono que conserva erroresTLS/DNS del SDK.
+Build `m2-auto-supervised-20261018T151529Z-pc92lqb3`:7 perfiles y C/ASan/UBSan/
+visuales PASS. `m2-tls-regression-20261018T151707Z-u25i208n`: anterior falla,
+corregido pasa, con API IDF simulada. Protocolo y85 tests Python PASS en
+`m2-host-checks-20261018T151629Z-zfe79aos`. [Manifiesto10037379](m2-tlsfix-build-manifest.json):
+879920B, margen168656B. Prueba física propia pendiente; sin cambios HAL/particiones.

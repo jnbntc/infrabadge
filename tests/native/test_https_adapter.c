@@ -18,7 +18,7 @@ static ib_device_config_t config={.device_id="adapter-fixture",.ssid="synthetic"
 int64_t esp_timer_get_time(void){return clock_us;}
 esp_http_client_handle_t esp_http_client_init(const esp_http_client_config_t *value)
 {
-    settings=*value;assert(settings.is_async&&settings.disable_auto_redirect);
+    settings=*value;assert(settings.disable_auto_redirect);
     assert(!settings.skip_cert_common_name_check&&settings.tls_version==ESP_HTTP_CLIENT_TLS_VER_TLS_1_2);
     assert(!strcmp(settings.cert_pem,config.ca_pem)&&settings.cert_len==strlen(config.ca_pem)+1);
     return &settings;
@@ -42,7 +42,11 @@ esp_err_t esp_http_client_perform(esp_http_client_handle_t handle)
 }
 int esp_http_client_get_status_code(esp_http_client_handle_t h){assert(h==&settings);return status;}
 esp_err_t esp_http_client_get_and_clear_last_tls_error(esp_http_client_handle_t h,int *detail,int *flags)
-{assert(h==&settings);*detail=tls_detail;*flags=tls_flags;return tls_result;}
+{assert(h==&settings);
+    /* SDK5.5.5 synchronous connect copies its TLS error handle; async does not.
+     * Reproduce that transport behavior for pre-HTTP connection failures. */
+    if(settings.is_async&&status==0){*detail=*flags=0;return ESP_OK;}
+    *detail=tls_detail;*flags=tls_flags;return tls_result;}
 void esp_http_client_cleanup(esp_http_client_handle_t h){assert(h==&settings);++cleaned;}
 int esp_http_client_get_socket(esp_http_client_handle_t h){assert(h==&settings);return -1;}
 unsigned ulTaskNotifyTake(int clear,unsigned ticks){(void)clear;(void)ticks;return 1;}
@@ -77,6 +81,9 @@ int main(void)
     reset(401,ESP_ERR_NOT_SUPPORTED);tls_flags=1;expect(IB_NET_TLS);
     reset(401,ESP_ERR_NOT_SUPPORTED);tls_detail=-1;expect(IB_NET_TLS);
     reset(401,ESP_ERR_NOT_SUPPORTED);tls_result=123;expect(IB_NET_TLS);
+    reset(0,ESP_FAIL);tls_flags=8;expect(IB_NET_TLS); /* CA/SAN/date rejection before HTTP. */
+    reset(0,ESP_FAIL);tls_detail=-9984;expect(IB_NET_TLS);
+    reset(0,ESP_FAIL);expect(IB_NET_HTTP); /* No invented TLS cause for a bare TCP error. */
     reset(0,ESP_FAIL);tls_result=ESP_ERR_ESP_TLS_CANNOT_RESOLVE_HOSTNAME;expect(IB_NET_DNS);
     reset(200,ESP_OK);expect(IB_NET_OK);
     reset(403,ESP_OK);expect(IB_NET_OK); /* Portable cycle maps403 toAUTH. */

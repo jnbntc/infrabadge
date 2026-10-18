@@ -1,6 +1,6 @@
 {
   "profile": "automation",
-  "status": "loaded_trial_running",
+  "status": "partial_journal_recovered",
   "esp_idf": "v5.5.5",
   "esp_idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
   "target": "esp32s3",
@@ -31,7 +31,12 @@
   "native_sanitizers_passed": true,
   "production_https_adapter_regression": "expected_failure_before_fix_pass_after_fix_mock_idf_transport",
   "regression_evidence": "results/m2-auth-regression-20261018T144724Z",
-  "physical_validation": "pending_terminal_journal",
+  "physical_validation": "16_cases_accepted_then_TLS_classified_as_HTTP",
   "flash_performed": true,
-  "physical_evidence": "results/m2-auto-physical-20261018T144846Z-oi1a2ccu"
+  "physical_evidence": "results/m2-auto-physical-20261018T144846Z-oi1a2ccu",
+  "completed_cases": 17,
+  "accepted_cases": 16,
+  "timer_returns": 16,
+  "journal_evidence": "results/m2-auto-journal-recovery-uxvszpyl",
+  "full_m2_validation": false
 }

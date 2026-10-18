@@ -15,15 +15,14 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 Perfil separado: STA → HTTPS con CA/hostname/fechas → snapshot validado → pantalla
 condicional → deep sleep. Gateway FastAPI/Pydantic con estados simulados, tokens
 individuales y ETag/304. Sin collectors de producción, MQTT ni base de datos.
-La placa conserva el **diagnóstico autónomo M2 SHA93277e2e, con corrección401**, cuyo grupo final está en marcha; los intentos anteriores conservan su estado
-incompleto. No hay PASS del grupo hasta validar su journal terminal.
-Con la aplicación anterior SHA733f7b9b se confirmaron
-físicamente HTTPS200/pantalla, consulta autónoma ETag/304, cuatro estados y
-recuperación tras HTTP503. Las excepciones temporales de ruta se retiraron.
-El intento interrumpido registró un wake reset8/wake4; falta completar los25
-del grupo. M2 sigue en validación: cancelación de refresco, negativos
-TLS físicos, batería y consumo pendientes. Ver el informe físico; no repetir
-cargas/provisiones ni ventanas de red con autorizaciones ya consumidas.
+La placa conserva el diagnóstico autónomo **SHA93277e2e**. Su journal confirmó
+16 casos aceptados y16 retornos reset8/wake4, incluido401→AUTH,304 sin
+transferencia y recuperación de fallos. El caso17 detuvo el grupo por un rechazo
+anterior a HTTP clasificado comoHTTP en lugar deTLS. Journal recuperado y ruta
+retirada: **no hay PASS26/25**. La corrección **SHA10037379** pasó7 builds,
+sanitizadores y85 tests; falta su ensayo físico. Mediciones eléctricas diferidas.
+Ver [evidencia](docs/M2-PHYSICAL-RESULTS.md) y
+[manifiesto corregido](docs/m2-tlsfix-build-manifest.json).
 
 M1.1 se propone por separado en [PR #2](https://github.com/jnbntc/infrabadge/pull/2),
 base main; M2 parte de esa misma base estable y usa feat/m2-connectivity.
@@ -31,7 +30,7 @@ M2 se propone en [PR #3](https://github.com/jnbntc/infrabadge/pull/3), basado en
 Ninguna rama anterior se reescribió y no se fusionó nada automáticamente.
 
 ```sh
-bash tools/build-m2.sh --all  # seis perfiles + tests C/sanitizadores/visuales; no hardware
+bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware
 # Backend independiente, sin instalar nada en el SDK:
 python3 -m venv /tmp/infrabadge-gateway
 /tmp/infrabadge-gateway/bin/python -m pip install --require-hashes -r gateway/requirements.lock

@@ -1,5 +1,14 @@
 # M2 — automatización y cierre de validación
 
+**Actualización2026-10-18:**93277e2e terminó INVALID tras17 registros,16 casos
+aceptados y16 retornos reset8/wake4. Journal recuperado y ruta retirada.
+El caso16 (CA ajena) produjoHTTP/status0; no se declara aprobado el negativoTLS
+ni PASS26/25. La nueva corrección10037379 pasó7 builds y85 tests; falta su carga
+y ensayo físico. Véanse [evidencia](m2-authfix-results.json),
+[manifiesto](m2-tlsfix-build-manifest.json) y [cierre pendiente](M2-CLOSEOUT.md).
+Los apartados anteriores conservan su alcance histórico.
+
+
 2026-10-18. El perfil diagnóstico independiente y el orquestador ya están
 implementados y compilados. **El primer ensayo fue cargado/aprovisionado y luego
 interrumpido; hay un timer confirmado, pero no PASS del grupo de26 casos.**

@@ -226,3 +226,20 @@ def test_generated_cert_variants_isolate_ca_san_and_dates_over_real_host_tls(tmp
                 if kind=='wrong_san':assert error.value.verify_code==62
                 if kind=='expired_cert':assert error.value.verify_code==10
         finally:server.should_exit=True;worker.join(5);listener.close()
+
+
+def test_export_waits_for_terminal_usb_readiness(monkeypatch):
+    import auto_sdk
+    channel=object();observed=[]
+    monkeypatch.setattr(auto_sdk.time,'monotonic',lambda:100)
+    def pending(value,deadline):
+        assert value is channel and deadline==115
+        observed.append('passive_read')
+        yield 'unrelated status'
+        yield 'IBAUTO_READY'
+        raise AssertionError('reader must stop at readiness')
+    monkeypatch.setattr(auto_sdk,'lines',pending)
+    assert auto_sdk.wait_export_ready(channel) is True
+    assert observed==['passive_read']
+    monkeypatch.setattr(auto_sdk,'lines',lambda *args:iter([]))
+    assert auto_sdk.wait_export_ready(channel) is False

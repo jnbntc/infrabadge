@@ -362,3 +362,32 @@ y pasa con el corregido bajo ASan/UBSan. No se reemplazó la evidencia física
 anterior por una simulación. Ver manifest del binario corregido93277e2e,879920B,
 compilado en los7 perfiles sin tocar HAL ni drivers. Su carga/ensayo posterior
 queda registrado por separado; todavía no se atribuyen resultados a esa imagen.
+
+## Grupo93277e2e:401 corregido, propagaciónTLS pendiente
+
+`results/m2-auto-physical-20261018T144846Z-oi1a2ccu` terminó INVALID/RESULT.
+La exportación inicial tuvo SerialTimeoutException; otra lectura en
+`results/m2-auto-journal-recovery-uxvszpyl` recuperó el journal sin nueva carga
+ni provisión. CRC/run verificados:17 registros,16 aceptados,16 timer_returns.
+Eventos1–16:reset8/wake4. [Evidencia saneada](m2-authfix-results.json).
+
+Aceptados:200,304 UNCHANGED/0 transferencias, estados,503/recuperación,401
+correctamente AUTH7,JSON8,oversize9,expirado10 y sus recuperaciones. Todos
+registran reloj confiable y parada Wi-Fi. Caso16 (CA ajena):HTTP6/status0 en
+171ms HTTPS,live0; se esperabaTLS5. No se prueba la causa criptográfica a partir
+de ese código genérico ni se declara aprobado el negativo.
+
+El SDK fijado5.5.5 `components/tcp_transport/transport_ssl.c` retorna progreso
+negativo desde `esp_tls_connect_async` sin copiar el error TLS al transporte.
+Su `ssl_connect` síncrono sí llama a `esp_transport_set_errors`. El adaptador
+corregido usa ese camino público; conserva CA/SAN/fecha, timeout finito y guardia
+de deadline. Un error TCP sin causaTLS sigue siendoHTTP: no se inventa una causa.
+La regresión reproduce esa diferencia: código anterior falla y corregido pasa
+bajo ASan/UBSan con SDK simulado. No sustituye prueba física.
+
+Imagen10037379/879920B preparada,7 builds y85 tests PASS. Todavía no instalada;
+la placa conserva93277e2e. Se agregó espera pasiva hasta15s de USB READY antes
+del export para evitar la carrera tras la notificación terminal, sin resets o
+reintentos de escrituras. El timeout original queda preservado. Retirada de ruta
+y cierre de gateways confirmados; otra lectura encontró prioridad5100 ausente.
+El gateway original se reabrió. El grupo completo sigue pendiente.

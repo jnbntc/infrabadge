@@ -1,0 +1,36 @@
+{
+  "profile": "automation",
+  "status": "compiled_pending_physical_execution",
+  "esp_idf": "v5.5.5",
+  "esp_idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
+  "target": "esp32s3",
+  "flash_size": "8MB",
+  "application_offset": "0x10000",
+  "application_capacity": 1048576,
+  "application_remaining_bytes": 168656,
+  "artifacts": {
+    "infrabadge.elf": {
+      "bytes": 9974204,
+      "sha256": "e9c81514198a902bf7578ce78858e236d8f942a748e48a28eef93795e0928172"
+    },
+    "infrabadge.bin": {
+      "bytes": 879920,
+      "sha256": "10037379a12333d5c201289d4d743e776a6343a250877502a20d4c3026e82848"
+    },
+    "bootloader/bootloader.bin": {
+      "bytes": 20848,
+      "sha256": "0494d8447367f4b6f6113c01616e9744c64279c7f58fb7810befffa6b4d3c4a8"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    }
+  },
+  "firmware_input_sha256": "2cd3e611b8e0c3897d1d60dbd42d27147031f7e0a55350486173fa3c48392d49",
+  "build_profiles": 7,
+  "native_sanitizers_passed": true,
+  "python_tests_passed": 85,
+  "physical_validation": "pending",
+  "flash_performed": false,
+  "regression_evidence": "results/m2-tls-regression-20261018T151707Z-u25i208n"
+}

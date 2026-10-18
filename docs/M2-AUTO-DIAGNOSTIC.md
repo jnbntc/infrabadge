@@ -1,7 +1,16 @@
 # M2 — diagnóstico autónomo y recuperación de ensayo interrumpido
 
-**Estado actual:** aplicación corregida93277e2e cargada/aprovisionada; grupo
-`m2-auto-physical-20261018T144846Z-oi1a2ccu` en curso. Esperar su journal y cleanup.
+**Actualización2026-10-18:**93277e2e terminó INVALID tras17 registros,16 casos
+aceptados y16 retornos reset8/wake4. Journal recuperado y ruta retirada.
+El caso16 (CA ajena) produjoHTTP/status0; no se declara aprobado el negativoTLS
+ni PASS26/25. La nueva corrección10037379 pasó7 builds y85 tests; falta su carga
+y ensayo físico. Véanse [evidencia](m2-authfix-results.json),
+[manifiesto](m2-tlsfix-build-manifest.json) y [cierre pendiente](M2-CLOSEOUT.md).
+Los apartados anteriores conservan su alcance histórico.
+
+
+**Intento93277e2e finalizado:** journal recuperado;16/17 casos aceptados,
+16 timers y cleanup verificado. No es PASS completo.
 
 2026-10-18. Rama `feat/m2-connectivity`, Waveshare V2, ESP-IDF5.5.5 bloqueado.
 **La preparación pasó compilación y pruebas sin placa. El usuario autorizó «Autorizo cargar y ejecutar»

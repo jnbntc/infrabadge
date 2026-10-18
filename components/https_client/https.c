@@ -53,8 +53,11 @@ ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,
     if(count<0||(size_t)count>=sizeof(url))return IB_NET_CONFIG;
     receive_t context={.limits={.reply=reply},.deadline=esp_timer_get_time()+(int64_t)config->http_timeout_ms*1000};
     atomic_init(&context.socket,-1);
+    /* IDF5.5.5 ssl_connect_async does not copy TLS errors to the transport
+     * error handle. The synchronous path does, preserving CA/SAN/date and DNS
+     * classification. Keep finite I/O timeout and the existing deadline guard. */
     esp_http_client_config_t settings={.url=url,.cert_pem=config->ca_pem,.cert_len=strlen(config->ca_pem)+1,
-        .timeout_ms=1000,.is_async=true,.event_handler=receive,.user_data=&context,
+        .timeout_ms=1000,.is_async=false,.event_handler=receive,.user_data=&context,
         .disable_auto_redirect=true,.skip_cert_common_name_check=false,
         .tls_version=ESP_HTTP_CLIENT_TLS_VER_TLS_1_2,.buffer_size=1024,.buffer_size_tx=512};
     esp_http_client_handle_t client=esp_http_client_init(&settings);

@@ -109,5 +109,17 @@
   User broad M2 consent authorizes the needed one app-only corrected load/setup
   and bounded50min trial. Private plan m2-auto-authfix-20261018 is prepared.
   It was subsequently loaded/provisioned successfully in
-  m2-auto-physical-20261018T144846Z-oi1a2ccu, now active. Do not open USB; read
-  progress.json/gateway-events.json until terminal notification/export by runner.
+  m2-auto-physical-20261018T144846Z-oi1a2ccu, now INVALID at case16.
+  Journal recovered in m2-auto-journal-recovery-uxvszpyl:17 records,16 accepted,
+  16 timers, cleanup confirmed. Preserve it.
+
+## TLS propagation correction prepared
+
+- IDF5.5.5 async connect omits copying TLS errors to transport; sync copies them.
+  HTTPS now uses sync mode with the same CA/SAN/date and timeout/deadline guard.
+- New10037379/879920B passed7 builds, ASan/UBSan and85 Python tests; not installed.
+  Manifest docs/m2-tlsfix-build-manifest.json. Board still has93277e2e.
+- Broad M2 authorization covers the necessary corrected load/setup/bounded trial;
+  sudo password must be entered in the normal user terminal, not in chat.
+- Collector waits passively up to15s for terminal USB readiness before export.
+  No reset/write retry added. Current results do not constitute26/25 PASS.
