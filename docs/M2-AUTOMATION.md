@@ -96,3 +96,22 @@ Recuperación del host verificada: protocolo y80 tests Python PASS en
 `results/m2-host-checks-20261018T140834Z-dmfq3bwr`. Incluye mocks del reset/setup
 sin llamadas al flasheo y rechazo de journal ajeno. No se recompiló ni cambió
 el binario instalado; el nuevo reset/setup todavía no se ejecutó físicamente.
+
+## Corrección de la duración del laboratorio
+
+El grupo completo dura más de30min. Un snapshot HEALTHY de recuperación con
+TTL1800s podía quedar a menos de60s de vencer cerca del caso23. El core acorta
+correctamente el sueño al TTL restante; el diagnóstico exige60s en esos éxitos.
+Se detuvo preventivamente el segundo intento tras7 casos aceptados, preservando
+su journal y retirando la regla. No se observó ni se atribuye un fallo de placa
+a ese límite anticipado; el INVALID/WAKE del journal final corresponde a la
+interrupción/lectura de un grupo no terminado.
+
+Sólo las fixtures del diagnóstico usan ahora TTL3600s, dentro del contrato
+existente. El gateway normal mantiene1800s; el caso de snapshot vencido conserva
+la fecha expirada. No se amplía el lease de reloj ni se cambia el firmware,
+su guardia de TTL o TLS. Tests explícitos cubren la recuperación después de30min,
+304 aún vigente, límites del protocolo y el default normal sin cambios.
+Protocolo y84 tests PASS en `results/m2-host-checks-20261018T142619Z-0dj0zmby`.
+El runner guarda progress.json y gateway-events.json cada15s; son progreso del
+host, no sustituyen la aceptación del journal del dispositivo.

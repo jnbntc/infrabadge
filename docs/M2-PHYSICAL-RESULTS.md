@@ -323,3 +323,23 @@ retorno real por timer en este intento, no los25 requeridos ni la supresión de
 refresco304. El fallo ocurrió con gateway/ruta de ensayo detenidos, por lo que
 no se atribuye a un defecto de la placa ni a una respuesta HTTP de error recibida.
 El grupo permanece INCOMPLETE. La pantalla e-paper no prueba alimentación activa.
+
+## Segundo grupo autónomo: detenido por corrección de laboratorio
+
+`results/m2-auto-physical-20261018T141551Z-yygtf_rx`: setup-only completado, sin
+flasheo. Antes de alcanzar un límite de TTL identificado en las fixtures, se
+detuvo el host de manera ordenada para corregir el laboratorio. No fue un fallo
+observado del firmware. Retirada de regla y cierre del gateway temporal
+confirmados. Journal previo preservado y exportado con CRC/run válidos.
+
+Sus7 eventos registrados pasaron las comprobaciones:200 inicial,304 con
+UNCHANGED/0 transferencias,200 WARNING/CRITICAL/UNKNOWN/HEALTHY y503 esperado.
+Eventos1–6 registran reset8/wake4; el contador de retorno llegó a7 antes de la
+interrupción/lectura, sin un octavo evento terminado. Fase final INVALID/WAKE,
+por eso no constituye un grupo completo ni prueba que se completaron25 wakes.
+Sí hay evidencia física de supresión de llamadas al driver para el framebuffer
+idéntico en el caso1. No equivale a una medición óptica ni eléctrica.
+
+El nuevo grupo aprobado, sin flasheo y con TTL diagnóstico3600s, está en
+`results/m2-auto-physical-20261018T142731Z-c7m7ih7r`. No afirmar sus resultados
+hasta recuperar y verificar su journal terminal. La app sigue siendo d4e7b93c.

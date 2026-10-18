@@ -175,6 +175,34 @@ def test_case_endpoints_authentication_and_faults_are_isolated():
     assert token not in json.dumps(events) and all(set(e)=={'slot','http','conditional','host_epoch'} for e in events)
 
 
+def test_recovery_snapshot_remains_fresh_beyond_half_hour():
+    import hashlib
+    from infrabadge_gateway.app import create_app
+    from infrabadge_gateway.models import Device,GatewayConfig
+    token='synthetic-token-'+'x'*32;digest=hashlib.sha256(token.encode()).hexdigest()
+    config=GatewayConfig(devices={'auto-test':Device(token_sha256=[digest],scenario='HEALTHY')})
+    now=[1800000000]
+    client=TestClient(create_app(config,clock=lambda:now[0],snapshot_ttl_seconds=3600))
+    url='/api/v1/devices/auto-test/status';headers={'Authorization':'Bearer '+token}
+    first=client.get(url,headers=headers);assert first.status_code==200
+    assert first.json()['expires_at']-first.json()['generated_at']==3600
+    now[0]+=1810
+    assert first.json()['expires_at']-now[0]>60
+    assert client.get(url,headers=dict(headers,**{'If-None-Match':first.headers['etag']})).status_code==304
+    lab=TestClient(create_case_app('auto-test',digest,5,[],threading.Lock()))
+    answer=lab.get(url,headers=headers).json()
+    assert answer['expires_at']-answer['generated_at']==3600
+    normal=TestClient(create_app(config,clock=lambda:now[0])).get(url,headers=headers).json()
+    assert normal['expires_at']-normal['generated_at']==1800
+
+
+@pytest.mark.parametrize('ttl',[0,3601,True])
+def test_custom_snapshot_ttl_never_exceeds_protocol(ttl):
+    from infrabadge_gateway.app import create_app
+    from infrabadge_gateway.models import GatewayConfig
+    with pytest.raises(ValueError,match='TTL'):create_app(GatewayConfig(devices={}),snapshot_ttl_seconds=ttl)
+
+
 def test_generated_cert_variants_isolate_ca_san_and_dates_over_real_host_tls(tmp_path):
     certificates(tmp_path,'localhost','a'*32)
     context=ssl.create_default_context(cafile=str(tmp_path/'ca.pem'));context.minimum_version=context.maximum_version=ssl.TLSVersion.TLSv1_2

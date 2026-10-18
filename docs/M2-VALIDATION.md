@@ -108,3 +108,14 @@ Corriente, energía, deriva y autonomía siguen SIN MEDIR. No extrapolar los400 
 nominales a duración. [POWER.md](POWER.md) presenta sólo un modelo paramétrico.
 La evidencia física M1/M1.1 anterior mantiene su alcance en
 [M1-M11-VALIDATION.md](M1-M11-VALIDATION.md), sin extenderla a M2.
+
+## Ampliación de CI del diagnóstico autónomo
+
+Commit `ca1989d933ff8741c944072dc9daa314a7d512b8`: CI aprobado por push y PR,
+[siete perfiles y tests gateway](https://github.com/jnbntc/infrabadge/actions/runs/39135371920)
+y [ejecución complementaria](https://github.com/jnbntc/infrabadge/actions/runs/39135368861).
+Incluye native C/sanitizadores/visuales y perfil autónomo separado, sin hardware.
+La corrección posterior de TTL de fixtures tiene su propia revisión y CI; no
+se atribuye a este commit. Los hashes del binario físico d4e7b93c siguen siendo
+los del paquete local congelado; no intercambiar imágenes por nombre ni por
+compilar fuentes equivalentes con otro git describe/app metadata.

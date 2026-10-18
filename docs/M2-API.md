@@ -116,3 +116,12 @@ Máximo dos hashes activos por identidad; no compartir token entre placas. Rotac
 de CA/origen: generar nuevo laboratorio, aprovisionarlo físicamente, comprobarlo y
 retirar el anterior. El cambio de configuración elimina sólo la caché de snapshot
 de M2; no borra NVS completo. Un nuevo UTC no se guarda como fecha actual en flash.
+
+## TTL de las fixtures del diagnóstico autónomo
+
+La factory Python `create_app(..., snapshot_ttl_seconds=1800)` conserva el default
+normal de30min y valida el mismo límite de protocolo1–3600s. Es configuración
+interna, no un parámetro HTTP que acepte el dispositivo. Sólo el laboratorio
+autónomo selecciona3600s para durar más de30min sin forzar una reducción legítima
+del sueño en una recuperación. El caso expired sigue entregando datos vencidos.
+304 no extiende la vigencia y no cambia el lease de hora del firmware.

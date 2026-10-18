@@ -113,10 +113,13 @@ def prepare_restart(previous_private,private):
     prior=validate_manifest(previous_private)
     result_dir=Path(json.loads((previous_private/'execution.json').read_text())['results']).resolve()
     if not result_dir.is_relative_to((ROOT/'results').resolve()):raise ValueError('previous_result_location')
-    result=json.loads((result_dir/'result.json').read_text());loaded=json.loads((result_dir/'load-setup.json').read_text())
+    result=json.loads((result_dir/'result.json').read_text())
+    record=result_dir/('setup-existing.json' if prior.get('execution_mode')=='setup_existing' else 'load-setup.json')
+    loaded=json.loads(record.read_text())
     collected=json.loads((result_dir/'collect.json').read_text());report=json.loads((result_dir/'device-report.json').read_text())
     validate(report,prior['run'])
-    if not (loaded.get('flash_completed') and loaded.get('setup_ack') and collected.get('status')=='completed' and report['phase'] in (3,4)):
+    confirmed_app=loaded.get('usb_reset_completed') if prior.get('execution_mode')=='setup_existing' else loaded.get('flash_completed')
+    if not (confirmed_app and loaded.get('setup_ack') and collected.get('status')=='completed' and report['phase'] in (3,4)):
         raise ValueError('previous_terminal_journal_required')
     if not (result.get('route_cleanup_confirmed') and result.get('test_gateway_stopped')):raise ValueError('previous_cleanup_not_confirmed')
     prepare(previous_private/'firmware',private,report)
@@ -197,8 +200,17 @@ def execute(private):
         result['firmware_write_requested']=action=='load-setup';save(out/'result.json',result)
         if sdk(action):raise ValueError('load_or_setup_incomplete_no_retry')
         print('Ensayo autónomo iniciado. No BOOT/PWR, resets, monitores ni otros clientes con el token. Esperando journal terminal.',flush=True)
-        end=time.monotonic()+SECONDS-240
-        while time.monotonic()<end and process.poll() is None and not lab.terminal_seen():time.sleep(1)
+        began=time.monotonic();end=began+SECONDS-240;checkpoint=-15
+        while time.monotonic()<end and process.poll() is None and not lab.terminal_seen():
+            elapsed=int(time.monotonic()-began)
+            if elapsed-checkpoint>=15:
+                with lab.lock:events=list(lab.events)
+                save(out/'gateway-events.json',events)
+                save(out/'progress.json',{'phase':'waiting_terminal','elapsed_seconds':elapsed,
+                  'gateway_http_events':len(events),'last_slot':events[-1]['slot'] if events else None,
+                  'not_device_journal_or_case_acceptance':True})
+                checkpoint=elapsed
+            time.sleep(1)
         if not lab.terminal_seen():raise ValueError('terminal_notice_missing_no_timer_pass_inferred')
         if sdk('collect'):raise ValueError('journal_export_incomplete')
         result.update(json.loads((out/'device-summary.json').read_text()))
@@ -216,6 +228,7 @@ def execute(private):
         result['route_cleanup_confirmed']=any(e.get('event')=='route_removed' and e.get('priority_absent') for e in result['events'])
         if not result['route_cleanup_confirmed'] or not result['test_gateway_stopped']:result['status']='incomplete_or_failed'
         save(out/'result.json',result)
+        save(out/'progress.json',{'phase':'finished','status':result['status']})
         print('Estado: '+result['status']+'. Resultados: '+str(out),flush=True)
         print('No se restaura firmware automáticamente. Diagnóstico queda instalado; mediciones pendientes.',flush=True)
         # Restore only the original lab service, never credentials or board flash.

@@ -47,7 +47,10 @@ def create_case_app(device_id,token_hash,slot,events,lock):
     from infrabadge_gateway.models import Device,GatewayConfig
     names={2:'WARNING',3:'CRITICAL',4:'UNKNOWN'};faults={6:'http',8:'auth',10:'json',12:'oversize',14:'expired'}
     config=GatewayConfig(devices={device_id:Device(token_sha256=[token_hash],scenario=names.get(slot,'HEALTHY'),fault=faults.get(slot))},enable_faults=slot in faults)
-    app=create_app(config)
+    # The finite diagnostic lasts >30min. A half-hour recovery snapshot could
+    # legitimately shorten a successful sleep near expiry, violating the test's
+    # exact60s expectation. Use the protocol's allowed1h TTL in this lab only.
+    app=create_app(config,snapshot_ttl_seconds=3600)
     @app.middleware('http')
     async def trace(request:Request,call_next):
         reply=await call_next(request)

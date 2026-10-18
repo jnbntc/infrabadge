@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import FastAPI, Header, HTTPException, Path, Query, Response
 from .models import Alert, Counts, GatewayConfig, Snapshot
 
-def fixture(device_id: str, state: str, now: int, revision: int) -> Snapshot:
+def fixture(device_id: str, state: str, now: int, revision: int, ttl_seconds: int = 1800) -> Snapshot:
     counts = {'healthy': 12, 'warning': 0, 'critical': 0, 'unknown': 0}
     alerts = []
     if state == 'WARNING':
@@ -22,10 +22,13 @@ def fixture(device_id: str, state: str, now: int, revision: int) -> Snapshot:
         counts.update(healthy=0, unknown=12)
         alerts = [Alert(title='SIN DATOS', detail='ESTADO DESCONOCIDO')]
     return Snapshot(schema_version=1, device_id=device_id, revision=revision, simulated=True,
-                    generated_at=now, expires_at=now+1800, status=state,
+                    generated_at=now, expires_at=now+ttl_seconds, status=state,
                     counts=Counts(**counts), alerts=alerts)
 
-def create_app(config: GatewayConfig, clock: Callable[[], float] = time.time) -> FastAPI:
+def create_app(config: GatewayConfig, clock: Callable[[], float] = time.time,
+               snapshot_ttl_seconds: int = 1800) -> FastAPI:
+    if type(snapshot_ttl_seconds) is not int or not 0 < snapshot_ttl_seconds <= 3600:
+        raise ValueError('snapshot TTL outside protocol bounds')
     app = FastAPI(title='InfraBadge mock gateway', docs_url=None, redoc_url=None)
     lock = threading.Lock()
     cached: dict[str, Snapshot] = {}
@@ -57,7 +60,8 @@ def create_app(config: GatewayConfig, clock: Callable[[], float] = time.time) ->
         with lock:
             old = cached.get(device_id)
             if not old or now >= old.expires_at or old.status != device.scenario:
-                old = fixture(device_id, device.scenario, now, old.revision+1 if old else 1)
+                old = fixture(device_id, device.scenario, now, old.revision+1 if old else 1,
+                              snapshot_ttl_seconds)
                 cached[device_id] = old
             data = old.model_dump()
             if fault == 'expired': data.update(generated_at=now-3600, expires_at=now-1)
