@@ -391,3 +391,30 @@ del export para evitar la carrera tras la notificación terminal, sin resets o
 reintentos de escrituras. El timeout original queda preservado. Retirada de ruta
 y cierre de gateways confirmados; otra lectura encontró prioridad5100 ausente.
 El gateway original se reabrió. El grupo completo sigue pendiente.
+
+## Grupo10037379:26 casos y25 timers confirmados
+
+`results/m2-auto-physical-20261018T154427Z-173109xf` completó el diagnóstico con app10037379,
+879920B, sólo aplicación0x10000. Carga/setup ACK confirmados. Journal exportado
+por el runner después de persistir el resultado; CRC/run verificados, COMPLETE,
+fault0,26 registros,25 retornos. Eventos1–25 reset8/wake4 y todas las comprobaciones
+por caso aceptadas. Último caso solicita0s; no se programa otro sleep. El aviso
+HTTPS terminal posterior no es otro caso ni cuenta como timer.
+
+Aceptados:200 inicial,304 UNCHANGED/0 transferencias, estados simulados,503→HTTP,
+401→AUTH,JSON inválido,oversize,snapshot vencido,CA ajena,SAN incorrecto,certificado
+vencido,DNS `.invalid`,AP ausente y recuperación tras cada negativo. Todos
+registran reloj confiable y parada Wi-Fi. Son registros del MCU, no medición
+de corriente/radio ni inspección óptica de cada píxel.
+
+Resultado `diagnostic_cases_confirmed`, no PASS global eléctrico/producción.
+[Datos saneados](m2-autonomous-results.json), [manifiesto](m2-tlsfix-build-manifest.json)
+y [cierre con exclusiones](M2-CLOSEOUT.md). Los grupos anteriores permanecen
+INCOMPLETE; no se les atribuye retrospectivamente el aprobado de este binario.
+
+El runner confirmó retirada exacta de ruta y cierre de gateways; otra lectura
+confirmó prioridad5100 ausente. Gateway original reabierto. No se restauró
+firmware: la placa conserva el diagnóstico terminal10037379. La exportación USB
+posterior no cuenta como timer adicional del grupo. No se publican configuración,
+tokens, identificadores de placa, logs USB ni backups. Consumo/energía/batería/
+autonomía M2 DEFERRED; cliente externo omitido por decisión del usuario.

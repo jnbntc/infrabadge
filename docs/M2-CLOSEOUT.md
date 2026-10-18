@@ -1,59 +1,71 @@
-# M2 — cierre funcional todavía pendiente
+# M2 — cierre funcional con exclusiones
 
-2026-10-18. Implementación, compilación y automatización entregadas. El último
-grupo físico se detuvo: **no hay PASS26/25 ni cierre físico completo**. Mediciones
-de consumo/energía/batería/autonomía DEFERRED por decisión del usuario.
+2026-10-18. **26/26 casos aceptados y25 despertares reales por temporizador**
+en Waveshare ESP32-S3-ePaper-1.54 V2. Resultado `diagnostic_cases_confirmed`;
+no equivale a certificación eléctrica, óptica por píxel o de producción.
 
-## Resultado más reciente
+## Evidencia
 
-La app93277e2e,879920B, fue cargada una sola vez en app0x10000. Journal recuperado:
-17 registros,16 aceptados,16 retornos reales reset8/wake4. Pasaron401→AUTH,
-304 UNCHANGED/0 transferencias, estados simulados,503,JSON,oversize,expiración y
-recuperaciones. Caso16 (CA ajena) quedó HTTP/status0 en lugar deTLS; no se declara
-aprobado ese negativo. La regla y gateways temporales se retiraron. La placa
-conserva93277e2e; no se restauró firmware normal ni fábrica.
+- Ensayo: `m2-auto-physical-20261018T154427Z-173109xf`, carga única app0x10000/setup con ACK.
+- App `10037379a12333d5c201289d4d743e776a6343a250877502a20d4c3026e82848`,
+  879920B; margen168656B en partición1MiB. [Manifiesto](m2-tlsfix-build-manifest.json).
+- Journal con CRC/run verificados, COMPLETE/fault0,26 registros/25 retornos.
+  Eventos1–25:reset8/wake4. Último caso solicita0s; no se programa otro sleep.
+- ETag304:UNCHANGED y0 transferencias al panel. Estados simulados y recuperación
+  de503,401,JSON inválido,oversize y expiración aceptados.
+- CA ajena, SAN incorrecto y certificado vencido rechazados comoTLS; DNS `.invalid`
+  y AP ausente rechazados comoDNS/WIFI. Recuperación válida tras cada negativo.
+- Todos los casos registran reloj confiable y parada Wi-Fi. Son datos del MCU,
+  no medición de corriente o cronometraje independiente.
+- Regla temporal retirada; prioridad5100 ausente comprobada aparte. Gateways
+  de ensayo cerrados y gateway original del host reabierto con archivos intactos.
+- [Datos saneados por caso](m2-autonomous-results.json) e
+  [histórico físico](M2-PHYSICAL-RESULTS.md). Intentos anteriores conservan su estado.
 
-[Evidencia por caso](m2-authfix-results.json) e
-[informe histórico](M2-PHYSICAL-RESULTS.md). La lectura inicial USB tuvo timeout;
-otra lectura recuperó CRC/run válido sin carga/provisión. Se conservan ambos
-resultados. Los intentos anteriores siguen incompletos.
+## Software y decisiones
 
-## Corrección preparada
+Siete perfiles compilados con ESP-IDF5.5.5 bloqueado; C/ASan/UBSan, visuales,
+protocolo y85 tests Python aprobados. Código `eae50f9` aprobado en
+[CI push](https://github.com/jnbntc/infrabadge/actions/runs/39140175608) y
+[CI PR](https://github.com/jnbntc/infrabadge/actions/runs/39140172101).
+Los rebuilds con metadata distinta no sustituyen al binario físico congelado.
 
-IDF5.5.5 no copia el errorTLS del camino connect_async al handle del transporte.
-El adaptador utiliza ahora el camino síncrono que sí lo conserva, con CA/SAN/
-fecha, timeout finito y la misma guardia de deadline. No transforma cualquier
-fallo TCP enTLS. El exportador espera USB READY antes de transmitir, con espera
-pasiva limitada15s y sin añadir resets o reintentos de escrituras.
+Se corrigieron dos diferencias observadas del SDK:401 NOT_SUPPORTED conserva
+AUTH, y connect síncrono copia el errorTLS que connect_async no propaga. Se
+mantienen CA/SAN/fecha, timeout finito y guardia de deadline; un errorTCP sin
+causaTLS sigue HTTP. Regresiones del adaptador reproducen el SDK y fallan antes/
+pasan después con transporte simulado. El exportador espera USB READY sin añadir
+resets o reintentos de escrituras. La evidencia física valida esas correcciones.
 
-- Imagen10037379a12333d5c201289d4d743e776a6343a250877502a20d4c3026e82848,
-  879920B; margen168656B en app1MiB. [Manifiesto](m2-tlsfix-build-manifest.json).
-- Siete perfiles compilados con ESP-IDF5.5.5; native C,ASan/UBSan,visuales PASS.
-- Protocolo y85 tests Python PASS. Regresión del adaptador: fuente anterior
-  falla, corregida pasa con transporte IDF simulado.
-- CI54695ee anterior aprobado en39137848673/39137843306. No corresponde a la
-  correcciónTLS posterior hasta identificar su propia ejecución.
-- Carga/prueba física de10037379 pendiente. El manifiesto nuevo limita una
-  carga app-only, setup y exportación, con ruta temporal/watchdog50min.
+HAL, drivers, UI y Power Manager previos reutilizados; perfil diagnóstico separado,
+NVS `ib_m2_auto`, configuración normal `ib_m2` conservada. Gateway y salud simulados,
+sin MQTT, collectors, base de datos ni despliegue de producción. PR #3 depende de
+#2 y sigue abierto; no se fusionó automáticamente.
 
-El usuario autorizó todo lo necesario para terminar M2. No hace falta repetir
-esa autorización. Iniciar el ensayo desde su terminal normal es necesario para
-introducir sudo localmente; esta sesión no dispone de esa autenticación.
+## Límites y estado instalado
 
-## Alcance y exclusiones
+- El diagnóstico usa60s tras éxito y120s tras error. No es un ensayo de25
+  ciclos a los900s del perfil normal ni una medición independiente de precisión.
+- Corriente, energía, batería, deriva y autonomía M2: **DEFERRED por el usuario**.
+  No extrapolar400mAh ni el aprobado M1.1 sólo con batería a Wi-Fi M2.
+- Mínimos de heap/stack y WCET no instrumentados. Los tiempos activos del MCU
+  no certifican una cota de tiempo real, incluido el resolver anterior al socket.
+- Contadores del driver confirman supresión de llamadas, no todos los píxeles.
+  Observación terminal humana: no recabada; excluida del aprobado por journal.
+- UTC inicial desde USB confiable; RTC2056 excluido. Reset frío o pérdida de
+  continuidad exigen UTC fresco. Cortes durante NVS, expiración prolongada y
+  pérdida física de alimentación no ensayados en este grupo.
+- NVS sin cifrar y tokens extraíbles físicamente. Sin cambios eFuse/Secure Boot/
+  Flash Encryption, borrado completo o sustitución de backups privados.
+- Cliente externo independiente omitido por el usuario. La política de retorno
+  LAN del host necesitó la excepción temporal; no hay solución persistente.
+- Aplicación única1MiB, sin OTA A/B; requiere diseño propio de particiones/migración.
 
-- Sin MQTT, collectors reales, base de datos ni producción; salud simulada.
-- NVS sin cifrar, token extraíble físicamente. Sin cambios eFuse/Secure Boot/
-  Flash Encryption ni borrado completo; backups privados preservados.
-- UTC inicial desde USB confiable; RTC2056 excluido. Reset frío y pérdida de
-  continuidad requieren UTC fresco. Cortes físicos durante NVS, expiración de
-  hora prolongada y recuperación tras pérdida de alimentación no ensayados.
-- Contadores del driver no verifican todos los píxeles ni miden radio/corriente.
-  No extrapolar autonomía desde400mAh o desde el resultado M1.1 sólo con batería.
-- Cliente externo omitido por el usuario. El gateway LAN depende de una regla
-  temporal frente a la política de retorno del host; no hay solución persistente.
-- Sin OTA A/B: requiere diseño propio de particiones/migración y rollback.
+Después de persistir el journal se envía un aviso HTTPS terminal adicional; no
+es otro caso ni un nuevo sleep. La espera del exportador USB y la imagen retenida
+no demuestran reposo eléctrico del MCU.
 
-Para cerrar el grupo faltan26 casos aceptados,25 timers, errores/recuperaciones,
-journal terminal válido y cleanup confirmado. Hasta entonces este archivo es
-un índice de cierre pendiente, no un certificado de validación completa.
+La placa conserva **10037379 en resultado terminal**. El runner restaura sólo el
+servicio del host. Volver a M2 normal requiere identificar su binario y UTC fresco;
+no se ejecuta como restauración implícita ni se vuelve a fábrica. Backups privados
+conservados; [procedimiento de rollback](FLASHING.md).

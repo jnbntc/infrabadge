@@ -1,4 +1,4 @@
-# InfraBadge — M2 Wi-Fi / HTTPS (en desarrollo)
+# InfraBadge — M2 Wi-Fi / HTTPS
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -15,14 +15,17 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 Perfil separado: STA → HTTPS con CA/hostname/fechas → snapshot validado → pantalla
 condicional → deep sleep. Gateway FastAPI/Pydantic con estados simulados, tokens
 individuales y ETag/304. Sin collectors de producción, MQTT ni base de datos.
-La placa conserva el diagnóstico autónomo **SHA93277e2e**. Su journal confirmó
-16 casos aceptados y16 retornos reset8/wake4, incluido401→AUTH,304 sin
-transferencia y recuperación de fallos. El caso17 detuvo el grupo por un rechazo
-anterior a HTTP clasificado comoHTTP en lugar deTLS. Journal recuperado y ruta
-retirada: **no hay PASS26/25**. La corrección **SHA10037379** pasó7 builds,
-sanitizadores y85 tests; falta su ensayo físico. Mediciones eléctricas diferidas.
-Ver [evidencia](docs/M2-PHYSICAL-RESULTS.md) y
-[manifiesto corregido](docs/m2-tlsfix-build-manifest.json).
+El diagnóstico autónomo **SHA10037379** completó **26/26 casos y25 retornos
+reales por temporizador** en la placa. Journal CRC/run válido, reset8/wake4,
+ETag304 sin transferencia al panel, estados, errores y recuperaciones aceptados,
+incluidos CA ajena, SAN incorrecto, certificado vencido, DNS y AP ausentes.
+Ruta temporal retirada y gateways de ensayo cerrados; gateway original reabierto.
+
+**M2 queda cerrado funcionalmente con exclusiones documentadas.** Consumo,
+energía, batería y autonomía M2 están diferidos por decisión del usuario. No se
+certifican todos los píxeles, cortes físicos de energía/NVS o seguridad de
+producción. La placa conserva el diagnóstico terminal, sin restauración automática.
+Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-results.json).
 
 M1.1 se propone por separado en [PR #2](https://github.com/jnbntc/infrabadge/pull/2),
 base main; M2 parte de esa misma base estable y usa feat/m2-connectivity.
@@ -49,7 +52,7 @@ compiladas ni TLS sin validación. El RTC externo2056 continúa excluido.
 - [Resultados M2](docs/M2-VALIDATION.md).
 - [Evidencia física M2 y límites](docs/M2-PHYSICAL-RESULTS.md).
 - [Estados y recuperación HTTP: sesión confirmada](docs/M2-SCENARIOS.md).
-- [Automatización M2: perfil compilado y límites del ensayo autónomo](docs/M2-AUTOMATION.md).
+- [Automatización M2 y límites del ensayo autónomo](docs/M2-AUTOMATION.md).
 - [Diagnóstico autónomo M2: procedimiento y autorización](docs/M2-AUTO-DIAGNOSTIC.md).
 - [Procedimiento físico; nuevos ensayos requieren autorización](docs/M2-PHYSICAL.md).
 - [Impacto energético esperado, sin mediciones](docs/POWER.md).

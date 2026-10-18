@@ -1,6 +1,6 @@
 {
   "profile": "automation",
-  "status": "compiled_pending_physical_execution",
+  "status": "diagnostic_cases_confirmed_with_exclusions",
   "esp_idf": "v5.5.5",
   "esp_idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
   "target": "esp32s3",
@@ -30,7 +30,17 @@
   "build_profiles": 7,
   "native_sanitizers_passed": true,
   "python_tests_passed": 85,
-  "physical_validation": "pending",
-  "flash_performed": false,
-  "regression_evidence": "results/m2-tls-regression-20261018T151707Z-u25i208n"
+  "physical_validation": "diagnostic_cases_confirmed",
+  "flash_performed": true,
+  "regression_evidence": "results/m2-tls-regression-20261018T151707Z-u25i208n",
+  "completed_cases": 26,
+  "timer_returns": 25,
+  "full_m2_validation": false,
+  "source_commit": "eae50f97535461568a2fbb5b3af9d10c77d92607",
+  "ci_runs": [
+    39140175608,
+    39140172101
+  ],
+  "physical_evidence": "results/m2-auto-physical-20261018T154427Z-173109xf",
+  "public_evidence": "docs/m2-autonomous-results.json"
 }

@@ -338,3 +338,12 @@ Si se reconstruye M1 desde esta rama, cambia el conjunto de fuentes: revisar su
 nuevo manifiesto y autorizar esos artefactos expresamente. Para fábrica usar sólo
 el respaldo privado y [el procedimiento de rollback](FLASHING.md). No se ejecuta
 ninguna restauración como parte de tests, compilación o esta preparación.
+
+## Alcance posterior M2
+
+M2 confirmó26 casos y25 retornos reset8/wake4 con USB conectado. Este aprobado
+funcional no extiende el resultado M1.1 sólo con batería a Wi-Fi M2.
+[M2-CLOSEOUT.md](M2-CLOSEOUT.md) y [datos](m2-autonomous-results.json).
+Corriente/energía/batería/autonomía M2 **DEFERRED por decisión del usuario**.
+La placa conserva ahora diagnóstico M2 terminal10037379; el estado instalado
+M1.1 descrito arriba es histórico. No se extrapola consumo desde400mAh.

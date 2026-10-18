@@ -130,3 +130,17 @@ visuales PASS. `m2-tls-regression-20261018T151707Z-u25i208n`: anterior falla,
 corregido pasa, con API IDF simulada. Protocolo y85 tests Python PASS en
 `m2-host-checks-20261018T151629Z-zfe79aos`. [Manifiesto10037379](m2-tlsfix-build-manifest.json):
 879920B, margen168656B. Prueba física propia pendiente; sin cambios HAL/particiones.
+
+## Cierre del código y diagnóstico corregido10037379
+
+Fuentes `eae50f97535461568a2fbb5b3af9d10c77d92607` aprobadas en
+[CI push](https://github.com/jnbntc/infrabadge/actions/runs/39140175608) y
+[CI PR](https://github.com/jnbntc/infrabadge/actions/runs/39140172101):7 perfiles,
+C/ASan/UBSan,visuales/protocolo y85 tests Python. Build local congelado
+`m2-auto-supervised-20261018T151529Z-pc92lqb3`, app10037379/879920B. Regresión
+red/green del adaptadorTLS en `m2-tls-regression-20261018T151707Z-u25i208n`.
+
+Separadamente, el hardware completó26 casos/25 timers en `m2-auto-physical-20261018T154427Z-173109xf`.
+[Datos](m2-autonomous-results.json). La matriz inicial de esta página conserva
+su alcance histórico; la CI no prueba hardware y el journal no mide consumo ni
+todos los píxeles. [Cierre y exclusiones](M2-CLOSEOUT.md).

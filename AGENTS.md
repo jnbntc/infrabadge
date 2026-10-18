@@ -27,8 +27,8 @@
 - M0 physically validated. M1 UI/button/sleep validation over USB and M1.1 three
   timer wakes solely on battery are recorded in docs/M1-M11-VALIDATION.md and
   docs/POWER-BASELINE.md. Those results do not imply M2 electrical measurements.
-- Current installed app is corrected autonomous diagnostic SHA93277e2e (879920B at0x10000).
-  Exact identity: docs/m2-authfix-build-manifest.json. The image is frozen locally;
+- Current installed app is corrected autonomous diagnostic SHA10037379 (879920B at0x10000).
+  Exact identity: docs/m2-tlsfix-build-manifest.json. The image is frozen locally;
   CI rebuild metadata/hashes need not equal that physical binary.
 - docs/M2-PHYSICAL-RESULTS.md is the physical evidence index. Other trial reports
   retain their original scopes. Software/CI: docs/M2-VALIDATION.md. Never convert
@@ -113,13 +113,25 @@
   Journal recovered in m2-auto-journal-recovery-uxvszpyl:17 records,16 accepted,
   16 timers, cleanup confirmed. Preserve it.
 
-## TLS propagation correction prepared
+## TLS propagation correction validated
 
 - IDF5.5.5 async connect omits copying TLS errors to transport; sync copies them.
   HTTPS now uses sync mode with the same CA/SAN/date and timeout/deadline guard.
-- New10037379/879920B passed7 builds, ASan/UBSan and85 Python tests; not installed.
-  Manifest docs/m2-tlsfix-build-manifest.json. Board still has93277e2e.
+- New10037379/879920B passed7 builds, ASan/UBSan and85 Python tests, and is installed.
+  Manifest docs/m2-tlsfix-build-manifest.json; final physical result accepted26/25.
 - Broad M2 authorization covers the necessary corrected load/setup/bounded trial;
   sudo password must be entered in the normal user terminal, not in chat.
 - Collector waits passively up to15s for terminal USB readiness before export.
-  No reset/write retry added. Current results do not constitute26/25 PASS.
+  No reset/write retry added. Historical partial results remain partial; the
+  completed10037379 run below is the accepted26/25 group.
+
+## M2 functional closeout
+
+- m2-auto-physical-20261018T154427Z-173109xf:COMPLETE/fault0,26 accepted cases,
+  25 reset8/wake4 returns, CRC/run and independent exact-route cleanup verified.
+  docs/M2-CLOSEOUT.md and docs/m2-autonomous-results.json are the current index.
+- CIeae50f9 passed push39140175608 and PR39140172101. Final documentation does
+  not change the frozen app identity. Historical partial attempts stay partial.
+- Board remains10037379 terminal; no normal-M2/factory restoration. Consumption,
+  energy/battery/autonomy deferred, externalclient omitted, optical per-cycle,
+  physical cold-reset/NVS cuts and production/OTA exclusions remain.

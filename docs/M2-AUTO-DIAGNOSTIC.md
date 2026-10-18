@@ -1,12 +1,20 @@
 # M2 — diagnóstico autónomo y recuperación de ensayo interrumpido
 
-**Actualización2026-10-18:**93277e2e terminó INVALID tras17 registros,16 casos
-aceptados y16 retornos reset8/wake4. Journal recuperado y ruta retirada.
-El caso16 (CA ajena) produjoHTTP/status0; no se declara aprobado el negativoTLS
-ni PASS26/25. La nueva corrección10037379 pasó7 builds y85 tests; falta su carga
-y ensayo físico. Véanse [evidencia](m2-authfix-results.json),
-[manifiesto](m2-tlsfix-build-manifest.json) y [cierre pendiente](M2-CLOSEOUT.md).
-Los apartados anteriores conservan su alcance histórico.
+**Estado actual2026-10-18:** **26/26 casos y25 timers confirmados** con app10037379,
+ensayo `m2-auto-physical-20261018T154427Z-173109xf`. Journal y cleanup verificados.
+[Cierre y límites](M2-CLOSEOUT.md), [datos por caso](m2-autonomous-results.json),
+[manifiesto](m2-tlsfix-build-manifest.json). La placa conserva el resultado terminal;
+su aviso HTTPS posterior no inicia otro sleep.
+
+## Preparación y ensayos anteriores (histórico)
+
+
+Antes de la carga corregida,93277e2e había terminado INVALID tras17 registros:
+16 casos aceptados/16 timers; journal recuperado y ruta retirada. El caso16
+(CA ajena) quedó clasificado HTTP. Ese intento sigue incompleto, con su
+[evidencia propia](m2-authfix-results.json); el grupo10037379 posterior se
+registra arriba y en el informe físico.
+
 
 
 **Intento93277e2e finalizado:** journal recuperado;16/17 casos aceptados,
