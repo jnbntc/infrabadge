@@ -93,7 +93,9 @@ explícita. No hace falta modificar firmware ni permitir paths arbitrarios de UR
 
 `device.json` contiene secretos: fuera de Git, modo 0600, sin copiarlo al chat.
 El host se considera confiable y con UTC correcto. El comando de provisión está
-separado de compilación/monitor y **no se ejecutó contra hardware en M2**:
+separado de compilación/monitor. Los helpers de los ensayos físicos ya realizaron
+las provisiones específicamente autorizadas: ver [M2-PHYSICAL-RESULTS.md](M2-PHYSICAL-RESULTS.md).
+No repetir este comando con una autorización consumida:
 
 ```sh
 # Sólo tras autorizar y cargar M2 siguiendo M2-PHYSICAL.md:

@@ -1,0 +1,216 @@
+{
+  "date": "2026-10-17",
+  "scope": "Phase A, host preparation only; no firmware write or provisioning",
+  "firmware_source_ci": "9c5ef573254e0348b070bd0831d1222f9a57d77f",
+  "local_checkout": "a01c84a412562faea8308168d42e73eb8794d0f7",
+  "source_paths_match_ci": true,
+  "idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
+  "firmware": {
+    "profile": "connectivity",
+    "status": "passed",
+    "target": "esp32s3",
+    "esp_idf": "v5.5.5",
+    "flash_size": "8MB",
+    "artifacts": {
+      "infrabadge.elf": {
+        "bytes": 9781744,
+        "sha256": "4636761ab4d9a48d2fa1ea7852f7a1aeba7bdac6a9759aa6a8966d11016f0ddd"
+      },
+      "infrabadge.bin": {
+        "bytes": 853296,
+        "sha256": "0553e5bb71ba22c45e520af3523b74aedbcb2d37b718160b66e45bacdc613878"
+      },
+      "bootloader/bootloader.bin": {
+        "bytes": 20848,
+        "sha256": "5baf9d1e70ed7d3dd5a94851f6a3b976b6eac3c9ca65d43191bd3fab7f7fcd60"
+      },
+      "partition_table/partition-table.bin": {
+        "bytes": 3072,
+        "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+      }
+    },
+    "hardware_validation": "not_performed",
+    "flash_performed": false
+  },
+  "configuration": {
+    "MBEDTLS_HAVE_TIME_DATE": true,
+    "LWIP_DNS_SUPPORT_MDNS_QUERIES": true,
+    "ESP_WIFI_ENABLED": true,
+    "ESP_TLS_INSECURE": false,
+    "ESP_TLS_SKIP_SERVER_CERT_VERIFY": false,
+    "SECURE_BOOT": false,
+    "SECURE_BOOT_V2_ENABLED": false,
+    "SECURE_FLASH_ENC_ENABLED": false,
+    "BOOTLOADER_APP_ANTI_ROLLBACK": false,
+    "NVS_ENCRYPTION": false,
+    "SPIRAM": false,
+    "APP_COMPILE_TIME_DATE": true,
+    "APP_REPRODUCIBLE_BUILD": false
+  },
+  "partition_review": {
+    "partitions": [
+      {
+        "label": "nvs",
+        "type": 1,
+        "subtype": 2,
+        "offset": 36864,
+        "bytes": 24576,
+        "flags": 0
+      },
+      {
+        "label": "phy_init",
+        "type": 1,
+        "subtype": 1,
+        "offset": 61440,
+        "bytes": 4096,
+        "flags": 0
+      },
+      {
+        "label": "factory",
+        "type": 0,
+        "subtype": 0,
+        "offset": 65536,
+        "bytes": 1048576,
+        "flags": 0
+      }
+    ],
+    "matches_approved_m11": true,
+    "app_bytes": 853296,
+    "app_capacity": 1048576,
+    "app_free": 195280,
+    "app_free_percent": 18.623,
+    "ota_slots": 0,
+    "ota_supported_current_layout": false,
+    "nvs_preserved_by_planned_firmware_ranges": true,
+    "nvs": {
+      "label": "nvs",
+      "type": 1,
+      "subtype": 2,
+      "offset": 36864,
+      "bytes": 24576,
+      "flags": 0
+    },
+    "flash_performed": false
+  },
+  "rollback": {
+    "status": "passed",
+    "originals_unchanged": true,
+    "artifacts": {
+      "infrabadge.elf": {
+        "bytes": 3735052,
+        "sha256": "f2c8d9c9b6b5f42d38bc2bd60a66ac9273c9176acf38c556262859445f22f3a0"
+      },
+      "infrabadge.bin": {
+        "bytes": 213104,
+        "sha256": "eed151751d100137432cebfe44a70b9e4d1bd2d067b2380a1c45c0d6fb51711b"
+      },
+      "bootloader/bootloader.bin": {
+        "bytes": 20848,
+        "sha256": "e62387960840ae61be328bd6556dcca7dc24e5c71e48d91728ab0e5bcfac9f29"
+      },
+      "partition_table/partition-table.bin": {
+        "bytes": 3072,
+        "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+      }
+    },
+    "partitions": [
+      {
+        "label": "nvs",
+        "type": 1,
+        "subtype": 2,
+        "offset": 36864,
+        "bytes": 24576,
+        "flags": 0
+      },
+      {
+        "label": "phy_init",
+        "type": 1,
+        "subtype": 1,
+        "offset": 61440,
+        "bytes": 4096,
+        "flags": 0
+      },
+      {
+        "label": "factory",
+        "type": 0,
+        "subtype": 0,
+        "offset": 65536,
+        "bytes": 1048576,
+        "flags": 0
+      }
+    ],
+    "hardware_io_performed": false
+  },
+  "host_tls": {
+    "status": "passed_tls_host_interface",
+    "tls_version": "TLSv1.2",
+    "http_200": true,
+    "http_304": true,
+    "auth_401": true,
+    "ca_unknown_rejected": true,
+    "hostname_and_dates_verified": true,
+    "system_resolver_matches_wifi": false,
+    "interface_resolver_matches_wifi": true,
+    "interface_answer_may_be_synthetic": true,
+    "external_dns_proof": "not_performed_explicit_user_choice",
+    "ca_sha256": "adc0ebe766de4d216ce759bc261926cc896e8760a0b5ae8fbdd23b2efa019baa",
+    "leaf_sha256": "1db93ab847db017d75e5e5c1571409f97f59bd8c5fd1707196364e4629fdaceb",
+    "not_before_utc": "2026-10-15T22:08:31+00:00",
+    "not_after_utc": "2026-10-24T22:08:31+00:00",
+    "ca_not_after_utc": "2026-11-16T22:08:31+00:00",
+    "hardware_validated": false
+  },
+  "external_client": "not_performed_explicit_user_choice",
+  "tests": {
+    "gateway_and_phase_a_pytest": 33,
+    "m0_python_tests": 8,
+    "native_c_sanitizers_visuals": "passed in local phase A build"
+  },
+  "board_io_performed": false,
+  "flash_performed": false,
+  "provision_performed": false,
+  "factory_backup_touched": false,
+  "external_dns_and_wifi_peer_access": "not_verified",
+  "operator_decision": "Use only current notebook; omit external check",
+  "phase_a_scope": "local preparation with documented external-network limitation",
+  "gateway_telemetry": {
+    "fields": [
+      "sequence",
+      "host_epoch",
+      "http_status",
+      "conditional_request",
+      "peer_scope"
+    ],
+    "ip_headers_tokens_board_identifiers_logged": false,
+    "physical_events_observed": false,
+    "active_and_host_tested": true
+  },
+  "final_host_preflight": {
+    "status": "passed_local_only",
+    "primary_device_token_matches_gateway": true,
+    "private_ca_matches_device": true,
+    "provision_encoding_within_limit": true,
+    "private_directory_0700": true,
+    "private_files_0600": true,
+    "m2_and_m11_artifact_hashes_rechecked": true,
+    "firmware_source_matches_ci": true,
+    "live_tls12_primary_200_304_401": true,
+    "sanitized_telemetry_active": true,
+    "observed_peer_scope": "host",
+    "external_client": "omitted_by_user",
+    "wifi_ssid_matches_active_connection": true,
+    "wifi_association_tested": false,
+    "board_io_performed": false,
+    "flash_performed": false,
+    "provision_performed": false,
+    "hardware_validated": false
+  },
+  "local_result": "results/m2-phase-a-20261017T220757Z",
+  "prior_session": "superseded_for_current_test; preserved without reuse of its CA or firmware identity",
+  "wifi_band_preflight": {
+    "check": "NetworkManager cached scan; no association attempt",
+    "matching_ssid_seen_on_24ghz": true,
+    "matching_ssid_seen_on_other_band": false,
+    "esp32_association_tested": false
+  }
+}

@@ -85,6 +85,7 @@ static void sleep_for(void *ctx,unsigned seconds)
 void app_main(void)
 {
     runtime.started=esp_timer_get_time();esp_log_level_set("*",ESP_LOG_WARN);esp_log_level_set(TAG,ESP_LOG_INFO);
+    esp_log_level_set("power",ESP_LOG_INFO); /* Validated timer-entry metadata only. */
     ESP_LOGI(TAG,"M2_BOOT: reset=%d wake=%d; mock gateway only",esp_reset_reason(),esp_sleep_get_wakeup_cause());
     if(ib_hal_init()!=ESP_OK){ESP_LOGE(TAG,"HAL unavailable; no network");return;}
     bool storage=ib_store_init();bool configured=storage&&ib_config_load(&config);

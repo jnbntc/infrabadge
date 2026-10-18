@@ -1,8 +1,26 @@
-# M2 — procedimiento físico futuro (pendiente, sin autorización de carga)
+# M2 — procedimiento físico incremental
 
-La placa conserva M1.1. Compilar, simular o conectar HTTPS por loopback no prueba
-Wi-Fi/TLS, consumo ni deep sleep de M2 en el ESP32. No ejecutar este procedimiento
-hasta obtener autorización explícita para sustituir temporalmente M1.1 por M2.
+**Primera consulta HTTPS200/pantalla confirmada** después de la corrección de
+instrumentación y una excepción temporal de ruta del host, ya retirada. Ver
+[M2-PHYSICAL-RESULTS.md](M2-PHYSICAL-RESULTS.md). Las cargas/provisiones autorizadas
+ya se realizaron; no repetir los comandos históricos de este procedimiento.
+La observación autónoma304 está en [M2-NEXT-CYCLE.md](M2-NEXT-CYCLE.md) y las
+siete etapas de estados/503/recuperación en [M2-SCENARIOS.md](M2-SCENARIOS.md).
+Esas ventanas ya se completaron y retiraron; no repetir con permisos consumidos.
+
+2026-10-17: el usuario autorizó iniciar el primer ensayo con una sola carga de
+aplicación M2, seguida de un aprovisionamiento USB con archivos privados y UTC
+actual. Autorización limitada al binario853296 B, SHA-256
+`0553e5bb71ba22c45e520af3523b74aedbcb2d37b718160b66e45bacdc613878`,
+offset0x10000; conservar bootloader, tabla y NVS. No autoriza repetir cargas,
+restaurar firmware ni cambiar credenciales/intervalo después de ese ensayo.
+
+La preparación actual y sus bloqueos están en [M2-PHASE-A.md](M2-PHASE-A.md).
+No saltar esa revisión ni tratar su gateway probado como validación del ESP32.
+
+M1.1 es el último firmware confirmado antes de ejecutar la carga autorizada.
+Compilar, simular o conectar HTTPS en el host no prueba Wi-Fi/TLS, consumo ni
+deep sleep de M2 en el ESP32. La autorización no es evidencia de haberlo ejecutado.
 
 ## Preparación sin tocar la placa
 
@@ -21,19 +39,37 @@ hasta obtener autorización explícita para sustituir temporalmente M1.1 por M2.
    offsets 0x0, 0x8000 y 0x10000. Son tres imágenes, no una imagen fusionada.
    No ejecutar erase_flash ni comandos eFuse; no activar seguridad irreversible.
 
-## Carga controlada, sólo con autorización nueva
+## Primer ensayo autorizado
 
-Cerrar monitores; puerto ya validado `/dev/infrabadge`, confirmar identidad física.
-Desde el entorno IDF fijado y la raíz del repositorio:
+Cerrar otros monitores y conectar sólo la Waveshare V2 de InfraBadge, con USB
+estable y la batería correctamente conectada. Dejar BOOT y PWR sueltos. El gateway
+de la fase A debe seguir activo. Desde una terminal normal del host, SIN sudo:
 
 ```sh
-# SÓLO tras autorización explícita; reemplaza la aplicación instalada:
-idf.py -B build-m2/connectivity -p /dev/infrabadge flash
+python3 /var/home/juanb/Proyectos/infrabadge/tools/m2/physical_first.py --authorized-m2-first
 ```
 
-Este comando escribe las particiones de firmware necesarias e implica reset; no
-es un borrado completo. La NVS original debe conservarse. Si falla, detenerse y
-recoger diagnóstico privado, sin reset/carga en bucle ni restauración automática.
+El auxiliar verifica artefactos/rollback/backup privado, SDK fijado, UTC del host,
+Wi-Fi y HTTPS, y entra en el iot-dev existente. Pide confirmación de preparación
+física, carga sólo la app una vez y captura RX sin solicitar nuevos resets.
+El reset estándar antes/después de esptool forma parte de esa única carga.
+Al observar IBPROV_READY envía una configuración y UTC actual; no registra TX.
+La escritura de aplicación borra únicamente sus sectores; no hace borrado completo.
+El aprovisionamiento guarda ib_m2 en NVS y borra su snapshot anterior, como se
+documentó en fase A; preservar NVS no significa que no se escriba ese namespace.
+
+El programa imprime únicamente observaciones estructuradas y pide corroborar
+HEALTHY/SIM/HORA VERIFICADA/VENCE. Los logs de carga quedan privados en results/;
+no se conserva texto RX bruto ni se imprimen credenciales/identificadores. Detener
+si falla: no hay segunda carga, reset adicional ni restauración automática.
+El registro de intento bloquea volver a cargar por accidente con el mismo comando.
+
+Este ensayo cubre la primera consulta, la pantalla y el sueño solicitado. No espera
+900 s ni reabre USB para certificar el siguiente wake o304; son la siguiente etapa
+con el firmware instalado. Un HTTP200 externo se correlaciona con ACK, M2_CYCLE OK,
+live/clock y observación del operador; el gateway por sí solo no identifica la placa.
+Se aprovisiona durante la primera ventana: la pantalla OFFLINE por ausencia de
+configuración, los fallos controlados y la pérdida de hora quedan para otra etapa.
 No existe script que compile y flashee como parte de los tests.
 
 ## Aprovisionamiento y evidencia

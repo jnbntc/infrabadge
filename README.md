@@ -2,8 +2,8 @@
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
-pantalla, batería/RTC/SHTC3 y un ciclo de deep sleep. Todavía no incluye Wi-Fi,
-gateway, MQTT ni Prometheus.
+pantalla, batería/RTC/SHTC3 y un ciclo de deep sleep, sin red. M2 añade un perfil
+separado de Wi-Fi/HTTPS con datos simulados; no incluye MQTT ni Prometheus.
 
 Este repositorio es **jnbntc/infrabadge**. `jnbntc/distrobox-stack` sigue administrando
 exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente.
@@ -15,7 +15,15 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 Perfil separado: STA → HTTPS con CA/hostname/fechas → snapshot validado → pantalla
 condicional → deep sleep. Gateway FastAPI/Pydantic con estados simulados, tokens
 individuales y ETag/304. Sin collectors de producción, MQTT ni base de datos.
-La placa conserva **M1.1**: M2 no se ha flasheado ni validado físicamente.
+La placa conserva el **diagnóstico autónomo M2 SHA d4e7b93c**, cargado en un
+ensayo interrumpido antes de completar la matriz; no hay PASS de ese grupo.
+Con la aplicación anterior SHA733f7b9b se confirmaron
+físicamente HTTPS200/pantalla, consulta autónoma ETag/304, cuatro estados y
+recuperación tras HTTP503. Las excepciones temporales de ruta se retiraron.
+El intento interrumpido registró un wake reset8/wake4; falta completar los25
+del grupo. M2 sigue en validación: cancelación de refresco, negativos
+TLS físicos, batería y consumo pendientes. Ver el informe físico; no repetir
+cargas/provisiones ni ventanas de red con autorizaciones ya consumidas.
 
 M1.1 se propone por separado en [PR #2](https://github.com/jnbntc/infrabadge/pull/2),
 base main; M2 parte de esa misma base estable y usa feat/m2-connectivity.
@@ -40,7 +48,11 @@ compiladas ni TLS sin validación. El RTC externo2056 continúa excluido.
 - [Contrato, gateway, provisión y rotación](docs/M2-API.md).
 - [Seguridad y límites de confianza](docs/SECURITY.md).
 - [Resultados M2](docs/M2-VALIDATION.md).
-- [Procedimiento físico futuro, requiere autorización](docs/M2-PHYSICAL.md).
+- [Evidencia física M2 y límites](docs/M2-PHYSICAL-RESULTS.md).
+- [Estados y recuperación HTTP: sesión confirmada](docs/M2-SCENARIOS.md).
+- [Automatización M2: perfil compilado y límites del ensayo autónomo](docs/M2-AUTOMATION.md).
+- [Diagnóstico autónomo M2: procedimiento y autorización](docs/M2-AUTO-DIAGNOSTIC.md).
+- [Procedimiento físico; nuevos ensayos requieren autorización](docs/M2-PHYSICAL.md).
 - [Impacto energético esperado, sin mediciones](docs/POWER.md).
 
 Captura SINTÉTICA generada por el mismo renderizador C (no prueba de hardware):
@@ -53,7 +65,8 @@ El [PR #1](https://github.com/jnbntc/infrabadge/pull/1) fue fusionado con M1.
 M1.1 y la documentación conjunta se publicaron después en `feat/m1-ui` y siguen
 fuera de ese merge. [El informe consolidado](docs/M1-M11-VALIDATION.md)
 distingue tests/CI, validación M1 por USB, tres retornos M1.1 sólo con batería y
-mediciones pendientes. La placa conserva el diagnóstico M1.1 instalado.
+mediciones pendientes. Ese informe conserva el cierre histórico de M1.1; el
+firmware instalado cambió después a M2 en los ensayos autorizados descritos arriba.
 Por elección del usuario, #1 conserva la evidencia complementaria y no se abrió
 otro PR para los cambios de la rama.
 

@@ -1,0 +1,42 @@
+{
+  "profile": "automation",
+  "status": "loaded_trial_interrupted",
+  "esp_idf": "v5.5.5",
+  "esp_idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
+  "target": "esp32s3",
+  "flash_size": "8MB",
+  "application_offset": "0x10000",
+  "application_capacity": 1048576,
+  "application_remaining_bytes": 168736,
+  "artifacts": {
+    "infrabadge.elf": {
+      "bytes": 9974124,
+      "sha256": "eaa3bdfa8c3a57e07cd522a9dc3a3a97f91877ca829991b3eb2674f9f471d50e"
+    },
+    "infrabadge.bin": {
+      "bytes": 879840,
+      "sha256": "d4e7b93c702e6048c88bf4b96c762fe1487788a3a30f80d5165a2f82a00cd167"
+    },
+    "bootloader/bootloader.bin": {
+      "bytes": 20848,
+      "sha256": "0494d8447367f4b6f6113c01616e9744c64279c7f58fb7810befffa6b4d3c4a8"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    }
+  },
+  "firmware_input_sha256": "99c32a9d710d04bb960d9a0100fe296c2e967b367e3fc4fc6f4562ca3aa5b11c",
+  "build_profiles": 7,
+  "native_sanitizers_passed": true,
+  "hardware_io_performed": true,
+  "flash_performed": true,
+  "physical_validation": "incomplete_one_timer_return_confirmed",
+  "requires_explicit_authorization": true,
+  "host_tests": {
+    "python_passed": 76,
+    "protocol_check": "passed",
+    "evidence": "results/m2-host-checks-20261018T044252Z-d24ewmig"
+  },
+  "physical_evidence": "results/m2-auto-physical-20261018T140230Z-m0k3p41s"
+}

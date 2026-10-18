@@ -1,6 +1,8 @@
 # ESP-IDF expands requirements before CONFIG_* is available. Keep dependencies
 # unconditional; select only the application source after configuration is loaded.
-if(CONFIG_IB_M2_CONNECTIVITY)
+if(CONFIG_IB_M2_AUTO_DIAG)
+    set(app_source "m2_auto_main.c")
+elseif(CONFIG_IB_M2_CONNECTIVITY)
     set(app_source "m2_main.c")
 elseif(CONFIG_IB_M11_TIMER_DIAG)
     set(app_source "timer_diag_main.c")
@@ -15,5 +17,9 @@ idf_build_get_property(build_m2 IB_BUILD_M2)
 # Legacy profiles never include the radio/HTTP dependency closure.
 if(build_m2)
     list(APPEND app_requirements connectivity_core connectivity_ui device_config wifi_manager https_client nvs_flash)
+endif()
+idf_build_get_property(build_m2_auto IB_BUILD_M2_AUTO)
+if(build_m2_auto)
+    list(APPEND app_requirements m2_auto_diag)
 endif()
 idf_component_register(SRCS "${app_source}" INCLUDE_DIRS "." PRIV_REQUIRES ${app_requirements})

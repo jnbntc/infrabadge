@@ -1,6 +1,7 @@
 #include "ib_https.h"
 #include "esp_http_client.h"
 #include "esp_tls_errors.h"
+#include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -15,6 +16,8 @@ typedef struct {
     ib_http_collector_t limits;int64_t deadline;
     atomic_int socket;SemaphoreHandle_t done;
 } receive_t;
+/* Never log URLs, hostnames, headers, certificates, bodies or credentials. */
+static const char *TAG="infrabadge-m2";
 /* Event-handler return values are not a transfer cancellation mechanism in IDF.
  * Shut down (do not free/close) the active socket on deadline. The HTTP owner
  * stops and joins this guard before cleaning up the client/context. DNS before
@@ -54,9 +57,14 @@ ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,
         .timeout_ms=1000,.is_async=true,.event_handler=receive,.user_data=&context,
         .disable_auto_redirect=true,.skip_cert_common_name_check=false,
         .tls_version=ESP_HTTP_CLIENT_TLS_VER_TLS_1_2,.buffer_size=1024,.buffer_size_tx=512};
-    esp_http_client_handle_t client=esp_http_client_init(&settings);if(!client)return IB_NET_HTTP;
+    esp_http_client_handle_t client=esp_http_client_init(&settings);
+    if(!client){
+        ESP_LOGI(TAG,"M2_HTTP: stage=INIT esp=%d tls=0 detail=0 flags=0 http=-1 timeout=0",ESP_FAIL);
+        return IB_NET_HTTP;
+    }
     context.done=xSemaphoreCreateBinary();TaskHandle_t guard=NULL;
     if(!context.done||xTaskCreate(deadline_guard,"m2-http-limit",2048,&context,5,&guard)!=pdPASS){
+        ESP_LOGI(TAG,"M2_HTTP: stage=ALLOC esp=%d tls=0 detail=0 flags=0 http=-1 timeout=0",ESP_FAIL);
         if(context.done)vSemaphoreDelete(context.done);
         esp_http_client_cleanup(client);return IB_NET_HTTP;
     }
@@ -64,7 +72,8 @@ ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,
     esp_err_t error=esp_http_client_set_header(client,"Authorization",authorization);
     if(error==ESP_OK)error=esp_http_client_set_header(client,"Accept","application/json");
     if(error==ESP_OK&&etag)error=esp_http_client_set_header(client,"If-None-Match",etag);
-    if(error==ESP_OK){
+    bool headers_ok=error==ESP_OK;
+    if(headers_ok){
         do{
             if(esp_timer_get_time()>=context.deadline||context.limits.overflow||context.limits.bad_header){error=ESP_FAIL;break;}
             error=esp_http_client_perform(client);
@@ -74,6 +83,9 @@ ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,
     if(esp_timer_get_time()>=context.deadline)error=ESP_FAIL;
     reply->status=esp_http_client_get_status_code(client);
     int tls_error=0,flags=0;esp_err_t tls=esp_http_client_get_and_clear_last_tls_error(client,&tls_error,&flags);
+    ESP_LOGI(TAG,"M2_HTTP: stage=%s esp=%d tls=%d detail=%d flags=%d http=%d timeout=%u",
+             headers_ok?"TRANSFER":"HEADERS",error,tls,tls_error,flags,reply->status,
+             (unsigned)(esp_timer_get_time()>=context.deadline));
     xTaskNotifyGive(guard);xSemaphoreTake(context.done,portMAX_DELAY);vSemaphoreDelete(context.done);
     esp_http_client_cleanup(client);memset(authorization,0,sizeof(authorization));
     if(context.limits.overflow)return IB_NET_OVERSIZE;

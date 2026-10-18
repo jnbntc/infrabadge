@@ -7,6 +7,15 @@ from pathlib import Path
 import struct
 
 
+def verify_m2_logging(config, image):
+    # A runtime tag cannot restore ESP_LOGI calls removed by the compiler.
+    assert config.get('LOG_DEFAULT_LEVEL') == 2, 'M2 SDK default logging must stay WARN'
+    assert config.get('LOG_MAXIMUM_LEVEL') == 3, 'M2 INFO events must be compiled; DEBUG must stay excluded'
+    assert config.get('LOG_DYNAMIC_LEVEL_CONTROL'), 'M2 needs per-tag runtime log control'
+    for marker in (b'M2_BOOT:', b'M2_DISPLAY:', b'M2_CYCLE:', b'M2_HTTP:'):
+        assert marker in image, f'Missing compiled M2 event: {marker.decode()}'
+
+
 def elf_symbols(data):
     assert data[:6] == b'\x7fELF\x01\x01', 'Expected 32-bit little-endian ELF'
     offset = struct.unpack_from('<I', data, 32)[0]
@@ -50,20 +59,22 @@ def elf_retained_record(data):
 
 def inspect(build, profile):
     config = json.loads((build / 'config/sdkconfig.json').read_text())
+    network_profile = profile in ('connectivity','automation')
     assert config['IDF_TARGET'] == 'esp32s3', 'Unexpected target'
     assert config['ESPTOOLPY_FLASHSIZE'] == '8MB', 'Flash size must be 8MB'
     assert config.get('ESP_CONSOLE_USB_SERIAL_JTAG'), 'USB Serial/JTAG console required'
     assert not config.get('SPIRAM'), 'M0 does not use PSRAM'
     for key in ['SECURE_BOOT', 'SECURE_BOOT_V2_ENABLED', 'SECURE_FLASH_ENC_ENABLED', 'BT_ENABLED', 'ESP_TLS_INSECURE', 'ESP_TLS_SKIP_SERVER_CERT_VERIFY']:
         assert not config.get(key), f'Forbidden feature: {key}'
-    assert bool(config.get('ESP_WIFI_ENABLED')) == (profile == 'connectivity'), 'Wi-Fi allowed only in M2'
-    if profile == 'connectivity':
+    assert bool(config.get('ESP_WIFI_ENABLED')) == network_profile, 'Wi-Fi allowed only in M2'
+    if network_profile:
         assert config.get('MBEDTLS_HAVE_TIME_DATE'), 'TLS certificate date validation required'
     modes = [name for name in ['display', 'sensors', 'sleep'] if config.get(f'IB_M0_{name.upper()}')]
-    assert modes == ([] if profile in ('ui','timer','connectivity') else [profile]), f'Wrong M0 profile: {modes}'
+    assert modes == ([] if profile in ('ui','timer','connectivity','automation') else [profile]), f'Wrong M0 profile: {modes}'
     assert bool(config.get('IB_M1_UI')) == (profile == 'ui'), 'Wrong M1 selection'
     assert bool(config.get('IB_M11_TIMER_DIAG')) == (profile == 'timer'), 'Wrong M1.1 selection'
-    assert bool(config.get('IB_M2_CONNECTIVITY')) == (profile == 'connectivity'), 'Wrong M2 selection'
+    assert bool(config.get('IB_M2_CONNECTIVITY')) == network_profile, 'Wrong M2 selection'
+    assert bool(config.get('IB_M2_AUTO_DIAG')) == (profile == 'automation'), 'Wrong autonomous diagnostic selection'
     description = json.loads((build / 'project_description.json').read_text())
     assert description['git_revision'] in ['v5.5.5', '5.5.5'], 'Unexpected IDF version'
     artifacts = {}
@@ -75,18 +86,25 @@ def inspect(build, profile):
             assert data[:4] == b'\x7fELF' and struct.unpack_from('<H', data, 18)[0] == 94, 'Expected Xtensa ELF'
             linked_ui = {'ib_ui_render', 'ib_ui_mock', 'ib_display_present', 'ib_power_sleep'} & elf_symbols(data)
             expected_ui = {'ib_ui_render','ib_ui_mock','ib_display_present','ib_power_sleep'} if profile=='ui' else (
-                {'ib_ui_render','ib_display_present','ib_power_sleep'} if profile=='connectivity' else set())
+                {'ib_ui_render','ib_display_present'} if profile=='automation' else
+                {'ib_ui_render','ib_display_present','ib_power_sleep'} if network_profile else set())
             assert linked_ui == expected_ui, f'Unexpected UI linkage: {linked_ui}'
             diag={'ib_td_boot','ib_td_arm_sleep','ib_td_render'} & elf_symbols(data)
             assert (len(diag)==3 if profile=='timer' else not diag), f'Unexpected timer linkage: {diag}'
             if profile=='timer':
                 elf_retained_record(data)
             network={'ib_cycle_run','ib_snapshot_decode','ib_wifi_start','ib_https_fetch'} & elf_symbols(data)
-            assert (len(network)==4 if profile=='connectivity' else not network), f'Unexpected network linkage: {network}'
+            assert (len(network)==4 if network_profile else not network), f'Unexpected network linkage: {network}'
+            auto={'ib_ma_resume','ib_ma_append','ib_ma_export'} & elf_symbols(data)
+            assert (len(auto)==3 if profile=='automation' else not auto), 'Autonomous journal isolation failed'
+        elif name == 'infrabadge.bin' and profile == 'automation':
+            assert b'IBAUTO_REPORT ' in data and b'IBAUTO_READY' in data, 'Missing diagnostic USB report'
+        elif name == 'infrabadge.bin' and profile == 'connectivity':
+            verify_m2_logging(config, data)
     flash = json.loads((build / 'flasher_args.json').read_text())
     assert set(flash['flash_files']) == {'0x0', '0x8000', '0x10000'}, 'Unexpected flash offsets'
     # Exclude radio stacks from the minimal dependency closure as well as runtime use.
-    forbidden = ({'bt','mqtt','openthread'} | (set() if profile=='connectivity' else {'esp_wifi'})) & set(description['build_components'])
+    forbidden = ({'bt','mqtt','openthread'} | (set() if network_profile else {'esp_wifi'})) & set(description['build_components'])
     assert not forbidden, f'Unexpected linked component closure: {forbidden}'
     return {'profile': profile, 'status': 'passed', 'target': 'esp32s3', 'esp_idf': 'v5.5.5',
             'flash_size': '8MB', 'artifacts': artifacts, 'hardware_validation': 'not_performed',
@@ -96,7 +114,7 @@ def inspect(build, profile):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--build', type=Path, required=True)
-    parser.add_argument('--profile', choices=['display', 'sensors', 'sleep', 'ui', 'timer', 'connectivity'], required=True)
+    parser.add_argument('--profile', choices=['display', 'sensors', 'sleep', 'ui', 'timer', 'connectivity', 'automation'], required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     result = inspect(args.build, args.profile)

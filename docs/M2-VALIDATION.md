@@ -1,11 +1,24 @@
 # M2 — resultados y límites
 
+Estado posterior: se confirmó una primera consulta física HTTPS200 y pantalla
+con la imagen diagnóstica733f7b9b y una excepción temporal de ruta, ya retirada.
+Otra ventana autorizada confirmó consulta autónoma ETag/304, posterior200 y
+refresco observado cerca del final; su regla también se retiró.
+La sesión posterior confirmó siete etapas de estados y recuperación503/304:
+ver [M2-SCENARIOS.md](M2-SCENARIOS.md). Su regla se retiró y el gateway original
+volvió a HEALTHY. No extiende la CI anterior a nuevos fuentes ni prueba batería.
+Este informe conserva la evidencia de build/CI anterior; ver
+[M2-PHYSICAL-RESULTS.md](M2-PHYSICAL-RESULTS.md) para los ensayos posteriores.
+No hay PASS M2 completo. [M2-NEXT-CYCLE.md](M2-NEXT-CYCLE.md) documenta esa
+observación sin carga/provisión; no equiparar actividad de red con causa timer.
+
 Fecha: 2026-10-17. Rama feat/m2-connectivity, base M1.1 b2dcf7a.
 [PR #2](https://github.com/jnbntc/infrabadge/pull/2) propone integrar M1.1 en main;
 M2 se propone en [PR #3](https://github.com/jnbntc/infrabadge/pull/3),
 con base en esa rama para separar su diff. feat/m1-ui se conserva intacta.
-No se realizó merge, carga, monitor, aprovisionamiento ni acceso a la placa M2.
-El diagnóstico M1.1 permanece instalado.
+Al cierre de esa revisión inicial no se había realizado carga, monitor,
+aprovisionamiento ni acceso M2; permanecía M1.1. Es un estado histórico: la
+imagen actual y los ensayos posteriores están identificados en el informe físico.
 
 ## Evidencia ejecutada localmente
 
@@ -42,7 +55,7 @@ antes del PASS. No se desactivaron warnings, sanitizadores ni TLS para lograrlo.
 La librería de tests Starlette avisa que su adaptador httpx está deprecado; los
 29 tests pasan con versiones fijadas. Es deuda de herramienta, no excepción TLS.
 
-## Cobertura por escenario
+## Cobertura por escenario al cierre del build/CI inicial (histórico)
 
 | Escenario | Evidencia M2 |
 | --- | --- |
@@ -78,7 +91,7 @@ Antes de una futura carga autorizada recompilar la revisión elegida y verificar
 sus propios hashes. Los commits posteriores de cierre sólo actualizan documentos;
 esta ejecución prueba los fuentes de firmware/backend `9c5ef57`, sin hardware.
 
-## Pendientes físicos y operativos
+## Pendientes físicos y operativos al cierre del build/CI inicial (histórico)
 
 [Procedimiento preparado](M2-PHYSICAL.md), requiere autorización explícita nueva.
 Falta probar STA/DNS/TLS del ESP32 con CA real, provisión/ACK/reenumeración USB,

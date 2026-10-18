@@ -1,0 +1,48 @@
+{
+  "profile": "connectivity",
+  "status": "compiled_verified_not_loaded",
+  "target": "esp32s3",
+  "esp_idf": "v5.5.5",
+  "flash_size": "8MB",
+  "artifacts": {
+    "infrabadge.elf": {
+      "bytes": 9813880,
+      "sha256": "bf91eef41c65defa9103abc964c59769fbc48e6c422b5b8201bf7f1fa739aa21"
+    },
+    "infrabadge.bin": {
+      "bytes": 863152,
+      "sha256": "733f7b9b839bfeed966a3914a4e6015429ddbd73be7624cbf5a8d43a6686ac2f"
+    },
+    "bootloader/bootloader.bin": {
+      "bytes": 20848,
+      "sha256": "0207ce7d2a3c51e14cf310634b830fe437a483d084a7377ca13f4c8e3a157a37"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    }
+  },
+  "hardware_validation": "not_performed",
+  "flash_performed": false,
+  "firmware_input_sha256": "67c85b326a45511ff2627a3bb515537e4d36bac4e10b01b3a74cbd7d31a39282",
+  "supervisor_source_sha256": "86899d2ab10b62c93444b5edcb349a093da53bcae5b6240ea3f2ede6ad3be945",
+  "logging": {
+    "LOG_DEFAULT_LEVEL": 2,
+    "LOG_MAXIMUM_LEVEL": 3,
+    "LOG_DYNAMIC_LEVEL_CONTROL": true
+  },
+  "application_offset": "0x10000",
+  "application_capacity": 1048576,
+  "application_remaining_bytes": 185424,
+  "application_remaining_percent": 17.683,
+  "requires_new_flash_and_provision_authorization": true,
+  "board_io_performed": false,
+  "tests": {
+    "six_profile_local_build": "passed",
+    "m2_native_asan_ubsan_visuals": "passed",
+    "gateway_tools_pytest_passed": 42,
+    "real_host_preflight_no_usb": "passed"
+  },
+  "local_supervisor": "results/m2-supervised-20261017T225909Z-y0fhadop",
+  "host_only_tool_changes_after_build": true
+}
