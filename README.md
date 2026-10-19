@@ -21,16 +21,22 @@ Un timer de usuario lo invoca cada60s; el gateway autentica, valida, evalúa sal
 con ventanas/histéresis y entrega el contrato M2 con ETag/304 y TTL de muestra.
 Datos ausentes/caducados se muestran UNKNOWN, separados del fallo de red de la placa.
 
-La validación local incluye adquisición real de Fedora → HTTPS temporal en
-localhost → snapshot M2 y304. No instala servicios ni configura la red. Se
-prepararon instalación/desinstalación, imagen rootless y pruebas deterministas.
+La validación de software incluye adquisición real de Fedora → HTTPS temporal en
+localhost → snapshot M2 y304, sin instalación automática. El usuario autorizó
+después los servicios locales: collector periódico y gateway rootless quedaron
+instalados y activos, con HTTPS sólo en localhost. Se verificaron caducidad,
+recuperación y reinicio del gateway. No se cambió la red ni se habilitó linger.
 La pantalla REAL necesita el pequeño cambio de parser/render en su propio commit;
 el firmware instalado M2 sigue intacto. No se flasheó ni validó ópticamente M3.
 
 - [Arquitectura, modelo de salud y seguridad](docs/M3-ARCHITECTURE.md).
 - [Pruebas ejecutadas y límites](docs/M3-VALIDATION.md).
-- [Instalación reproducible en Fedora, pendiente de autorización](docs/M3-FEDORA-SETUP.md).
+- [Instalación reproducible en Fedora y desinstalación](docs/M3-FEDORA-SETUP.md).
 - [Plan de validación física posterior](docs/M3-PHYSICAL.md).
+
+La prueba ESP32 se difirió por elección del usuario. La red activa cambió desde
+M2 y Wi-Fi está bloqueado por software; no se presume conectividad de la placa.
+Suspensión/logout reales y mediciones eléctricas continúan pendientes.
 
 Referencia **sintética**, generada por el renderizador C real; no es una foto
 ni expone métricas de la notebook:

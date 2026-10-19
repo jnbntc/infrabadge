@@ -59,8 +59,8 @@ Private local results directories, all reporting passed/no hardware I/O:
 
 Rootless gateway build used the official Python base digest fixed in Containerfile
 and pip --require-hashes. A transient instance was tested against actual host
-metrics and removed. No unit, persistent listener, LAN exposure, firewall/route/
-DNS setting, linger or host RPM was installed/changed. The built image remains
+metrics and removed. That transient test did not install units or change host
+configuration; the later authorized deployment is reported below. The image remains
 local for review; nothing was pushed to a container registry.
 
 ## Reproduction
@@ -81,7 +81,7 @@ podman build -f deploy/m3/Containerfile -t localhost/infrabadge-gateway:m3 .
 ```
 
 This temporary test publishes only a random localhost port and removes its
-container/ephemeral files. No systemd service is installed. All screenshots under
+container/ephemeral files. That smoke test does not install services. All screenshots under
 `docs/m3-ui/` use **synthetic** metrics, even though their source indicator is REAL
 to exercise that wire/display mode. They are not captures of the physical screen.
 
@@ -91,10 +91,65 @@ The software path and actual Fedora-to-local-gateway path are exercised. Functio
 readiness also requires green checks on the current PR head. Draft status is
 intentional: review and later operator deployment are separate decisions.
 
-Not executed: actual user timer activation, suspend/logout/linger scenarios,
-installed Quadlet lifecycle, sustained resource measurements, selected Wi-Fi LAN
+Initially not executed: actual user timer activation and installed Quadlet lifecycle;
+these were subsequently verified in the explicitly authorized session below.
+Still not executed: suspend/logout scenarios, sustained resource measurements, selected Wi-Fi LAN
 DNS/routing/firewall, real notebook data on ESP32, M3 optical/sleep validation or
-electrical measurements. No host stress, board write, provisioning, reset,
+electrical measurements. No host stress, board write, provisioning, board reset,
 erase/eFuse/security change, factory restoration or PR merge was performed.
 The board still has the M2 terminal diagnostic. Follow
 [M3 physical plan](M3-PHYSICAL.md) only after explicit authorization.
+
+## Authorized installed-host validation — 2026-10-19
+
+The operator explicitly authorized creating/activating the collector user timer
+and local rootless gateway, with new private M3 files. Original M2 configuration,
+certificates, factory backup and frozen rollback packs were preserved. Execution
+occurred only after that specific approval, extending the earlier no-install scope.
+
+Installed application source38a1f35, collector ZIP SHA-256
+`70c73eddf129a7a0cbc5f3f7e1b61fff557b754ea05295c8930dc0d458229f5c`;
+gateway local image `e5d259e53be7c309920ca5a549a10c053e53a639718bd46887e8457cdb7f4c8e`.
+The timer unit includes correction245fe2e: initial trigger uses OnActiveSec=30s
+instead of an already elapsed OnStartupSec. This avoids a second rapid sample
+after the documented manual first run. Container start is not HTTPS readiness:
+an initial submission failed before the server was ready; after verified TLS
+readiness the collector succeeded. This transient remains in the private journal.
+
+| Installed-host check | Result |
+| --- | --- |
+| Actual scheduled collector sends | PASS, two successive scheduled samples, measured interval60s |
+| Verified TLS, explicit private CA, real metrics and REAL source | PASS |
+| Identical snapshot / If-None-Match | PASS304, no TTL extension |
+| Collector credential on device endpoint / device credential on ingress | Both rejected401 |
+| Stop only collector; wait actual180s sample TTL | PASS, UNKNOWN200 instead of stale304, DATOS CADUCADOS, no current old metrics |
+| Resume collector after the gap | PASS, fresh samples accepted and complete CPU metrics recovered |
+| Restart only installed M3 gateway | PASS, process memory reset gives UNKNOWN/SIN MUESTRA until next sample |
+| Scheduled recovery after gateway restart | PASS |
+| Rootless restrictions | UID10001, read-only root filesystem, no-new-privileges, CapEff/CapBnd/CapAmb zero |
+| Host port publication | Only127.0.0.1:8443, no LAN/Internet listener |
+| Final unit state | Gateway and timer active; collector timer enabled |
+| Existing linger | Disabled, unchanged |
+
+Private execution evidence: `results/m3-host-install-20261019T152220Z/`, with
+`validation/result.json`, and `results/m3-board-preflight-20261019T152644Z/`.
+Do not publish private deployment metadata, certificates, credentials, systemd
+journals, raw snapshots or backup contents. This report contains only allowlisted
+outcomes, not notebook capacity, sensor inventory or identifiers.
+
+The new laboratory TLS certificate expires **2026-11-18 15:22:20 UTC**. The CA
+signing key was not persisted; renewal/CA rotation is a reviewed operation and
+future ESP32 trust changes require explicit provisioning authorization. This is
+not automatic production certificate management. Secrets remain outside Git;
+only the gateway's dedicated directory was SELinux-labeled for its read-only mount.
+
+The normal M3 app was frozen and rechecked at863472 bytes, SHA9311046b (full hash
+above), offset0x10000. Matching partition layout, historical M2/M1.1 rollback
+artifacts and the private8MiB factory backup were verified **read-only**. No USB
+port was opened and no board write occurred. The operator explicitly chose to
+leave the ESP32 test pending because current Wi-Fi/LAN availability is uncertain.
+
+A collector pause exercises missing-data semantics and CPU gap recovery; it is
+**not evidence of real suspend/resume, logout or device deep sleep**. Those checks
+remain separate. No Wi-Fi/VLAN/VPN/DNS/firewall changes, linger activation, host
+stress, layered RPM installation or firmware operations were performed.
