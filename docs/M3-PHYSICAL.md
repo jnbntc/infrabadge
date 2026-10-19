@@ -6,6 +6,14 @@ M2 autonomous diagnostic terminal. Do not touch USB, reset, provision or flash
 from the software validation tools. Electrical/autonomy measurements remain
 deferred as requested by the user.
 
+Update2026-10-19: the user authorized the installed host services, bound only to
+localhost, and explicitly deferred the ESP32 trial. Wi-Fi is software-blocked and
+the notebook now uses wired VLANs; do not change those connections or assume the
+M2 Wi-Fi/return-route setup is still applicable. A normal M3 app pack and the
+original M2/M1.1/factory backups were verified without opening USB or writing the
+board. The physical gate remains closed until a future explicit authorization
+and a new network inspection. No phone/client test is requested.
+
 ## Gates before any board write
 
 1. Review the draft PR and exact source SHA; CI and seven-profile regression pass.

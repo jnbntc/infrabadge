@@ -2,7 +2,7 @@
 Description=Collect Fedora metrics once per minute after completion
 
 [Timer]
-OnStartupSec=30s
+OnActiveSec=30s
 OnUnitInactiveSec=60s
 AccuracySec=5s
 Persistent=false

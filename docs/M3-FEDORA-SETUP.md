@@ -1,9 +1,10 @@
 # M3 — Fedora Atomic setup (explicit operator activation)
 
-Nothing in the M3 development/build/test workflow installs user units, enables
-services, changes networking or flashes the board. The following steps are a
-procedure for a **later authorized installation**, run as the normal user, never
-sudo. Commands assume a checkout at `~/Proyectos/infrabadge`.
+Development/build/test commands do not install units or flash the board. The
+operator subsequently authorized the local M3 user services on2026-10-19;
+the installed deployment and its limits are tracked in M3-VALIDATION.md.
+The following procedure remains opt-in for other installations, run as the normal
+user, never sudo. Commands assume a checkout at `~/Proyectos/infrabadge`.
 
 ## Software validation without installation
 
@@ -97,8 +98,11 @@ systemctl --user enable --now infrabadge-collector.timer
 systemctl --user list-timers infrabadge-collector.timer
 ```
 
-First run can be UNKNOWN because CPU needs a previous counter sample. The timer
-waits 60 s **after completion** with up to 5 s coalescing, not exact wall-minute
+First run can be UNKNOWN because CPU needs a previous counter sample. The initial
+trigger waits 30s from timer activation (OnActiveSec), so a preceding manual check
+does not collide with the gateway's minimum sample spacing. Wait for verified
+HTTPS readiness before that manual check: container start is not HTTP readiness.
+The timer waits 60 s **after completion** with up to 5 s coalescing, not exact wall-minute
 alignment. Changing `interval_seconds` also requires changing OnUnitInactiveSec
 and gateway policy (minimum spacing/gap/TTL). It does not itself reschedule systemd.
 Persistent=false is explicit; persistence affects calendar timers, while this one

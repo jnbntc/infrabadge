@@ -7,9 +7,14 @@
 - Implement only the authorized Fedora host collector and FastAPI integration,
   preserving the M2 endpoint/schema and separate collector/device credentials.
   No MQTT, unrelated collectors, database or distrobox-stack changes.
-- Do not install/enable user services, change real host networking/configuration,
-  enable linger, provision, reset or flash the board. Host read-only metrics and
-  temporary localhost HTTPS software tests are allowed. Draft PR only; no merge.
+- The user explicitly authorized installation/activation of the M3 collector
+  timer and rootless gateway on2026-10-19, HTTPS bound to localhost:8443 only.
+  New private M3 configuration/certificates and bounded stop/recovery tests of
+  these new services are authorized. Preserve original M2 files/backups.
+- Do not change host network/VLAN/VPN/DNS settings, enable linger, provision,
+  reset or flash the board. The user explicitly deferred the ESP32 trial;
+  Wi-Fi was software-blocked and the active wired network has changed since M2.
+  Draft PR only; no merge. Real suspend/logout is not automatically authorized.
 - The physical board remains the frozen M2 diagnostic. M3 REAL support is a
   separately committed minimal parser/source/render update, not physically loaded.
   Preserve M0/M1, HAL, Power Manager, TLS and framebuffer diff.
