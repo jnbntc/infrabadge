@@ -1,4 +1,5 @@
 """One bounded HTTPS POST. No proxy environment, redirect, subprocess or retry."""
+
 import contextlib
 import http.client
 import json
@@ -6,6 +7,7 @@ import re
 import signal
 import ssl
 from urllib.parse import urlsplit
+
 from .runtime import private_bytes
 
 
@@ -42,12 +44,17 @@ def submit(config, token_file, metrics):
         raise ValueError("verified_https_required")
     context = ssl.create_default_context(cafile=config["ca_file"])
     context.minimum_version = ssl.TLSVersion.TLSv1_2
-    connection = http.client.HTTPSConnection(url.hostname, url.port or 443,
-                                             timeout=config["timeout_seconds"], context=context)
+    connection = http.client.HTTPSConnection(
+        url.hostname, url.port or 443, timeout=config["timeout_seconds"], context=context
+    )
     try:
         with deadline(config["timeout_seconds"]):
-            connection.request("POST", "/api/v1/collectors/" + config["node_id"] + "/metrics", body,
-                               {"Authorization": "Bearer " + token, "Content-Type": "application/json"})
+            connection.request(
+                "POST",
+                "/api/v1/collectors/" + config["node_id"] + "/metrics",
+                body,
+                {"Authorization": "Bearer " + token, "Content-Type": "application/json"},
+            )
             response = connection.getresponse()
             content = response.read(1025)
             if len(content) > 1024:

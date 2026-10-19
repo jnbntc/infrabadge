@@ -1,4 +1,5 @@
 """Bounded read-only acquisition. Never reads credentials or host identifiers."""
+
 import math
 import os
 import re
@@ -29,8 +30,10 @@ def parse_stat(text):
 def cpu_delta(current, previous, uptime, max_gap=180):
     if not previous or uptime is None:
         return None
-    if (current["logical_cpus"] != previous.get("logical_cpus")
-            or not 0 < uptime - previous.get("uptime", uptime) <= max_gap):
+    if (
+        current["logical_cpus"] != previous.get("logical_cpus")
+        or not 0 < uptime - previous.get("uptime", uptime) <= max_gap
+    ):
         return None
     old = previous.get("ticks", [])
     if len(old) != 8:
@@ -47,21 +50,43 @@ def parse_meminfo(text):
     fields = {}
     for line in text.splitlines():
         key, _, value = line.partition(":")
-        if key in {"MemTotal", "MemAvailable", "MemFree", "Buffers", "Cached", "SReclaimable", "Shmem"}:
+        if key in {
+            "MemTotal",
+            "MemAvailable",
+            "MemFree",
+            "Buffers",
+            "Cached",
+            "SReclaimable",
+            "Shmem",
+        }:
             parts = value.split()
             if key in fields or len(parts) != 2 or parts[1] != "kB":
                 raise ValueError("memory_fields")
             fields[key] = int(parts[0]) * 1024
     total = fields["MemTotal"]
     estimated = "MemAvailable" not in fields
-    available = (fields["MemFree"] + fields["Buffers"] + fields["Cached"]
-                 + fields.get("SReclaimable", 0) - fields.get("Shmem", 0)) if estimated else fields["MemAvailable"]
+    available = (
+        (
+            fields["MemFree"]
+            + fields["Buffers"]
+            + fields["Cached"]
+            + fields.get("SReclaimable", 0)
+            - fields.get("Shmem", 0)
+        )
+        if estimated
+        else fields["MemAvailable"]
+    )
     if estimated:
         available = min(total, max(0, available))
     if total <= 0 or available < 0 or available > total or any(v < 0 for v in fields.values()):
         raise ValueError("memory_values")
-    return {"total_bytes": total, "available_bytes": available, "used_bytes": total - available,
-            "used_percent": round(100 * (total - available) / total, 2), "available_estimated": estimated}
+    return {
+        "total_bytes": total,
+        "available_bytes": available,
+        "used_bytes": total - available,
+        "used_percent": round(100 * (total - available) / total, 2),
+        "available_estimated": estimated,
+    }
 
 
 def disk_usage(path, mount_id, statvfs=os.statvfs):
@@ -71,8 +96,12 @@ def disk_usage(path, mount_id, statvfs=os.statvfs):
     available = max(0, value.f_bavail) * block
     if total <= 0 or not 0 <= available <= total:
         raise ValueError("disk_values")
-    return {"mount_id": mount_id, "total_bytes": total, "available_bytes": available,
-            "used_percent": round(100 * (total - available) / total, 2)}
+    return {
+        "mount_id": mount_id,
+        "total_bytes": total,
+        "available_bytes": available,
+        "used_percent": round(100 * (total - available) / total, 2),
+    }
 
 
 def parse_uptime(text):
@@ -124,14 +153,26 @@ def cpu_temperature(hwmon_root):
     if not candidates:
         return None
     priority = min(item[0] for item in candidates)
-    _, temperature, sensor = max((item for item in candidates if item[0] == priority), key=lambda item: item[1])
+    _, temperature, sensor = max(
+        (item for item in candidates if item[0] == priority), key=lambda item: item[1]
+    )
     return {"celsius": round(temperature, 3), "sensor": sensor}
 
 
-def acquire(node_id, mount_path, mount_id, previous=None, proc_root=Path("/proc"),
-            hwmon_root=Path("/sys/class/hwmon"), now=None, max_gap=180):
+def acquire(
+    node_id,
+    mount_path,
+    mount_id,
+    previous=None,
+    proc_root=Path("/proc"),
+    hwmon_root=Path("/sys/class/hwmon"),
+    now=None,
+    max_gap=180,
+):
     import time
+
     from . import __version__
+
     errors = []
 
     def attempt(code, function):
@@ -141,7 +182,9 @@ def acquire(node_id, mount_path, mount_id, previous=None, proc_root=Path("/proc"
             errors.append(code)
             return None
 
-    uptime = attempt("uptime_unavailable", lambda: parse_uptime(read_text(proc_root / "uptime", 128)))
+    uptime = attempt(
+        "uptime_unavailable", lambda: parse_uptime(read_text(proc_root / "uptime", 128))
+    )
     counters = attempt("cpu_unavailable", lambda: parse_stat(read_text(proc_root / "stat")))
     load = attempt("load_unavailable", lambda: parse_load(read_text(proc_root / "loadavg", 256)))
     cpu = None
@@ -150,7 +193,11 @@ def acquire(node_id, mount_path, mount_id, previous=None, proc_root=Path("/proc"
         usage = cpu_delta(counters, previous, uptime, max_gap)
         if usage is None:
             errors.append("cpu_warmup")
-        cpu = {"usage_percent": usage, "logical_cpus": counters["logical_cpus"], "load_average": load}
+        cpu = {
+            "usage_percent": usage,
+            "logical_cpus": counters["logical_cpus"],
+            "load_average": load,
+        }
         if uptime is not None:
             baseline = dict(counters, uptime=uptime)
     memory = attempt("memory_unavailable", lambda: parse_meminfo(read_text(proc_root / "meminfo")))
@@ -161,6 +208,15 @@ def acquire(node_id, mount_path, mount_id, previous=None, proc_root=Path("/proc"
     stamp = int(time.time() if now is None else now)
     if not 1577836800 <= stamp <= 4102444800:
         raise ValueError("utc_outside_protocol")
-    return {"schema_version": 1, "node_id": node_id, "collector_version": __version__, "collected_at": stamp,
-            "cpu": cpu, "memory": memory, "disk": disk, "temperature": temperature,
-            "uptime_seconds": uptime, "errors": errors}, baseline
+    return {
+        "schema_version": 1,
+        "node_id": node_id,
+        "collector_version": __version__,
+        "collected_at": stamp,
+        "cpu": cpu,
+        "memory": memory,
+        "disk": disk,
+        "temperature": temperature,
+        "uptime_seconds": uptime,
+        "errors": errors,
+    }, baseline

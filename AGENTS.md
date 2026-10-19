@@ -1,5 +1,27 @@
 # InfraBadge development instructions
 
+## Current M3 scope (supersedes historical M2-only restrictions below)
+
+- Main includes merged M1.1 #2 and M2 #3. Work M3 on
+  feat/m3-fedora-monitoring, branched from updated main19a9a00.
+- Implement only the authorized Fedora host collector and FastAPI integration,
+  preserving the M2 endpoint/schema and separate collector/device credentials.
+  No MQTT, unrelated collectors, database or distrobox-stack changes.
+- Do not install/enable user services, change real host networking/configuration,
+  enable linger, provision, reset or flash the board. Host read-only metrics and
+  temporary localhost HTTPS software tests are allowed. Draft PR only; no merge.
+- The physical board remains the frozen M2 diagnostic. M3 REAL support is a
+  separately committed minimal parser/source/render update, not physically loaded.
+  Preserve M0/M1, HAL, Power Manager, TLS and framebuffer diff.
+- Collector runs on the host with stdlib only; never claim container proc/sys/mounts
+  are host metrics. No identifiers/private data in public fixtures/reports.
+- M3 docs: M3-ARCHITECTURE, M3-VALIDATION, M3-FEDORA-SETUP and M3-PHYSICAL.
+  Run root pytest.ini (collector+gateway+TLS integration), pinned Ruff via
+  tools/m3/check_style.sh, protocol/M3 fixture checks and all seven SDK profiles.
+- Preserve the distinction between deterministic fixtures, real Fedora localhost
+  checks, rootless container smoke, installed user timer, LAN and physical ESP32.
+  Do not substitute CI/host tests for the latter stages. Energy remains deferred.
+
 ## Scope and safety
 
 - Work only in `jnbntc/infrabadge`; confirm Git root/origin before edits.
@@ -17,9 +39,9 @@
 - Builds/tests must never open USB, provision or flash. Keep CI, simulation,
   driver callback counters, optical observations and electrical measurements distinct.
 - Do not merge, rewrite/delete historical branches or replace backups automatically.
-  Do not add MQTT, production collectors, databases or unrelated platform changes.
+  Do not add MQTT, databases or unrelated platform changes.
 
-## Branches and evidence
+## Historical M2 branches and evidence
 
 - Work M2 on feat/m2-connectivity, based on M1.1 b2dcf7a. PR #2 proposes
   feat/m1.1-integration into main; PR #3 targets that integration branch.
@@ -56,7 +78,8 @@
 - Runtime provisioning through trusted physical USB, never secrets in argv/code/
   Kconfig/logs. A fresh synchronized host UTC seed starts trust. Only valid
   deep-sleep RTC continuity preserves it; no NVS timestamp as now after reset.
-- Gateway health is simulated. Invalid/expired query is OFFLINE with historical
+- M2 mock health is simulated; M3-bound devices use explicit REAL data/UNKNOWN.
+  Invalid/expired query is OFFLINE with historical
   labels, not a current old HEALTHY/CRITICAL. Respect version/ranges/TTL/identity.
 - Bounded timeouts/backoff, explicit Wi-Fi stop before sleep, conditional render
   and framebuffer cancellation. Do not infer radio current from stop callbacks.

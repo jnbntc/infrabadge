@@ -20,3 +20,6 @@ __pycache__/
 *.key
 /gateway/private/
 /build-m2-auto/
+.pytest_cache/
+.ruff_cache/
+*.token

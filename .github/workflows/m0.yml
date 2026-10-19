@@ -1,4 +1,4 @@
-name: InfraBadge M0, M1, M1.1 and M2
+name: InfraBadge M0 to M3
 
 on:
   push:
@@ -49,7 +49,13 @@ jobs:
         run: |
           python3 -m venv /tmp/infrabadge-gateway
           /tmp/infrabadge-gateway/bin/python -m pip install --require-hashes -r gateway/requirements.lock
-      - name: Protocol, mock gateway and real loopback HTTPS tests (no hardware)
+          /tmp/infrabadge-gateway/bin/python -m pip install --require-hashes -r tools/m3/style.lock
+      - name: Collector, gateway, integration and protocol regression (deterministic fixtures)
         run: |
           /tmp/infrabadge-gateway/bin/python tools/m2/generate_protocol.py --check
-          /tmp/infrabadge-gateway/bin/python -m pytest -q gateway/tests
+          /tmp/infrabadge-gateway/bin/python tools/m3/generate_fixtures.py --check
+          /tmp/infrabadge-gateway/bin/python -m pytest -c pytest.ini
+          PATH="/tmp/infrabadge-gateway/bin:$PATH" bash tools/m3/check_style.sh
+          /tmp/infrabadge-gateway/bin/python tools/m3/build_collector.py --output /tmp/infrabadge-collector.pyz
+          /tmp/infrabadge-gateway/bin/python -I /tmp/infrabadge-collector.pyz --help
+          systemd-analyze verify deploy/m3/infrabadge-collector.service deploy/m3/infrabadge-collector.timer

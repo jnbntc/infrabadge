@@ -1,8 +1,16 @@
 from pathlib import Path
 from types import SimpleNamespace
+
 import pytest
 from infrabadge_collector.acquire import (
-    acquire, cpu_delta, cpu_temperature, disk_usage, parse_load, parse_meminfo, parse_stat, parse_uptime,
+    acquire,
+    cpu_delta,
+    cpu_temperature,
+    disk_usage,
+    parse_load,
+    parse_meminfo,
+    parse_stat,
+    parse_uptime,
 )
 
 
@@ -34,11 +42,21 @@ def test_memavailable_and_explicit_estimated_fallback():
     value = parse_meminfo("MemTotal: 1000 kB\nMemAvailable: 250 kB\n")
     assert value["used_percent"] == 75 and value["used_bytes"] == 750 * 1024
     assert value["available_estimated"] is False
-    value = parse_meminfo("MemTotal: 1000 kB\nMemFree: 100 kB\nBuffers: 50 kB\nCached: 200 kB\nSReclaimable: 50 kB\nShmem: 25 kB\n")
+    value = parse_meminfo(
+        "MemTotal: 1000 kB\nMemFree: 100 kB\nBuffers: 50 kB\nCached: 200 kB\nSReclaimable: 50 kB\nShmem: 25 kB\n"
+    )
     assert value["available_bytes"] == 375 * 1024 and value["available_estimated"] is True
 
 
-@pytest.mark.parametrize("value", ["MemTotal: 0 kB\nMemAvailable: 0 kB", "MemTotal: 10 kB\nMemAvailable: 20 kB", "MemTotal: 10 MB", "MemTotal: 10 kB"])
+@pytest.mark.parametrize(
+    "value",
+    [
+        "MemTotal: 0 kB\nMemAvailable: 0 kB",
+        "MemTotal: 10 kB\nMemAvailable: 20 kB",
+        "MemTotal: 10 MB",
+        "MemTotal: 10 kB",
+    ],
+)
 def test_invalid_memory(value):
     with pytest.raises((ValueError, KeyError)):
         parse_meminfo(value)
@@ -48,6 +66,7 @@ def test_disk_uses_unprivileged_available_and_no_directory_walk():
     def source(path):
         assert path == "/configured/mount"
         return SimpleNamespace(f_frsize=4096, f_bsize=4096, f_blocks=100, f_bavail=10)
+
     value = disk_usage("/configured/mount", "DATA", source)
     assert value["available_bytes"] == 40960 and value["used_percent"] == 90
     assert value["mount_id"] == "DATA" and "path" not in value
@@ -89,13 +108,23 @@ def test_uptime_load_and_utc_incomplete_sources(tmp_path):
     for value in ("nan", "inf", "-1"):
         with pytest.raises(ValueError):
             parse_uptime(value)
-    metrics, baseline = acquire("workstation", str(tmp_path / "missing"), "HOME", proc_root=tmp_path,
-                                hwmon_root=tmp_path, now=1800000000)
-    assert metrics["cpu"] is metrics["memory"] is metrics["disk"] is metrics["uptime_seconds"] is None
+    metrics, baseline = acquire(
+        "workstation",
+        str(tmp_path / "missing"),
+        "HOME",
+        proc_root=tmp_path,
+        hwmon_root=tmp_path,
+        now=1800000000,
+    )
+    assert (
+        metrics["cpu"] is metrics["memory"] is metrics["disk"] is metrics["uptime_seconds"] is None
+    )
     assert "cpu_unavailable" in metrics["errors"] and baseline is None
     assert metrics["collected_at"] == 1800000000 and "hostname" not in metrics
     with pytest.raises(ValueError):
-        acquire("workstation", str(tmp_path), "HOME", proc_root=tmp_path, hwmon_root=tmp_path, now=0)
+        acquire(
+            "workstation", str(tmp_path), "HOME", proc_root=tmp_path, hwmon_root=tmp_path, now=0
+        )
 
 
 def test_full_fixture_and_read_errors(tmp_path, monkeypatch):
@@ -103,14 +132,30 @@ def test_full_fixture_and_read_errors(tmp_path, monkeypatch):
     (tmp_path / "meminfo").write_text("MemTotal: 1000 kB\nMemAvailable: 700 kB")
     (tmp_path / "loadavg").write_text("0.1 0.2 0.3")
     (tmp_path / "uptime").write_text("100 20")
-    value, baseline = acquire("workstation", str(tmp_path), "HOME", proc_root=tmp_path, hwmon_root=tmp_path, now=1800000000)
+    value, baseline = acquire(
+        "workstation",
+        str(tmp_path),
+        "HOME",
+        proc_root=tmp_path,
+        hwmon_root=tmp_path,
+        now=1800000000,
+    )
     assert value["cpu"]["logical_cpus"] == 2 and value["cpu"]["usage_percent"] is None
     assert baseline["uptime"] == 100 and value["memory"]["used_percent"] == 30
     original = Path.open
+
     def denied(path, *args, **kwargs):
         if path.name == "meminfo":
             raise PermissionError("must never be logged")
         return original(path, *args, **kwargs)
+
     monkeypatch.setattr(Path, "open", denied)
-    partial, _ = acquire("workstation", str(tmp_path), "HOME", proc_root=tmp_path, hwmon_root=tmp_path, now=1800000000)
+    partial, _ = acquire(
+        "workstation",
+        str(tmp_path),
+        "HOME",
+        proc_root=tmp_path,
+        hwmon_root=tmp_path,
+        now=1800000000,
+    )
     assert partial["memory"] is None and "memory_unavailable" in partial["errors"]

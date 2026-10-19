@@ -1,0 +1,16 @@
+[Unit]
+Description=InfraBadge Fedora metrics (read-only host acquisition)
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I %h/.local/share/infrabadge-collector/infrabadge-collector.pyz --config %h/.config/infrabadge/collector.json --token-file %d/collector-token
+LoadCredential=collector-token:%h/.config/infrabadge/collector.token
+UMask=0077
+TimeoutStartSec=20s
+Nice=10
+IOSchedulingClass=idle
+NoNewPrivileges=true
+LockPersonality=true
+RestrictSUIDSGID=true
+# Deliberately no alternate mount/proc namespace: metrics must describe the host.
+# Paths are validated; the program writes only its private CPU baseline/lock.

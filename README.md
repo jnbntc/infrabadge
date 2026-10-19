@@ -1,14 +1,41 @@
-# InfraBadge — M2 Wi-Fi / HTTPS
+# InfraBadge — M3 Fedora Atomic Monitoring
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
 pantalla, batería/RTC/SHTC3 y un ciclo de deep sleep, sin red. M2 añade un perfil
 separado de Wi-Fi/HTTPS con datos simulados; no incluye MQTT ni Prometheus.
+M3 incorpora métricas reales de Fedora mediante un collector liviano de sólo
+lectura y el mismo gateway HTTPS, con credenciales separadas y caducidad explícita.
 
 Este repositorio es **jnbntc/infrabadge**. `jnbntc/distrobox-stack` sigue administrando
 exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente.
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
+
+## M3: monitoreo de la notebook
+
+Collector Python sin dependencias externas: CPU/load, RAM, disco por statvfs,
+temperatura CPU cuando se identifica de forma confiable y uptime/UTC. Funciona
+en el host, sin root, sockets de contenedores ni lectura de archivos personales.
+Un timer de usuario lo invoca cada60s; el gateway autentica, valida, evalúa salud
+con ventanas/histéresis y entrega el contrato M2 con ETag/304 y TTL de muestra.
+Datos ausentes/caducados se muestran UNKNOWN, separados del fallo de red de la placa.
+
+La validación local incluye adquisición real de Fedora → HTTPS temporal en
+localhost → snapshot M2 y304. No instala servicios ni configura la red. Se
+prepararon instalación/desinstalación, imagen rootless y pruebas deterministas.
+La pantalla REAL necesita el pequeño cambio de parser/render en su propio commit;
+el firmware instalado M2 sigue intacto. No se flasheó ni validó ópticamente M3.
+
+- [Arquitectura, modelo de salud y seguridad](docs/M3-ARCHITECTURE.md).
+- [Pruebas ejecutadas y límites](docs/M3-VALIDATION.md).
+- [Instalación reproducible en Fedora, pendiente de autorización](docs/M3-FEDORA-SETUP.md).
+- [Plan de validación física posterior](docs/M3-PHYSICAL.md).
+
+Referencia **sintética**, generada por el renderizador C real; no es una foto
+ni expone métricas de la notebook:
+
+![M3: diseño con datos de ejemplo y origen REAL](docs/m3-ui/healthy.png)
 
 ## M2: conectividad de laboratorio
 
@@ -27,10 +54,9 @@ certifican todos los píxeles, cortes físicos de energía/NVS o seguridad de
 producción. La placa conserva el diagnóstico terminal, sin restauración automática.
 Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-results.json).
 
-M1.1 se propone por separado en [PR #2](https://github.com/jnbntc/infrabadge/pull/2),
-base main; M2 parte de esa misma base estable y usa feat/m2-connectivity.
-M2 se propone en [PR #3](https://github.com/jnbntc/infrabadge/pull/3), basado en #2.
-Ninguna rama anterior se reescribió y no se fusionó nada automáticamente.
+M1.1 se integró mediante [PR #2](https://github.com/jnbntc/infrabadge/pull/2) y M2
+mediante [PR #3](https://github.com/jnbntc/infrabadge/pull/3), con autorización del
+usuario. Ambos están fusionados en main. M3 se propone por separado, sin merge automático.
 
 ```sh
 bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware
@@ -64,13 +90,13 @@ Captura SINTÉTICA generada por el mismo renderizador C (no prueba de hardware):
 ## Estado
 
 El [PR #1](https://github.com/jnbntc/infrabadge/pull/1) fue fusionado con M1.
-M1.1 y la documentación conjunta se publicaron después en `feat/m1-ui` y siguen
-fuera de ese merge. [El informe consolidado](docs/M1-M11-VALIDATION.md)
+M1.1 y la documentación conjunta se publicaron después en `feat/m1-ui` y se
+integraron posteriormente mediante #2. [El informe consolidado](docs/M1-M11-VALIDATION.md)
 distingue tests/CI, validación M1 por USB, tres retornos M1.1 sólo con batería y
 mediciones pendientes. Ese informe conserva el cierre histórico de M1.1; el
 firmware instalado cambió después a M2 en los ensayos autorizados descritos arriba.
-Por elección del usuario, #1 conserva la evidencia complementaria y no se abrió
-otro PR para los cambios de la rama.
+Por elección del usuario, #1 conserva la evidencia complementaria; #2 realizó
+después la integración M1.1.
 
 La matriz de conexiones se contrastó con el esquemático oficial N8R8 y los ejemplos
 ESP-IDF **V2**. [HARDWARE.md](docs/HARDWARE.md) documenta señales, polaridades,
@@ -215,7 +241,7 @@ imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
 La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
 pasó el 17 de octubre de 2026. M1 se fusionó mediante el
 [PR #1](https://github.com/jnbntc/infrabadge/pull/1), con validación funcional física
-cerrada; M1.1 se publicó posteriormente y todavía no está integrado en `main`.
+cerrada; M1.1 se integró posteriormente en `main` mediante #2.
 Los límites y mediciones pendientes están en el informe físico.
 El estado de CI de la revisión consolidada se consulta en las ejecuciones de Actions
 de `feat/m1-ui` para el SHA correspondiente;

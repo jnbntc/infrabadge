@@ -1,0 +1,13 @@
+[Unit]
+Description=Collect Fedora metrics once per minute after completion
+
+[Timer]
+OnStartupSec=30s
+OnUnitInactiveSec=60s
+AccuracySec=5s
+Persistent=false
+WakeSystem=false
+Unit=infrabadge-collector.service
+
+[Install]
+WantedBy=timers.target

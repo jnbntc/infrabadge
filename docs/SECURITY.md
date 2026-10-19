@@ -67,3 +67,12 @@ claves privadas, tokens operativos ni logs físicos.
 Referencias oficiales: [HTTP Client ESP-IDF 5.5.5](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/protocols/esp_http_client.html),
 [System Time](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/system/system_time.html),
 [NVS y límites físicos](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/storage/nvs_flash.html).
+# M3 extension
+
+The M3 collector uses a separate scoped credential, verified HTTPS and bounded
+strict ingress. It never receives commands or uses container sockets. Host-only
+acquisition and private CPU-baseline writes are documented in
+[M3 architecture](M3-ARCHITECTURE.md). Read that threat model and
+[Fedora setup](M3-FEDORA-SETUP.md) before installing services. No Internet exposure,
+linger, firewall/VPN/DNS change or board write is automatic. Same-user compromise,
+authenticated lying collectors and replay across gateway restarts remain limits.

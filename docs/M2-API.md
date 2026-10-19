@@ -125,3 +125,11 @@ interna, no un parámetro HTTP que acepte el dispositivo. Sólo el laboratorio
 autónomo selecciona3600s para durar más de30min sin forzar una reducción legítima
 del sueño en una recuperación. El caso expired sigue entregando datos vencidos.
 304 no extiende la vigencia y no cambia el lease de hora del firmware.
+# M3 compatibility note
+
+M3 preserves this M2 endpoint/schema/ETag contract and adds separate authenticated
+collector ingress. Real snapshots set `simulated=false`; old M2 firmware rejects
+them, so a minimal separately tested parser/render update is required before a
+future authorized board deployment. Mock devices continue using `simulated=true`.
+See [M3 architecture](M3-ARCHITECTURE.md) for timestamp/TTL, node bindings,
+health policy, UNKNOWN control responses and REAL display semantics.

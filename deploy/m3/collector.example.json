@@ -1,0 +1,10 @@
+{
+  "node_id": "workstation",
+  "gateway_url": "https://gateway.example.invalid:8443",
+  "ca_file": "/ABSOLUTE/PRIVATE/ca.pem",
+  "mount_path": "/var/home",
+  "mount_id": "HOME",
+  "state_file": "/ABSOLUTE/HOME/.local/state/infrabadge-collector/cpu.json",
+  "interval_seconds": 60,
+  "timeout_seconds": 10
+}
