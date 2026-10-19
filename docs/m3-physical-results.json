@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "first_real_display_confirmed_timer_capture_incomplete",
+  "result_directory": "m3-physical-20261019T212131Z",
+  "application": {
+    "sha256": "9311046ba985e95a285404b6824ab3c9ec8da1eebe2003fa007656b4d75debcc",
+    "bytes": 863472,
+    "offset": 65536
+  },
+  "normal_connectivity_profile": true,
+  "app_only_flash_completed": true,
+  "provision_acknowledged": true,
+  "physical_https_200_observed": true,
+  "live_clocked_draw_callback": true,
+  "successful_query_cycle_observed": true,
+  "optical_confirmation": "confirmed_by_operator",
+  "new_m3_timer_return_confirmed": false,
+  "observer_stop_class": "SerialException",
+  "underlying_trial_status": "partial",
+  "controller_close_reason": "agent_cleanup_after_observer_stop",
+  "firmware_restored": false,
+  "cleanup": {
+    "route_priority_5100_absent": true,
+    "gateway_loopback_only": true,
+    "gateway_active": true,
+    "collector_timer_active": true
+  },
+  "electrical_measurements": "DEFERRED",
+  "physical_threshold_transitions": "not_executed",
+  "physical_stale_recovery": "not_executed",
+  "suspend_logout": "not_executed",
+  "panel_no_transfer_proof": "not_executed",
+  "external_phone_test": "omitted_by_user",
+  "operator_observed_m3_real_cpu_ram_disk_clock_expiry": true
+}

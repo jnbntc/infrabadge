@@ -26,17 +26,20 @@ localhost → snapshot M2 y304, sin instalación automática. El usuario autoriz
 después los servicios locales: collector periódico y gateway rootless quedaron
 instalados y activos, con HTTPS sólo en localhost. Se verificaron caducidad,
 recuperación y reinicio del gateway. No se cambió la red ni se habilitó linger.
-La pantalla REAL necesita el pequeño cambio de parser/render en su propio commit;
-el firmware instalado M2 sigue intacto. No se flasheó ni validó ópticamente M3.
+La carga M3 fue autorizada y realizada una vez: la placa recibió HTTPS200 y el
+usuario confirmó métricas reales, REAL, hora verificada y vencimiento en pantalla.
+La captura USB se detuvo al reconectar, por lo que el nuevo retorno por timer
+no quedó confirmado. M3 permanece instalado; los backups M2/fábrica se conservan.
 
 - [Arquitectura, modelo de salud y seguridad](docs/M3-ARCHITECTURE.md).
 - [Pruebas ejecutadas y límites](docs/M3-VALIDATION.md).
 - [Instalación reproducible en Fedora y desinstalación](docs/M3-FEDORA-SETUP.md).
-- [Plan de validación física posterior](docs/M3-PHYSICAL.md).
+- [Prueba física ejecutada, límites y procedimiento](docs/M3-PHYSICAL.md).
 
-La prueba ESP32 se difirió por elección del usuario. La red activa cambió desde
-M2 y Wi-Fi está bloqueado por software; no se presume conectividad de la placa.
-Suspensión/logout reales y mediciones eléctricas continúan pendientes.
+La prueba usó temporalmente la Wi-Fi del laboratorio; la regla de retorno y la
+publicación LAN se retiraron y verificaron al finalizar. El gateway vuelve a
+localhost: no quedó habilitado permanentemente para la placa. Suspensión/logout,
+observación del próximo timer y mediciones eléctricas continúan pendientes.
 
 Referencia **sintética**, generada por el renderizador C real; no es una foto
 ni expone métricas de la notebook:

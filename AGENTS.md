@@ -11,12 +11,25 @@
   timer and rootless gateway on2026-10-19, HTTPS bound to localhost:8443 only.
   New private M3 configuration/certificates and bounded stop/recovery tests of
   these new services are authorized. Preserve original M2 files/backups.
-- Do not change host network/VLAN/VPN/DNS settings, enable linger, provision,
-  reset or flash the board. The user explicitly deferred the ESP32 trial;
-  Wi-Fi was software-blocked and the active wired network has changed since M2.
-  Draft PR only; no merge. Real suspend/logout is not automatically authorized.
-- The physical board remains the frozen M2 diagnostic. M3 REAL support is a
-  separately committed minimal parser/source/render update, not physically loaded.
+- On2026-10-19 the user resumed and explicitly authorized the concrete M3
+  physical plan: one863472B app-only load at0x10000 (SHA9311046b, full hash in
+  M3-PHYSICAL), private provisioning with new M3 CA/fresh trusted UTC, and a
+  temporary selected Wi-Fi IPv4 gateway listener. The matching private plan is
+  referenced by results/m3-physical-plan-active.json; never retry a consumed plan.
+- The only authorized routing exception is priority5100, exact gatewayLAN/32
+  to its connected Wi-Fi subnet, TCP source8443, lookup main, maximum20min with
+  exact cleanup. Restore the original loopback Quadlet after the trial; independent
+  user watchdog bounds LAN publication. No persistent network/VLAN/VPN/DNS/firewall
+  changes or linger. Draft PR only; no merge. Real suspend/logout is not authorized.
+- The authorized run m3-physical-20261019T212131Z loaded the normal M3 app
+  SHA9311046b, provisioned once and observed physical HTTPS200 plus a live/clocked
+  draw callback and OK cycle. No restoration was performed: M3 is installed.
+  The operator explicitly confirmed the real metrics/clock/expiry on screen.
+  The USB observer stopped with SerialException; a new M3 timer return remains
+  unconfirmed. Do not turn this partial capture into a full physical-suite PASS.
+  Exact route removal, loopback-only gateway and active collector were verified.
+  See docs/m3-physical-results.json. No extra write/retry is authorized by the
+  consumed plan; retain its execution marker and private results.
   Preserve M0/M1, HAL, Power Manager, TLS and framebuffer diff.
 - Collector runs on the host with stdlib only; never claim container proc/sys/mounts
   are host metrics. No identifiers/private data in public fixtures/reports.

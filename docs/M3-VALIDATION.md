@@ -93,11 +93,12 @@ intentional: review and later operator deployment are separate decisions.
 
 Initially not executed: actual user timer activation and installed Quadlet lifecycle;
 these were subsequently verified in the explicitly authorized session below.
-Still not executed: suspend/logout scenarios, sustained resource measurements, selected Wi-Fi LAN
-DNS/routing/firewall, real notebook data on ESP32, M3 optical/sleep validation or
-electrical measurements. No host stress, board write, provisioning, board reset,
-erase/eFuse/security change, factory restoration or PR merge was performed.
-The board still has the M2 terminal diagnostic. Follow
+At that earlier stage, Wi-Fi LAN and ESP32 validation were pending; the
+authorized first physical trial below supersedes those pending items for the
+first real-data query and optical observation only. Suspend/logout, sustained
+resource measurements, new M3 timer return and electrical measurements remain
+pending. No host stress, erase/eFuse/security change, factory restoration or PR
+merge has been performed. The board now runs the M3 normal application. Follow
 [M3 physical plan](M3-PHYSICAL.md) only after explicit authorization.
 
 ## Authorized installed-host validation — 2026-10-19
@@ -153,3 +154,47 @@ A collector pause exercises missing-data semantics and CPU gap recovery; it is
 **not evidence of real suspend/resume, logout or device deep sleep**. Those checks
 remain separate. No Wi-Fi/VLAN/VPN/DNS/firewall changes, linger activation, host
 stress, layered RPM installation or firmware operations were performed.
+
+## Physical preparation resumed — 2026-10-19
+
+Pre-trial firmware/source revision ad052cc has all four checks successful: push workflow39279014223
+and PR workflow39279019615, each gateway and seven-profile firmware jobs.
+The reviewed application remains the frozen normal-profile SHA9311046b above;
+no firmware source change was made for the physical runner.
+
+The operator explicitly approved one M3 app-only load, private provisioning and
+maximum20min selected-Wi-Fi publication/exact reply-route exception, followed by
+restoration to localhost. Current Wi-Fi/private-config match, interface-specific
+mDNS, certificate SAN/dates, synchronized host UTC, existing firewall port range,
+rollback packs and factory backup were checked read-only. The initial global
+resolver check selected another interface; the per-Wi-Fi Avahi check resolves the
+selected address without changing DNS. Tailscale return routing still requires
+the approved narrow temporary exception. No physical PASS follows from preflight.
+
+The local trial runner passed Python syntax checks, nine serial-event allowlist
+checks, and two deterministic route-cleanup tests (normal exit and wrong-route
+failure). Those tests used mocks and did not add routes, start a LAN listener,
+open USB, provision or flash. See M3-PHYSICAL for the explicit one-use scope and
+operator procedure. The subsequent execution and optical result are recorded
+below; the new timer return remains unconfirmed. Energy/autonomy remain DEFERRED.
+
+## First controlled ESP32 trial — 2026-10-19
+
+The explicitly authorized one-use trial loaded normal M3 SHA9311046b once and
+received IBPROV_OK. Actual device events then recorded HTTPS200 (transport/TLS
+errors zero), an OK cycle and drawn/live/clocked display callback. These are
+physical ESP32 transport/callback observations, distinct from host requests and
+fixture tests. The operator explicitly confirmed M3/REAL, CPU/RAM/disk, verified
+clock and expiry on the screen. Exact simultaneous numeric agreement was not
+measured. The new timer return was not confirmed: the serial observer stopped with SerialException after the first
+sleep request. No repeated flash, automatic restoration or additional provisioning
+was performed. M3 remains installed; the raw trial stays partial.
+
+The agent closed the waiting parent to trigger authorized cleanup; its
+KeyboardInterrupt is explained separately from the SDK observer failure and must
+not be blamed on the operator. Independent checks confirmed priority5100 absent,
+loopback-only published port, active gateway and active collector timer. Per-case
+records: [M3-PHYSICAL](M3-PHYSICAL.md) and the allowlisted
+[machine-readable index](m3-physical-results.json). Electrical measurements remain
+DEFERRED. No new physical timer, no-transfer, stale/recovery or state-transition
+PASS is inferred from the first query.
