@@ -123,3 +123,56 @@ def test_transport_no_redirect_proxy_or_response_logging(tmp_path, monkeypatch, 
         with pytest.raises(ValueError, match="gateway_rejected"):
             transport.submit(config, token, {"node_id": "workstation"})
     assert observed == [("POST", "/api/v1/collectors/workstation/metrics"), "closed"]
+
+
+@pytest.mark.parametrize("stage", ["lock", "cache"])
+def test_full_state_filesystem_does_not_suppress_disk_alarm(tmp_path, monkeypatch, capsys, stage):
+    import errno
+    import sys
+
+    from infrabadge_collector import cli
+
+    tmp_path.chmod(0o700)
+    state = tmp_path / "cpu.json"
+    config = dict(
+        node_id="workstation",
+        mount_path="/var/home",
+        mount_id="HOME",
+        state_file=str(state),
+        interval_seconds=60,
+    )
+    monkeypatch.setattr(sys, "argv", ["collector", "--config", "unused", "--token-file", "unused"])
+    monkeypatch.setattr(cli, "require_host", lambda: None)
+    monkeypatch.setattr(cli, "load_config", lambda _: config)
+    monkeypatch.setattr(
+        cli, "load_baseline", lambda _: dict(ticks=[1] * 8, logical_cpus=1, uptime=1.0)
+    )
+    observed = []
+
+    def acquire(*args, **kwargs):
+        observed.append(("previous", args[3]))
+        return {"disk": {"available_bytes": 0}}, {"ticks": [2] * 8}
+
+    monkeypatch.setattr(cli, "acquire", acquire)
+    monkeypatch.setattr(
+        cli, "submit", lambda _config, _token, payload: observed.append(("sent", payload))
+    )
+
+    def full(*args, **kwargs):
+        raise OSError(errno.ENOSPC, "PRIVATE PATH MUST NOT BE LOGGED")
+
+    if stage == "cache":
+        monkeypatch.setattr(cli, "save_baseline", full)
+    else:
+        monkeypatch.setattr(cli.os, "open", full)
+    previous_umask = os.umask(0o077)
+    try:
+        assert cli.main() == 0
+    finally:
+        os.umask(previous_umask)
+    assert observed[-1] == ("sent", {"disk": {"available_bytes": 0}})
+    assert (observed[0][1] is None) == (stage == "lock")
+    logs = capsys.readouterr()
+    assert json.loads(logs.err)["error_code"] == "cpu_state_unavailable"
+    assert "PRIVATE PATH" not in logs.err
+    assert json.loads(logs.out)["event"] == "submitted"

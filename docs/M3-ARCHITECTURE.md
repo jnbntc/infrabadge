@@ -34,6 +34,10 @@ parsing. `runtime.py` owns private configuration/CPU-baseline I/O; `transport.py
 owns one POST. Only the CPU counters, CPU count and uptime are persisted. The
 lock prevents overlapping collectors. State is stored before transport: a network
 failure does not make the next delta span several minutes unintentionally.
+If a full/read-only filesystem prevents writing that cache, available metrics are
+still sent with a sanitized warning. If even the lock cannot be created, CPU
+starts as unknown without a shared baseline, while a known disk/RAM alarm can
+still be delivered. An overlapping locked collector is refused normally.
 
 POST `/api/v1/collectors/{node_id}/metrics` accepts exactly:
 

@@ -8,13 +8,14 @@ logs. M3 branch: `feat/m3-fedora-monitoring`, based on integrated main19a9a00.
 
 | Check | Result | Scope |
 | --- | --- | --- |
-| Collector + gateway + integration | **142 passed** | Deterministic fixtures, pytest root config, Python3.14 host venv |
+| Collector + gateway + integration | **144 passed** | Deterministic fixtures, pytest root config, Python3.14 host venv |
 | CPU/memory/load/uptime parsing and deltas | PASS | Guest accounting, decrease/hotplug/gap/warmup, MemAvailable/fallback, invalid/missing/read failures |
 | Disk and hwmon | PASS | statvfs fixture, supported/absent/faulted/unreliable CPU channels; no runner sensor dependency |
 | Authentication and strict ingress | PASS | Role/node isolation, malformed/duplicate/oversize/NaN, range/consistency, UTC, replay/out-of-order, rate spacing |
 | Policy and cache | PASS | CPU confirmation/hysteresis, RAM/disk precedence/recovery, explicit temperature opt-in, UNKNOWN/stale/recovery, expiry before304 |
 | Actual loopback TLS integration | PASS | Fixture acquisition through collector transport, CA/SAN/date checks, M2 contract/304; expired and wrong-host certs rejected |
 | Package and staging | PASS | Byte-reproducible ZIP, isolated Python execution, temporary-home installation, no enable/overwrite, private config preparation |
+| Full state filesystem | PASS | ENOSPC on lock creation or cache write still delivers available disk-alarm metrics; no private exception details logged |
 | Static/format | PASS | Ruff0.14.2, hash-pinned in tools/m3/style.lock; M3/newly modified Python scope |
 | Protocol references | PASS | Existing four M2 fixtures/schema unchanged; six new synthetic M3 wire fixtures |
 | C/sanitizers/visuals | PASS | Existing core/HAL/panel/UI/timer/TLS adapter tests; ASan/UBSan; six M3 actual C decoder/render references; unchanged M2 pixels |
