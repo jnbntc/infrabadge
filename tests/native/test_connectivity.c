@@ -53,7 +53,7 @@ int main(void)
     read_fixture("protocol/fixtures/healthy.json",healthy);read_fixture("protocol/fixtures/critical.json",critical);
     expected_etag[0]='"';memset(expected_etag+1,'a',64);expected_etag[65]='"';expected_etag[66]=0;
     ib_snapshot_t s;assert(ib_snapshot_decode(healthy,strlen(healthy),"badge-lab",&s));
-    assert(s.valid&&s.status==IB_HEALTHY&&s.healthy==12);
+    assert(s.valid&&s.simulated&&s.status==IB_HEALTHY&&s.healthy==12);
     assert(ib_snapshot_fresh(&s,epoch,true));assert(!ib_snapshot_fresh(&s,s.expires_at,true));
     assert(!ib_snapshot_fresh(&s,epoch,false));assert(!ib_snapshot_fresh(&s,s.generated_at-1,true));
     assert(!ib_snapshot_decode(healthy,strlen(healthy),"different-id",&s));
@@ -62,6 +62,9 @@ int main(void)
     for(unsigned i=0;i<2;++i){char body[2049],path[80];snprintf(path,sizeof(path),"protocol/fixtures/%s.json",cases[i]);read_fixture(path,body);assert(ib_snapshot_decode(body,strlen(body),"badge-lab",&s));}
     cJSON *bad=cJSON_Parse(healthy);assert(bad);cJSON_AddNumberToObject(bad,"revision",7);
     char *bad_json=cJSON_PrintUnformatted(bad);assert(!ib_snapshot_decode(bad_json,strlen(bad_json),"badge-lab",&s));
+    cJSON_free(bad_json);cJSON_Delete(bad);
+    bad=cJSON_Parse(healthy);cJSON_ReplaceItemInObjectCaseSensitive(bad,"simulated",cJSON_CreateFalse());
+    bad_json=cJSON_PrintUnformatted(bad);assert(ib_snapshot_decode(bad_json,strlen(bad_json),"badge-lab",&s)&&!s.simulated);
     cJSON_free(bad_json);cJSON_Delete(bad);
     bad=cJSON_Parse(healthy);cJSON_ReplaceItemInObjectCaseSensitive(bad,"simulated",cJSON_CreateNumber(1));
     bad_json=cJSON_PrintUnformatted(bad);assert(!ib_snapshot_decode(bad_json,strlen(bad_json),"badge-lab",&s));

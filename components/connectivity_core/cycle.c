@@ -2,7 +2,7 @@
 #include <string.h>
 static bool same_snapshot(const ib_snapshot_t *a,const ib_snapshot_t *b)
 {
-    if(a->valid!=b->valid||a->generated_at!=b->generated_at||a->expires_at!=b->expires_at||
+    if(a->valid!=b->valid||a->simulated!=b->simulated||a->generated_at!=b->generated_at||a->expires_at!=b->expires_at||
        a->revision!=b->revision||a->status!=b->status||a->healthy!=b->healthy||a->warning!=b->warning||
        a->critical!=b->critical||a->unknown!=b->unknown||a->alert_count!=b->alert_count||strcmp(a->device_id,b->device_id))return false;
     for(unsigned i=0;i<a->alert_count;++i)
