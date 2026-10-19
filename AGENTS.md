@@ -31,6 +31,14 @@
   See docs/m3-physical-results.json. No extra write/retry is authorized by the
   consumed plan; retain its execution marker and private results.
   Preserve M0/M1, HAL, Power Manager, TLS and framebuffer diff.
+- Follow-up lab tools are opt-in: tools/m3/{prepare_observer,check_observer,
+  observe_gateway,provision_session,physical_session}.py and docs/M3-LAB.md.
+  Localhost observer verified,191 Python tests passed; no new physical result.
+  The next session needs its own approval for one UTC provisioning and bounded
+  LAN/route/collector pause; no firmware write path exists. Do not reuse the old
+  execution marker. Keep USB closed during autonomous observations. Gateway
+  request metadata cannot establish exact reset8/wake4 or electrical sleep.
+
 - Collector runs on the host with stdlib only; never claim container proc/sys/mounts
   are host metrics. No identifiers/private data in public fixtures/reports.
 - M3 docs: M3-ARCHITECTURE, M3-VALIDATION, M3-FEDORA-SETUP and M3-PHYSICAL.

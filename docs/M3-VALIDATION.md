@@ -198,3 +198,30 @@ records: [M3-PHYSICAL](M3-PHYSICAL.md) and the allowlisted
 [machine-readable index](m3-physical-results.json). Electrical measurements remain
 DEFERRED. No new physical timer, no-transfer, stale/recovery or state-transition
 PASS is inferred from the first query.
+
+## Autonomous observation tooling — host/fixture validation only
+
+The first physical application/query/screen remains confirmed, while its next
+reset/wake cause remains unconfirmed. New lab tools avoid reopening serial during
+wake; the installed firmware, collector ZIP, gateway image and localhost units
+were not replaced. See [M3-LAB](M3-LAB.md) for scope and commands.
+
+The complete Python suite now passes191 tests (47 new), with pinned Ruff checks
+and format. Real upstream TLS tests reject expired/wrong-SAN certificates; the
+actual installed-gateway test verifies TLS on both localhost hops, fresh REAL200,
+ETag304, authentication401 and an unknown CA. The latter checks the certificate
+verification cause, so a connection refusal cannot count as TLS rejection. No
+hardware or selected LAN listener was used for these new tests.
+
+Synthetic tests cover bounded private records, redirects/oversize/expired/foreign
+payload rejection, role isolation, total request deadline, one TX after USB READY,
+no uncertain retry, exact route selectors and independent cleanup despite a failed
+collector/observer restoration. The planned physical parent uses a separate7min
+collector recovery guard; this was tested with mocks, not triggered on Fedora.
+
+[m3-observer-results.json](m3-observer-results.json) is the public installed-host
+summary. The original physical partial report and operator confirmation remain
+unchanged. New autonomous requests, stale/recovery screens and exact wake cause
+are not claimed until a separately approved session supplies the matching evidence.
+Electrical measurements remain DEFERRED; no dependency upgrade was performed for
+the existing non-failing Starlette TestClient deprecation warning.

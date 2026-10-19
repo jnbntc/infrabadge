@@ -183,3 +183,17 @@ permission for that app-only write. No automatic restoration or erase. A legacy
 firmware ignores the newer snapshot-cache version but retains normal config.
 NVS is plaintext; removing the collector or rolling back firmware does not revoke
 its token. Revoke the collector digest in the gateway as a separate reviewed step.
+
+## Next observation path prepared — no new physical result
+
+[M3-LAB](M3-LAB.md) now defines a separate no-flash session using the installed
+application. The observer records authenticated requests at the gateway and keeps
+USB closed after one separately authorized UTC provisioning. It can exercise
+actual stale-data/recovery with a bounded collector pause. Its localhost path was
+verified against installed real metrics; this is not a new ESP32 result.
+
+The user selected the previous Wi-Fi. Its saved profile was activated once without
+editing it; the actual SSID/mDNS/TLS match was rechecked. A different Fedora profile
+alias does not itself require Wi-Fi reprovisioning. New NVS provisioning and the
+new LAN/routing window still require the concrete session approval, since the
+previous one-use authorization is consumed. No additional flash was performed.

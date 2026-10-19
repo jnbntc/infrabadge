@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "scope": "installed_gateway_to_ephemeral_loopback_observer",
+  "fresh_real_snapshot": true,
+  "verified_tls_both_hops": true,
+  "etag_304": true,
+  "auth_401": true,
+  "unknown_ca_rejected": true,
+  "board_accessed": false,
+  "selected_lan_bound": false,
+  "installed_services_changed": false,
+  "exact_wake_cause_verified": false,
+  "electrical_measurements": "DEFERRED"
+}

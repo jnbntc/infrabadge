@@ -35,6 +35,7 @@ no quedó confirmado. M3 permanece instalado; los backups M2/fábrica se conserv
 - [Pruebas ejecutadas y límites](docs/M3-VALIDATION.md).
 - [Instalación reproducible en Fedora y desinstalación](docs/M3-FEDORA-SETUP.md).
 - [Prueba física ejecutada, límites y procedimiento](docs/M3-PHYSICAL.md).
+- [Laboratorio autónomo sin otra carga de firmware](docs/M3-LAB.md).
 
 La prueba usó temporalmente la Wi-Fi del laboratorio; la regla de retorno y la
 publicación LAN se retiraron y verificaron al finalizar. El gateway vuelve a
