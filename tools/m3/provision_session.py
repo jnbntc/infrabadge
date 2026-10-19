@@ -47,6 +47,47 @@ def provision_channel(channel, value, state, persist, deadline):
     raise RuntimeError("provision_ack_not_observed_no_retry")
 
 
+def await_provision(ports, connect, value, state, persist, deadline, recoverable):
+    """Reconnect only BEFORE any TX; never reuse a handle across deep sleep."""
+    identity = None
+    while time.monotonic() < deadline:
+        found = ports()
+        if not found:
+            time.sleep(0.1)
+            continue
+        candidate = found[0].serial_number
+        if not candidate or (identity is not None and candidate != identity):
+            raise RuntimeError("usb_identity_missing_or_changed")
+        identity = candidate  # In memory only; never persist hardware identifiers.
+        channel = None
+        try:
+            channel = connect(found[0].device)
+            state["serial_opened"] = True
+            state["pre_tx_opens"] = state.get("pre_tx_opens", 0) + 1
+            persist()
+            provision_channel(channel, value, state, persist, deadline)
+            return channel
+        except recoverable:
+            if channel:
+                channel.close()
+            if state["attempted"]:
+                raise  # TX may have reached the board: no reopen or resend.
+            state["pre_tx_disconnects"] = state.get("pre_tx_disconnects", 0) + 1
+            persist()
+            if state["pre_tx_disconnects"] >= 4:
+                raise RuntimeError("pre_tx_usb_unstable_no_configuration_sent") from None
+            print(
+                "USB reconectando antes del envío; mantené BOOT hasta Configuración enviada.",
+                flush=True,
+            )
+            time.sleep(0.2)
+        except BaseException:
+            if channel:
+                channel.close()
+            raise
+    raise RuntimeError("pre_tx_deadline_no_configuration_sent")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--private", type=Path, required=True)
@@ -97,34 +138,36 @@ def main():
                 "LISTO BOOT: mantené BOOT pulsado hasta Configuración enviada y soltalo. No PWR/reset.",
                 flush=True,
             )
-            end = time.monotonic() + 45
-            found = []
-            while time.monotonic() < end:
-                found = ports()
-                if found:
-                    break
-                time.sleep(0.1)
-            if not found:
-                raise RuntimeError("usb_setup_wake_not_observed")
-            time.sleep(0.3)
-            channel = serial.Serial(
-                port=None, baudrate=115200, timeout=0.2, write_timeout=3, exclusive=True
-            )
-            channel.port = found[0].device
-            channel.dtr = False
-            channel.rts = False
-            channel.open()
-            state["serial_opened"] = True
-            save(record, state)
             stamp = json.loads((args.out / "host-preflight.json").read_text())
             if not 0 <= time.time() - stamp["utc_checked_epoch"] < 180:
                 raise RuntimeError("host_utc_preflight_too_old")
-            provision_channel(
-                channel,
+
+            def connect(port):
+                candidate = serial.Serial(
+                    port=None,
+                    baudrate=115200,
+                    timeout=0.2,
+                    write_timeout=3,
+                    exclusive=True,
+                )
+                candidate.port = port
+                candidate.dtr = False
+                candidate.rts = False
+                try:
+                    candidate.open()
+                except BaseException:
+                    candidate.close()
+                    raise
+                return candidate
+
+            channel = await_provision(
+                ports,
+                connect,
                 read_private(args.private / "device.json"),
                 state,
                 lambda: save(record, state),
-                time.monotonic() + 40,
+                time.monotonic() + 60,
+                (serial.SerialException, OSError),
             )
             print(
                 "IBPROV_OK. Esperando cierre USB; no se volverá a abrir durante la prueba autónoma.",

@@ -1,0 +1,15 @@
+{
+  "status": "stopped_before_configuration_tx",
+  "scope": "authorized_m3_no_flash_observation",
+  "firmware_written": false,
+  "configuration_attempted": false,
+  "provision_ack": false,
+  "serial_opened": true,
+  "stop_class": "SerialException",
+  "autonomous_phase_started": false,
+  "route_cleanup_confirmed": true,
+  "collector_restored": true,
+  "observer_stopped": true,
+  "exact_wake_cause_verified": false,
+  "electrical_measurements": "DEFERRED"
+}

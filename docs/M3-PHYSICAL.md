@@ -197,3 +197,17 @@ editing it; the actual SSID/mDNS/TLS match was rechecked. A different Fedora pro
 alias does not itself require Wi-Fi reprovisioning. New NVS provisioning and the
 new LAN/routing window still require the concrete session approval, since the
 previous one-use authorization is consumed. No additional flash was performed.
+
+## Follow-up observation stopped before provisioning
+
+The separately authorized no-flash session `m3-observation-20261019T224036Z`
+opened serial, then stopped with SerialException before READY/configuration TX.
+`attempted=false`, `ack=false`; no configuration or firmware write was attempted.
+No autonomous query, stale screen, recovery screen or timer cause is established.
+Exact route removal, observer termination and active collector were confirmed;
+independent checks found onlylocalhost gateway publication. Historical results
+remain intact. [Allowlisted attempt index](m3-observation-attempt.json).
+
+A continuation may preserve this consumed marker and use a new linked record
+under the same still-unused one-provision authorization, only after verifying
+that no TX/ACK occurred. An uncertain TX must never qualify for this continuation.

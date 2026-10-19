@@ -6,12 +6,13 @@ import json
 import subprocess
 import time
 from collections import deque
+from types import SimpleNamespace
 
 import physical_session
 import prepare_observer
 import pytest
 from infrabadge_gateway.lab import certificates
-from provision_session import provision_channel
+from provision_session import await_provision, provision_channel
 
 
 def config():
@@ -29,10 +30,58 @@ def config():
     )
 
 
+@pytest.mark.parametrize("field", [None, "attempted", "ack", "firmware_written"])
+def test_continuation_requires_proven_zero_tx(tmp_path, field):
+    tmp_path.chmod(0o700)
+    prior, out, current = (tmp_path / n for n in ("prior", "out", "current"))
+    for p in (prior, out, current):
+        p.mkdir(mode=0o700)
+    scope = dict(
+        interface="wifi",
+        address="192.0.2.1",
+        network="192.0.2.0/24",
+        hostname="lab.local",
+        maximum_seconds=1200,
+        route_priority=5100,
+        tcp_source_port=8443,
+        board_flash_permitted=False,
+        provision_count=1,
+    )
+    proof = dict(attempted=False, ack=False, firmware_written=False)
+    if field:
+        proof[field] = True
+    for path, value in [
+        (prior / "continuation.json", dict(private=str(current))),
+        (prior / "execution.json", dict(results=str(out))),
+        (prior / "plan.json", scope),
+        (out / "provision.json", proof),
+        (
+            out / "result.json",
+            dict(
+                phase="finished",
+                collector_restored=True,
+                observer_stopped=True,
+                route_cleanup_confirmed=True,
+            ),
+        ),
+    ]:
+        prepare_observer.write_private(path, value)
+    plan = dict(scope, continuation_of=str(prior))
+    if field:
+        with pytest.raises(RuntimeError, match="proven_zero_tx"):
+            physical_session.check_continuation(current, plan)
+    else:
+        physical_session.check_continuation(current, plan)
+        plan["maximum_seconds"] = 1201
+        with pytest.raises(RuntimeError, match="same_scope"):
+            physical_session.check_continuation(current, plan)
+
+
 class Channel:
     def __init__(self, lines):
         self.lines = deque(lines)
         self.transmitted = []
+        self.closed = False
 
     def readline(self, _size):
         value = self.lines.popleft() if self.lines else b""
@@ -46,15 +95,119 @@ class Channel:
     def flush(self):
         pass
 
+    def close(self):
+        self.closed = True
+
+
+def test_reconnect_before_tx_only_with_same_identity():
+    broken = Channel([OSError("private path")])
+    ready = Channel([b"IBPROV_READY", b"IBPROV_OK"])
+    channels = deque([broken, ready])
+    port = SimpleNamespace(device="fixture-port", serial_number="private-id")
+    state = dict(attempted=False, ack=False)
+    result = await_provision(
+        lambda: [port],
+        lambda _: channels.popleft(),
+        config(),
+        state,
+        lambda: None,
+        time.monotonic() + 2,
+        (OSError,),
+    )
+    assert result is ready and broken.closed and not ready.closed
+    assert len(ready.transmitted) == 1 and not broken.transmitted
+    assert state["pre_tx_opens"] == 2 and state["pre_tx_disconnects"] == 1
+
+
+def test_disconnect_after_tx_never_reopens():
+    broken = Channel([b"IBPROV_READY", OSError("private path")])
+    port = SimpleNamespace(device="fixture-port", serial_number="private-id")
+    calls = []
+    state = dict(attempted=False, ack=False)
+
+    def connect(_):
+        calls.append(True)
+        return broken
+
+    with pytest.raises(OSError):
+        await_provision(
+            lambda: [port],
+            connect,
+            config(),
+            state,
+            lambda: None,
+            time.monotonic() + 2,
+            (OSError,),
+        )
+    assert state["attempted"] and not state["ack"]
+    assert len(calls) == 1 and len(broken.transmitted) == 1 and broken.closed
+
+
+def test_reconnect_rejects_changed_board_before_tx():
+    identities = deque(["first-private-id", "other-private-id"])
+    broken = Channel([OSError("disconnected")])
+    calls = []
+
+    def ports():
+        return [SimpleNamespace(device="fixture-port", serial_number=identities.popleft())]
+
+    def connect(_):
+        calls.append(True)
+        return broken
+
+    with pytest.raises(RuntimeError, match="usb_identity_missing_or_changed"):
+        await_provision(
+            ports,
+            connect,
+            config(),
+            dict(attempted=False, ack=False),
+            lambda: None,
+            time.monotonic() + 2,
+            (OSError,),
+        )
+    assert len(calls) == 1 and not broken.transmitted
+
+
+def test_pre_tx_reconnections_bounded():
+    calls = []
+    port = SimpleNamespace(device="fixture-port", serial_number="private-id")
+
+    def connect(_):
+        calls.append(True)
+        raise OSError("unavailable")
+
+    state = dict(attempted=False, ack=False)
+    with pytest.raises(RuntimeError, match="pre_tx_usb_unstable"):
+        await_provision(
+            lambda: [port],
+            connect,
+            config(),
+            state,
+            lambda: None,
+            time.monotonic() + 2,
+            (OSError,),
+        )
+    assert len(calls) == 4 and not state["attempted"]
+
 
 def test_ready_only_one_tx_repeated_ready_and_no_raw_log(capsys):
     channel = Channel(
-        [b"raw private console data", b"IBPROV_OK", b"IBPROV_READY", b"IBPROV_READY", b"IBPROV_OK"]
+        [
+            b"raw private console data",
+            b"IBPROV_OK",
+            b"IBPROV_READY",
+            b"IBPROV_READY",
+            b"IBPROV_OK",
+        ]
     )
     state = dict(attempted=False, ack=False)
     saved = []
     provision_channel(
-        channel, config(), state, lambda: saved.append(copy.deepcopy(state)), time.monotonic() + 1
+        channel,
+        config(),
+        state,
+        lambda: saved.append(copy.deepcopy(state)),
+        time.monotonic() + 1,
     )
     assert state == dict(attempted=True, ack=True)
     assert len(channel.transmitted) == 1 and channel.transmitted[0].startswith(b"IBPROV1 ")
@@ -205,7 +358,12 @@ def test_physical_plan_checks_ssid_not_connection_alias(tmp_path, monkeypatch):
                 [
                     dict(
                         addr_info=[
-                            dict(family="inet", scope="global", local="192.0.2.10", prefixlen=24)
+                            dict(
+                                family="inet",
+                                scope="global",
+                                local="192.0.2.10",
+                                prefixlen=24,
+                            )
                         ]
                     )
                 ]

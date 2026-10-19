@@ -206,7 +206,7 @@ reset/wake cause remains unconfirmed. New lab tools avoid reopening serial durin
 wake; the installed firmware, collector ZIP, gateway image and localhost units
 were not replaced. See [M3-LAB](M3-LAB.md) for scope and commands.
 
-The complete Python suite now passes191 tests (47 new), with pinned Ruff checks
+The complete Python suite now passes199 tests (55 new), with pinned Ruff checks
 and format. Real upstream TLS tests reject expired/wrong-SAN certificates; the
 actual installed-gateway test verifies TLS on both localhost hops, fresh REAL200,
 ETag304, authentication401 and an unknown CA. The latter checks the certificate

@@ -135,7 +135,7 @@ permanent LAN deployment is outside this bounded approval.
 
 ## Validation performed
 
-- 191 Python tests passed, including47 new observer/session cases: role/path
+- 199 Python tests passed, including47 new observer/session cases: role/path
   isolation, duplicate auth, fixed upstream/header forwarding, malformed/oversized/
   expired/foreign/simulated replies, ETag/304 and TTL, total timeout, CA/SAN/dates,
   wildcard rejection, private bounded journal, one configuration TX, SSID-versus-
@@ -144,6 +144,23 @@ permanent LAN deployment is outside this bounded approval.
 - Actual installed Fedora gateway through a temporary localhost HTTPS observer:
   REAL200,304,401 and unknown-CA rejection passed with both TLS hops verified.
   Public allowlisted summary: [m3-observer-results.json](m3-observer-results.json).
-- The new physical session has only been prepared/previewed, not executed or
-  authorized by the earlier consumed plan. First M3 hardware evidence remains in
-  [M3-PHYSICAL](M3-PHYSICAL.md) and [its index](m3-physical-results.json).
+- The explicitly authorized observation session stopped before sending any
+  configuration: serial open succeeded, then SerialException occurred before
+  READY. All three cleanup checks passed. No autonomous query or new screen
+  evidence was collected; see [attempt index](m3-observation-attempt.json).
+- The helper now tolerates up to four connection failures within60s only before
+  its first TX, binding the same hardware identity privately in memory. After any
+  TX, an exception stops without reopening/resending. Four additional tests cover
+  pre-TX reconnect, changed identity, bounds, and post-TX refusal. No firmware
+  change was needed.
+
+USB disappearance during deep sleep is documented by [Espressif](https://docs.espressif.com/projects/esp-idf/en/v5.5.1/esp32s3/api-guides/usb-serial-jtag-console.html).
+The failed open/read alone does not establish its cause; the bounded pre-TX
+reconnection handles enumeration loss without claiming a reset or hardware fault.
+
+A zero-TX continuation uses a new private folder linked by `continuation_of` and
+an exclusive parent `continuation.json`. The runner rechecks the prior attempt
+has `attempted=false`, `ack=false`, no firmware write, completed cleanup and the
+same interface/address/network/port/time/provisioning scope. Any prior TX/ACK or
+changed scope is rejected. It never removes or reuses an execution marker. Four
+additional tests cover this guard, including refusal after an uncertain TX.

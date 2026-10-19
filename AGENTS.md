@@ -33,8 +33,12 @@
   Preserve M0/M1, HAL, Power Manager, TLS and framebuffer diff.
 - Follow-up lab tools are opt-in: tools/m3/{prepare_observer,check_observer,
   observe_gateway,provision_session,physical_session}.py and docs/M3-LAB.md.
-  Localhost observer verified,191 Python tests passed; no new physical result.
-  The next session needs its own approval for one UTC provisioning and bounded
+  Localhost observer verified,199 Python tests passed. The separately approved
+  no-flash session224036Z stopped before any TX (SerialException); cleanup passed.
+  See docs/m3-observation-attempt.json. Preserve its consumed marker; one-provision
+  authorization remains unused. A new linked continuation must verify no TX/ACK
+  and unchanged scope. Never continue an uncertain TX automatically.
+  The user approved one UTC provisioning and bounded
   LAN/route/collector pause; no firmware write path exists. Do not reuse the old
   execution marker. Keep USB closed during autonomous observations. Gateway
   request metadata cannot establish exact reset8/wake4 or electrical sleep.

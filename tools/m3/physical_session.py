@@ -36,6 +36,43 @@ def save(path, value):
     os.replace(temporary, path)
 
 
+def check_continuation(private, plan):
+    """A consumed attempt can continue only when its configuration TX never began."""
+    if "continuation_of" not in plan:
+        return
+    from prepare_observer import private_bytes
+
+    prior = Path(plan["continuation_of"])
+    link = json.loads(private_bytes(prior / "continuation.json", 8192))
+    execution = json.loads(private_bytes(prior / "execution.json", 8192))
+    out = Path(execution["results"])
+    provision = json.loads(private_bytes(out / "provision.json", 8192))
+    result = json.loads(private_bytes(out / "result.json", 8192))
+    old_plan = json.loads(private_bytes(prior / "plan.json", 8192))
+    scope = (
+        "interface",
+        "address",
+        "network",
+        "hostname",
+        "maximum_seconds",
+        "route_priority",
+        "tcp_source_port",
+        "board_flash_permitted",
+        "provision_count",
+    )
+    if (
+        link.get("private") != str(private)
+        or any(provision.get(k) is not False for k in ("attempted", "ack", "firmware_written"))
+        or result.get("phase") != "finished"
+        or any(
+            result.get(k) is not True
+            for k in ("collector_restored", "observer_stopped", "route_cleanup_confirmed")
+        )
+        or any(plan[k] != old_plan[k] for k in scope)
+    ):
+        raise RuntimeError("continuation_requires_proven_zero_tx_and_same_scope")
+
+
 def route_child(interface, address, network):
     from try_local_route import check_scope, reply_route, rule_command
 
@@ -144,6 +181,7 @@ def main():
         raise RuntimeError("wrong_session_scope")
     if (args.private / "execution.json").exists():
         raise RuntimeError("session_consumed_no_retry")
+    check_continuation(args.private, plan)
     if not args.authorized_m3_observation:
         print(
             "Preview: one UTC provisioning, temporary LAN/route, collector pause/recovery. No firmware load or service changes executed."
