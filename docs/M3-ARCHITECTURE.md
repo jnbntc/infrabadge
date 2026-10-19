@@ -159,8 +159,10 @@ renderer unconditionally printed SIM. Commit 5600c99 isolates the necessary
 firmware change: accept a strict boolean, preserve source, reuse M1 alert geometry
 for node/CPU/RAM/disk/temperature/sample UTC, show REAL and expiry. Mock SIM pixels
 remain unchanged. M0/M1/HAL/Power Manager/radio/TLS are preserved.
-The installed frozen M2 diagnostic **does not support real snapshots**; it is not
-silently upgraded. New firmware is compiled only, not loaded.
+The historical frozen M2 diagnostic **does not support real snapshots**. A single
+explicitly authorized app-only load installed the normal M3 application, followed
+by confirmed real-data display and a separate no-flash stale/recovery trial.
+See [M3-PHYSICAL](M3-PHYSICAL.md); this evidence does not authorize another load.
 
 Snapshot NVS format is version2 to avoid interpreting legacy padding as REAL.
 Version1 snapshot cache is refused even with a valid CRC; normal configuration

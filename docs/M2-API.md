@@ -132,7 +132,8 @@ del sueño en una recuperación. El caso expired sigue entregando datos vencidos
 
 M3 preserves this M2 endpoint/schema/ETag contract and adds separate authenticated
 collector ingress. Real snapshots set `simulated=false`; old M2 firmware rejects
-them, so a minimal separately tested parser/render update is required before a
-future authorized board deployment. Mock devices continue using `simulated=true`.
+them. The minimal separately tested parser/render update was explicitly loaded
+in the M3 physical trial; other historical M2 devices still need that update
+before consuming real snapshots. Mock devices continue using `simulated=true`.
 See [M3 architecture](M3-ARCHITECTURE.md) for timestamp/TTL, node bindings,
 health policy, UNKNOWN control responses and REAL display semantics.

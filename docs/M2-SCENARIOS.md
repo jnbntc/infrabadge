@@ -64,13 +64,13 @@ Primero se puede verificar sin cambiar nada, mientras el gateway original sigue
 activo:
 
 ```sh
-/var/home/juanb/.local/share/infrabadge-lab/phase-a-20261017T220757Z/venv/bin/python /var/home/juanb/Proyectos/infrabadge/tools/m2/scenario_session.py --plan
+$HOME/.local/share/infrabadge-lab/phase-a-20261017T220757Z/venv/bin/python $HOME/Proyectos/infrabadge/tools/m2/scenario_session.py --plan
 ```
 
 Ejecutar en una terminal normal, con el puerto8443 libre:
 
 ```sh
-/var/home/juanb/.local/share/infrabadge-lab/phase-a-20261017T220757Z/venv/bin/python /var/home/juanb/Proyectos/infrabadge/tools/m2/scenario_session.py --authorized-scenarios
+$HOME/.local/share/infrabadge-lab/phase-a-20261017T220757Z/venv/bin/python $HOME/Proyectos/infrabadge/tools/m2/scenario_session.py --authorized-scenarios
 ```
 
 Iniciar SIN sudo; sólo el hijo que mantiene la regla necesita sudo. La venv ya
@@ -96,7 +96,7 @@ si el puerto sigue ocupado tras un fallo; requiere revisión en ese caso.
 Sólo si esa restauración no pudo iniciarse, el comando manual de recuperación es:
 
 ```sh
-/var/home/juanb/.local/share/infrabadge-lab/phase-a-20261017T220757Z/venv/bin/python /var/home/juanb/Proyectos/infrabadge/tools/m2/phase_a.py --serve-saved --private /var/home/juanb/.local/share/infrabadge-lab/phase-a-20261017T220757Z --result /var/home/juanb/Proyectos/infrabadge/results/m2-phase-a-20261017T220757Z
+$HOME/.local/share/infrabadge-lab/phase-a-20261017T220757Z/venv/bin/python $HOME/Proyectos/infrabadge/tools/m2/phase_a.py --serve-saved --private $HOME/.local/share/infrabadge-lab/phase-a-20261017T220757Z --result $HOME/Proyectos/infrabadge/results/m2-phase-a-20261017T220757Z
 ```
 
 Reiniciar el gateway vacía la caché/revisión en memoria: no interpretar el nuevo

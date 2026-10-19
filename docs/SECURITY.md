@@ -2,8 +2,13 @@
 
 M2 protege transporte e integridad lógica en un laboratorio con host y operador
 confiables. No habilita Secure Boot, Flash Encryption, eFuses ni almacenamiento
-resistente a extracción física. El backup privado se preserva; la placa conserva
-el diagnóstico M2 terminal. M3 no ha cargado firmware ni aprovisionado la placa.
+resistente a extracción física. El backup privado se preserva. El diagnóstico M2
+terminal fue reemplazado por
+la aplicación normal M3 en una prueba expresamente autorizada. M3 confirmó
+métricas reales, caducidad y recuperación en pantalla; las cargas y provisiones
+consumidas no autorizan repeticiones. Véanse [M3-PHYSICAL](M3-PHYSICAL.md) y
+[m3-observation-results.json](m3-observation-results.json). El gateway operativo
+vuelve a localhost; no hay exposición LAN permanente autorizada.
 
 ## Transporte y tiempo
 

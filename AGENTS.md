@@ -20,7 +20,11 @@
   to its connected Wi-Fi subnet, TCP source8443, lookup main, maximum20min with
   exact cleanup. Restore the original loopback Quadlet after the trial; independent
   user watchdog bounds LAN publication. No persistent network/VLAN/VPN/DNS/firewall
-  changes or linger. Draft PR only; no merge. Real suspend/logout is not authorized.
+  changes or linger. The user authorized the closing audit and marking PR #4 Ready after a
+  satisfactory review. Merge still needs a new explicit authorization. Only after
+  that merge may feat/m3.1-lan-deployment start. Do not change the installed board,
+  gateway or host configuration during this audit. Real suspend/logout remains
+  unauthorized.
 - The authorized run m3-physical-20261019T212131Z loaded the normal M3 app
   SHA9311046b, provisioned once and observed physical HTTPS200 plus a live/clocked
   draw callback and OK cycle. No restoration was performed: M3 is installed.

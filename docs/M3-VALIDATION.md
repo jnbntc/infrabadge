@@ -33,7 +33,7 @@ workflow with the full Python suite, fixture checks, Ruff and ZIP/unit validatio
 CI state belongs to the **exact PR head checks**, not a permanently copied green
 badge or the older M2 run. Local results above are not asserted to be GitHub CI.
 
-## Local firmware artifacts (not installed)
+## Local firmware artifacts (normal app subsequently installed)
 
 Firmware change isolated in commit `5600c99`. The full local seven-profile build
 ran after that commit. Later changes are Python/deployment/documentation; they do
@@ -89,7 +89,8 @@ to exercise that wire/display mode. They are not captures of the physical screen
 
 The software path and actual Fedora-to-local-gateway path are exercised. Functional
 readiness also requires green checks on the current PR head. Draft status is
-intentional: review and later operator deployment are separate decisions.
+historical for the development stage: the closing audit may mark Ready for review,
+while merge still requires explicit operator authorization.
 
 Initially not executed: actual user timer activation and installed Quadlet lifecycle;
 these were subsequently verified in the explicitly authorized session below.
@@ -244,3 +245,10 @@ seven firmware profiles and C/ASan/UBSan/visual regression. This final evidence
 update changes documentation only; check its head separately. Exact M3 wake
 registers, physical304/no-transfer, threshold forcing, numeric agreement,
 suspend/logout and electrical measurements remain outside this result.
+
+## Closing audit
+
+See [M3-AUDIT](M3-AUDIT.md) for code/security review, bounded secret/advisory
+checks, documentation/privacy corrections and current integration gates. The
+audit does not change installed services or firmware and does not authorize merge.
+M3.1 starts only after explicit merge approval and verification of main.

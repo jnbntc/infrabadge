@@ -9,4 +9,6 @@
 Los ejemplos completos Waveshare, SensorLib, LVGL, drivers de audio/touch/SD y
 firmware de fábrica no se incorporan. Los decodificadores RTC/SHTC3 se implementan
 con el contrato de sus datasheets; la fuente 5×7 y el renderizado son originales.
-La licencia del código original de InfraBadge se elegirá antes de publicar.
+La licencia global del código original de InfraBadge sigue pendiente. Publicar el
+repositorio no sustituye esa decisión; los permisos de terceros indicados arriba
+se aplican únicamente a sus respectivos materiales.

@@ -36,6 +36,7 @@ los backups M2/fábrica se conservan.
 
 - [Arquitectura, modelo de salud y seguridad](docs/M3-ARCHITECTURE.md).
 - [Pruebas ejecutadas y límites](docs/M3-VALIDATION.md).
+- [Auditoría final y autorización de integración](docs/M3-AUDIT.md).
 - [Instalación reproducible en Fedora y desinstalación](docs/M3-FEDORA-SETUP.md).
 - [Prueba física ejecutada, límites y procedimiento](docs/M3-PHYSICAL.md).
 - [Laboratorio autónomo sin otra carga de firmware](docs/M3-LAB.md).
@@ -143,9 +144,9 @@ cerró tres retornos por timer sólo con batería, con su perfil de diagnóstico
 
 ```bash
 # Tests, regresiones de los tres perfiles M0 y compilación M1; sin tocar la placa:
-bash /var/home/juanb/Proyectos/infrabadge/tools/build-m1.sh --all
+bash $HOME/Proyectos/infrabadge/tools/build-m1.sh --all
 # Sólo M1, manteniendo los tests nativos y visuales:
-bash /var/home/juanb/Proyectos/infrabadge/tools/build-m1.sh
+bash $HOME/Proyectos/infrabadge/tools/build-m1.sh
 ```
 
 El binario M1 se genera en `build-m1/ui/infrabadge.bin`; no es una imagen fusionada:
@@ -193,7 +194,7 @@ dibujado por el simulador o una imagen retenida no es evidencia física de la se
 Desde la carpeta local del host, usando el `iot-dev` Distrobox ya preparado:
 
 ```bash
-bash /var/home/juanb/Proyectos/infrabadge/tools/build.sh all
+bash $HOME/Proyectos/infrabadge/tools/build.sh all
 ```
 
 Dentro de un shell ESP-IDF ya activado se usa el mismo script, sin Distrobox:
