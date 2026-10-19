@@ -21,6 +21,7 @@ logs. M3 branch: `feat/m3-fedora-monitoring`, based on integrated main19a9a00.
 | NVS cache regression | PASS | Production store with fake NVS rejects version1 even with valid CRC, preserves REAL/SIM in version2 and rejects corruption |
 | All seven ESP-IDF profiles | PASS | M0 display/sensors/sleep, M1 UI, M1.1 timer, normal M2 and autonomous M2; ESP32-S3/8MB, security options checked |
 | systemd unit syntax | PASS | systemd-analyze verify, both user units; **not** a real service activation test |
+| Rootless Quadlet generation | PASS | Isolated QUADLET_UNIT_DIRS, generator --user --dryrun; expected read-only/loopback unit generated, nothing installed/started |
 | Real Fedora acquisition → ephemeral HTTPS | PASS | Actual host CPU/RAM/disk/uptime; compatible CPU sensor available; authenticated ingest, M2/304 and wrong-role401 |
 | Real Fedora → rootless container HTTPS | PASS | Non-root read-only container, explicit CA/SAN, localhost-only random port, no collector secret mounted; removed at exit |
 

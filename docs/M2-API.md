@@ -1,7 +1,10 @@
 # Contrato HTTPS v1 (M2)
 
-Gateway exclusivamente simulado: no collectors, base de datos ni integraciones
-Prometheus/Wazuh/Restic. Python ≥3.11; dependencias directas fijadas en
+En el alcance original M2, el gateway es simulado, sin collectors ni base de datos.
+La extensión [M3](M3-ARCHITECTURE.md) conserva este contrato y agrega datos reales
+con `simulated=false`, mediante credenciales de collector separadas. El firmware
+histórico M2 requiere el pequeño cambio de parser/render M3 antes de consumirlos.
+Sin integraciones Prometheus/Wazuh/Restic. Python ≥3.11; dependencias fijadas en
 `gateway/requirements.in`, resolución transitiva y hashes en `requirements.lock`.
 No se agregan dependencias Python al entorno del SDK.
 
@@ -29,7 +32,7 @@ Campos obligatorios, sin extras ni duplicados:
 | schema_version | Entero 1 |
 | device_id | Coincide con la identidad aprovisionada |
 | revision | Entero 1..2147483647; cambia con nueva representación |
-| simulated | Booleano true; datos reales fuera de alcance M2 |
+| simulated | Booleano estricto; true en M2 simulado, false en la extensión M3 |
 | generated_at / expires_at | Enteros Unix UTC 1577836800..4102444800; TTL 1..3600 s |
 | status | HEALTHY, WARNING, CRITICAL, OFFLINE o UNKNOWN |
 | counts | healthy/warning/critical/unknown 0..999; total 1..999 |
@@ -125,7 +128,7 @@ interna, no un parámetro HTTP que acepte el dispositivo. Sólo el laboratorio
 autónomo selecciona3600s para durar más de30min sin forzar una reducción legítima
 del sueño en una recuperación. El caso expired sigue entregando datos vencidos.
 304 no extiende la vigencia y no cambia el lease de hora del firmware.
-# M3 compatibility note
+## M3 compatibility note
 
 M3 preserves this M2 endpoint/schema/ETag contract and adds separate authenticated
 collector ingress. Real snapshots set `simulated=false`; old M2 firmware rejects

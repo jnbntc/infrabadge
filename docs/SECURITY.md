@@ -2,7 +2,8 @@
 
 M2 protege transporte e integridad lógica en un laboratorio con host y operador
 confiables. No habilita Secure Boot, Flash Encryption, eFuses ni almacenamiento
-resistente a extracción física. Firmware instalado M1.1 y backup privado intactos.
+resistente a extracción física. El backup privado se preserva; la placa conserva
+el diagnóstico M2 terminal. M3 no ha cargado firmware ni aprovisionado la placa.
 
 ## Transporte y tiempo
 
@@ -67,7 +68,7 @@ claves privadas, tokens operativos ni logs físicos.
 Referencias oficiales: [HTTP Client ESP-IDF 5.5.5](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/protocols/esp_http_client.html),
 [System Time](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/system/system_time.html),
 [NVS y límites físicos](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/storage/nvs_flash.html).
-# M3 extension
+## M3 extension
 
 The M3 collector uses a separate scoped credential, verified HTTPS and bounded
 strict ingress. It never receives commands or uses container sockets. Host-only
