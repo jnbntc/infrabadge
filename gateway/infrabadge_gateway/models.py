@@ -1,13 +1,10 @@
 from typing import Annotated, Literal
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import Field, model_validator
+from .base import DeviceId, Epoch, Strict
+from .metrics import Collector
 
-DeviceId = Annotated[str, Field(pattern=r'^[a-z0-9][a-z0-9_-]{0,31}$')]
 State = Literal['HEALTHY', 'WARNING', 'CRITICAL', 'OFFLINE', 'UNKNOWN']
-Epoch = Annotated[int, Field(ge=1577836800, le=4102444800)]
 Count = Annotated[int, Field(ge=0, le=999)]
-
-class Strict(BaseModel):
-    model_config = ConfigDict(extra='forbid', strict=True)
 
 class Counts(Strict):
     healthy: Count
@@ -32,8 +29,6 @@ class Snapshot(Strict):
 
     @model_validator(mode='after')
     def consistency(self):
-        if self.simulated is not True:
-            raise ValueError('M2 only accepts simulated data')
         c = self.counts
         if not 0 < c.healthy + c.warning + c.critical + c.unknown <= 999:
             raise ValueError('invalid total')
@@ -45,6 +40,7 @@ class Snapshot(Strict):
         return self
 
 class Device(Strict):
+    node_id: DeviceId | None = None
     token_sha256: Annotated[list[str], Field(min_length=1, max_length=2)]
     scenario: State = 'HEALTHY'
     fault: Literal['json','oversize','expired','version','auth','http'] | None = None
@@ -59,3 +55,17 @@ class Device(Strict):
 class GatewayConfig(Strict):
     devices: dict[DeviceId, Device]
     enable_faults: bool = False
+    collectors: dict[DeviceId, Collector] = Field(default_factory=dict)
+
+    @model_validator(mode='after')
+    def identities(self):
+        credentials = []
+        for device in self.devices.values():
+            if device.node_id is not None and (device.node_id not in self.collectors or device.fault is not None):
+                raise ValueError('real device requires configured collector and no fault injection')
+            credentials.extend(device.token_sha256)
+        for collector in self.collectors.values():
+            credentials.extend(collector.token_sha256)
+        if len(set(credentials)) != len(credentials):
+            raise ValueError('credentials must be unique across identities and roles')
+        return self

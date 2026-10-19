@@ -48,7 +48,7 @@ def test_fixtures(state):
     assert len(snapshot.model_dump_json())<2048
 
 @pytest.mark.parametrize('mutation',[{'schema_version':True},{'schema_version':1.0},{'simulated':1},{'schema_version':2},{'device_id':'bad/id'},{'expires_at':1799999999},
-    {'simulated':False},{'alerts':[{'title':'x'*25,'detail':'INVALID'}]}, {'extra':'not allowed'},
+    {'simulated':None},{'alerts':[{'title':'x'*25,'detail':'INVALID'}]}, {'extra':'not allowed'},
     {'counts':{'healthy':0,'warning':0,'critical':1,'unknown':0}}])
 def test_invalid_models(mutation):
     value=fixture('badge-lab','HEALTHY',1800000000,1).model_dump();value.update(mutation)
