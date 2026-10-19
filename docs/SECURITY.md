@@ -2,7 +2,13 @@
 
 M2 protege transporte e integridad lógica en un laboratorio con host y operador
 confiables. No habilita Secure Boot, Flash Encryption, eFuses ni almacenamiento
-resistente a extracción física. Firmware instalado M1.1 y backup privado intactos.
+resistente a extracción física. El backup privado se preserva. El diagnóstico M2
+terminal fue reemplazado por
+la aplicación normal M3 en una prueba expresamente autorizada. M3 confirmó
+métricas reales, caducidad y recuperación en pantalla; las cargas y provisiones
+consumidas no autorizan repeticiones. Véanse [M3-PHYSICAL](M3-PHYSICAL.md) y
+[m3-observation-results.json](m3-observation-results.json). El gateway operativo
+vuelve a localhost; no hay exposición LAN permanente autorizada.
 
 ## Transporte y tiempo
 
@@ -67,3 +73,12 @@ claves privadas, tokens operativos ni logs físicos.
 Referencias oficiales: [HTTP Client ESP-IDF 5.5.5](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/protocols/esp_http_client.html),
 [System Time](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/system/system_time.html),
 [NVS y límites físicos](https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/storage/nvs_flash.html).
+## M3 extension
+
+The M3 collector uses a separate scoped credential, verified HTTPS and bounded
+strict ingress. It never receives commands or uses container sockets. Host-only
+acquisition and private CPU-baseline writes are documented in
+[M3 architecture](M3-ARCHITECTURE.md). Read that threat model and
+[Fedora setup](M3-FEDORA-SETUP.md) before installing services. No Internet exposure,
+linger, firewall/VPN/DNS change or board write is automatic. Same-user compromise,
+authenticated lying collectors and replay across gateway restarts remain limits.

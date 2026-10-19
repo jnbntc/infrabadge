@@ -1,14 +1,56 @@
-# InfraBadge — M2 Wi-Fi / HTTPS
+# InfraBadge — M3 Fedora Atomic Monitoring
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
 pantalla, batería/RTC/SHTC3 y un ciclo de deep sleep, sin red. M2 añade un perfil
 separado de Wi-Fi/HTTPS con datos simulados; no incluye MQTT ni Prometheus.
+M3 incorpora métricas reales de Fedora mediante un collector liviano de sólo
+lectura y el mismo gateway HTTPS, con credenciales separadas y caducidad explícita.
 
 Este repositorio es **jnbntc/infrabadge**. `jnbntc/distrobox-stack` sigue administrando
 exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente.
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
+
+## M3: monitoreo de la notebook
+
+Collector Python sin dependencias externas: CPU/load, RAM, disco por statvfs,
+temperatura CPU cuando se identifica de forma confiable y uptime/UTC. Funciona
+en el host, sin root, sockets de contenedores ni lectura de archivos personales.
+Un timer de usuario lo invoca cada60s; el gateway autentica, valida, evalúa salud
+con ventanas/histéresis y entrega el contrato M2 con ETag/304 y TTL de muestra.
+Datos ausentes/caducados se muestran UNKNOWN, separados del fallo de red de la placa.
+
+La validación de software incluye adquisición real de Fedora → HTTPS temporal en
+localhost → snapshot M2 y304, sin instalación automática. El usuario autorizó
+después los servicios locales: collector periódico y gateway rootless quedaron
+instalados y activos, con HTTPS sólo en localhost. Se verificaron caducidad,
+recuperación y reinicio del gateway. No se cambió la red ni se habilitó linger.
+La carga M3 fue autorizada y realizada una vez: la placa recibió HTTPS200 y el
+usuario confirmó métricas reales, REAL, hora verificada y vencimiento en pantalla.
+La sesión posterior, sin otra carga de firmware y con USB cerrado tras la provisión,
+confirmó consultas autónomas, caducidad y recuperación al pausar/restaurar el
+collector. El usuario confirmó ambas transiciones en pantalla y ausencia de
+intervención. La causa exacta reset/wake no se capturó. M3 permanece instalado;
+los backups M2/fábrica se conservan.
+
+- [Arquitectura, modelo de salud y seguridad](docs/M3-ARCHITECTURE.md).
+- [Pruebas ejecutadas y límites](docs/M3-VALIDATION.md).
+- [Auditoría final y autorización de integración](docs/M3-AUDIT.md).
+- [Instalación reproducible en Fedora y desinstalación](docs/M3-FEDORA-SETUP.md).
+- [Prueba física ejecutada, límites y procedimiento](docs/M3-PHYSICAL.md).
+- [Laboratorio autónomo sin otra carga de firmware](docs/M3-LAB.md).
+
+La prueba usó temporalmente la Wi-Fi del laboratorio; la regla de retorno y la
+publicación LAN se retiraron y verificaron al finalizar. El gateway vuelve a
+localhost: no quedó habilitado permanentemente para la placa. Suspensión/logout,
+registro exacto de causa de despertar y mediciones eléctricas continúan pendientes.
+[Resultados de la sesión autónoma](docs/m3-observation-results.json).
+
+Referencia **sintética**, generada por el renderizador C real; no es una foto
+ni expone métricas de la notebook:
+
+![M3: diseño con datos de ejemplo y origen REAL](docs/m3-ui/healthy.png)
 
 ## M2: conectividad de laboratorio
 
@@ -27,10 +69,9 @@ certifican todos los píxeles, cortes físicos de energía/NVS o seguridad de
 producción. La placa conserva el diagnóstico terminal, sin restauración automática.
 Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-results.json).
 
-M1.1 se propone por separado en [PR #2](https://github.com/jnbntc/infrabadge/pull/2),
-base main; M2 parte de esa misma base estable y usa feat/m2-connectivity.
-M2 se propone en [PR #3](https://github.com/jnbntc/infrabadge/pull/3), basado en #2.
-Ninguna rama anterior se reescribió y no se fusionó nada automáticamente.
+M1.1 se integró mediante [PR #2](https://github.com/jnbntc/infrabadge/pull/2) y M2
+mediante [PR #3](https://github.com/jnbntc/infrabadge/pull/3), con autorización del
+usuario. Ambos están fusionados en main. M3 se propone por separado, sin merge automático.
 
 ```sh
 bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware
@@ -64,13 +105,13 @@ Captura SINTÉTICA generada por el mismo renderizador C (no prueba de hardware):
 ## Estado
 
 El [PR #1](https://github.com/jnbntc/infrabadge/pull/1) fue fusionado con M1.
-M1.1 y la documentación conjunta se publicaron después en `feat/m1-ui` y siguen
-fuera de ese merge. [El informe consolidado](docs/M1-M11-VALIDATION.md)
+M1.1 y la documentación conjunta se publicaron después en `feat/m1-ui` y se
+integraron posteriormente mediante #2. [El informe consolidado](docs/M1-M11-VALIDATION.md)
 distingue tests/CI, validación M1 por USB, tres retornos M1.1 sólo con batería y
 mediciones pendientes. Ese informe conserva el cierre histórico de M1.1; el
 firmware instalado cambió después a M2 en los ensayos autorizados descritos arriba.
-Por elección del usuario, #1 conserva la evidencia complementaria y no se abrió
-otro PR para los cambios de la rama.
+Por elección del usuario, #1 conserva la evidencia complementaria; #2 realizó
+después la integración M1.1.
 
 La matriz de conexiones se contrastó con el esquemático oficial N8R8 y los ejemplos
 ESP-IDF **V2**. [HARDWARE.md](docs/HARDWARE.md) documenta señales, polaridades,
@@ -103,9 +144,9 @@ cerró tres retornos por timer sólo con batería, con su perfil de diagnóstico
 
 ```bash
 # Tests, regresiones de los tres perfiles M0 y compilación M1; sin tocar la placa:
-bash /var/home/juanb/Proyectos/infrabadge/tools/build-m1.sh --all
+bash $HOME/Proyectos/infrabadge/tools/build-m1.sh --all
 # Sólo M1, manteniendo los tests nativos y visuales:
-bash /var/home/juanb/Proyectos/infrabadge/tools/build-m1.sh
+bash $HOME/Proyectos/infrabadge/tools/build-m1.sh
 ```
 
 El binario M1 se genera en `build-m1/ui/infrabadge.bin`; no es una imagen fusionada:
@@ -153,7 +194,7 @@ dibujado por el simulador o una imagen retenida no es evidencia física de la se
 Desde la carpeta local del host, usando el `iot-dev` Distrobox ya preparado:
 
 ```bash
-bash /var/home/juanb/Proyectos/infrabadge/tools/build.sh all
+bash $HOME/Proyectos/infrabadge/tools/build.sh all
 ```
 
 Dentro de un shell ESP-IDF ya activado se usa el mismo script, sin Distrobox:
@@ -215,7 +256,7 @@ imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
 La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
 pasó el 17 de octubre de 2026. M1 se fusionó mediante el
 [PR #1](https://github.com/jnbntc/infrabadge/pull/1), con validación funcional física
-cerrada; M1.1 se publicó posteriormente y todavía no está integrado en `main`.
+cerrada; M1.1 se integró posteriormente en `main` mediante #2.
 Los límites y mediciones pendientes están en el informe físico.
 El estado de CI de la revisión consolidada se consulta en las ejecuciones de Actions
 de `feat/m1-ui` para el SHA correspondiente;

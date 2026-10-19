@@ -20,7 +20,7 @@ import tempfile
 import time
 
 ROOT=Path(__file__).resolve().parents[2]
-LAB=Path('/var/home/juanb/.local/share/infrabadge-lab/phase-a-20261017T220757Z')
+LAB=(Path.home() / '.local/share/infrabadge-lab/phase-a-20261017T220757Z')
 # AF_PACKET/SOCK_DGRAM presents IPv4 at offset0. Limit packets in the kernel:
 # DNS5353: at most1500 bytes; TCP8443: only128 header bytes; everything else:0.
 FILTER=[(0x30,0,0,0),(0x54,0,0,0xf0),(0x15,0,13,0x40),

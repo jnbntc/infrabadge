@@ -30,7 +30,7 @@ bool ib_snapshot_load(const ib_device_config_t *config,ib_cycle_t *state)
     if(nvs_open("ib_m2",NVS_READONLY,&h)!=ESP_OK)return false;
     esp_err_t error=nvs_get_blob(h,"snapshot",&r,&size);nvs_close(h);
     uint32_t stored=r.checksum;r.checksum=0;
-    if(error!=ESP_OK||size!=sizeof(r)||r.magic!=0x49425332u||r.version!=1||
+    if(error!=ESP_OK||size!=sizeof(r)||r.magic!=0x49425332u||r.version!=2||
        r.config_crc!=ib_crc32(config,sizeof(*config))||stored!=ib_crc32(&r,sizeof(r))||
        !r.snapshot.valid||!memchr(r.snapshot.device_id,0,sizeof(r.snapshot.device_id))||
        strcmp(r.snapshot.device_id,config->device_id)||!memchr(r.etag,0,sizeof(r.etag))||!ib_etag_valid(r.etag))return false;
@@ -38,7 +38,7 @@ bool ib_snapshot_load(const ib_device_config_t *config,ib_cycle_t *state)
 }
 bool ib_snapshot_store(const ib_device_config_t *config,const ib_snapshot_t *snapshot,const char *etag)
 {
-    snapshot_record_t r={0};r.magic=0x49425332u;r.version=1;r.config_crc=ib_crc32(config,sizeof(*config));
+    snapshot_record_t r={0};r.magic=0x49425332u;r.version=2;r.config_crc=ib_crc32(config,sizeof(*config));
     r.snapshot=*snapshot;memcpy(r.etag,etag,sizeof(r.etag));r.checksum=ib_crc32(&r,sizeof(r));
     nvs_handle_t h;if(nvs_open("ib_m2",NVS_READWRITE,&h)!=ESP_OK)return false;
     esp_err_t error=nvs_set_blob(h,"snapshot",&r,sizeof(r));if(error==ESP_OK)error=nvs_commit(h);

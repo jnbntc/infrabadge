@@ -74,7 +74,7 @@ no renueva UTC automáticamente.
 Comando autorizado, sujeto al margen de UTC:
 
 ```sh
-python3 /var/home/juanb/Proyectos/infrabadge/tools/m2/try_local_route.py --authorized-temporary-route
+python3 $HOME/Proyectos/infrabadge/tools/m2/try_local_route.py --authorized-temporary-route
 ```
 
 Se inicia SIN sudo; pide sudo únicamente para el hijo que agrega la regla,

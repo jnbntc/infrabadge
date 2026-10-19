@@ -46,7 +46,7 @@ estable y la batería correctamente conectada. Dejar BOOT y PWR sueltos. El gate
 de la fase A debe seguir activo. Desde una terminal normal del host, SIN sudo:
 
 ```sh
-python3 /var/home/juanb/Proyectos/infrabadge/tools/m2/physical_first.py --authorized-m2-first
+python3 $HOME/Proyectos/infrabadge/tools/m2/physical_first.py --authorized-m2-first
 ```
 
 El auxiliar verifica artefactos/rollback/backup privado, SDK fijado, UTC del host,

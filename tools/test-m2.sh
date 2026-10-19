@@ -14,6 +14,12 @@ if [[ ${IB_SANITIZE:-0} == 1 ]]; then flags+=(-fsanitize=address,undefined -fno-
     tests/native/test_connectivity.c -lm -o "$native_dir/test-connectivity"
 "$native_dir/test-connectivity"
 
+"${CC:-cc}" "${flags[@]}" -I tests/native/store_stubs -I components/device_config/include \
+    -I components/connectivity_core/include -I components/ui/include -I "$IDF_PATH/components/json/cJSON" \
+    components/device_config/store.c components/connectivity_core/snapshot.c \
+    "$IDF_PATH/components/json/cJSON/cJSON.c" tests/native/test_m3_store.c -lm -o "$native_dir/test-m3-store"
+"$native_dir/test-m3-store"
+
 "${CC:-cc}" "${flags[@]}" -I tests/native/https_stubs -I components/https_client/include \
     -I components/connectivity_core/include -I components/ui/include -I components/device_config/include \
     -I "$IDF_PATH/components/json/cJSON" components/https_client/https.c \
@@ -23,3 +29,4 @@ if [[ ${IB_SANITIZE:-0} == 1 ]]; then flags+=(-fsanitize=address,undefined -fno-
 "$native_dir/test-https-adapter"
 
 python3 tools/simulate_m2.py --check
+python3 tools/simulate_m3.py --check

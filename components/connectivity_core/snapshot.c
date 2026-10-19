@@ -80,7 +80,7 @@ bool ib_snapshot_decode(const char *data,size_t length,const char *device_id,ib_
     ib_snapshot_t s={0};uint32_t value;char status[10];bool valid=false;
     if(!fields(root,keys,9)||!number(root,"schema_version",1,1,&value)||
        !text(root,"device_id",s.device_id,sizeof(s.device_id))||strcmp(s.device_id,device_id)||
-       !number(root,"revision",1,2147483647u,&s.revision)||!cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(root,"simulated"))||
+       !number(root,"revision",1,2147483647u,&s.revision)||!cJSON_IsBool(cJSON_GetObjectItemCaseSensitive(root,"simulated"))||
        !number(root,"generated_at",1577836800u,4102444800u,&s.generated_at)||
        !number(root,"expires_at",1577836800u,4102444800u,&s.expires_at)||
        s.expires_at<=s.generated_at||s.expires_at-s.generated_at>3600||
@@ -105,6 +105,7 @@ bool ib_snapshot_decode(const char *data,size_t length,const char *device_id,ib_
         if(!fields(a,alert_keys,2)||!text(a,"title",s.titles[i],sizeof(s.titles[i]))||
            !text(a,"detail",s.details[i],sizeof(s.details[i]))||!label(s.titles[i])||!label(s.details[i]))goto done;
     }
+    s.simulated=cJSON_IsTrue(cJSON_GetObjectItemCaseSensitive(root,"simulated"));
     s.valid=true;*out=s;valid=true;
 done:cJSON_Delete(root);return valid;
 }

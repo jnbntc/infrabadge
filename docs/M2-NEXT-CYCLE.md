@@ -30,7 +30,7 @@ sueltos. No reiniciar ni desconectar alimentación ni ejecutar otros clientes co
 el token de la placa durante toda la ventana. No hacer un wake manual.
 
 ```sh
-python3 /var/home/juanb/Proyectos/infrabadge/tools/m2/observe_next_cycle.py --authorized-next-cycle-route
+python3 $HOME/Proyectos/infrabadge/tools/m2/observe_next_cycle.py --authorized-next-cycle-route
 ```
 
 Iniciar SIN sudo; el programa pide sudo para el hijo limitado. Al indicar LISTO,

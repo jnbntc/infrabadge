@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "autonomous_polling_stale_and_recovery_functionally_confirmed",
+  "result_directory": "m3-observation-20261019T224512Z",
+  "firmware_changed": false,
+  "configuration_tx_attempts": 1,
+  "provision_acknowledged": true,
+  "usb_reopens_during_autonomous_phase": 0,
+  "autonomous_polling_confirmed_under_no_intervention": true,
+  "physical_flow": [
+    {
+      "control": "fresh",
+      "state": "HEALTHY",
+      "http_status": 200
+    },
+    {
+      "control": "fresh",
+      "state": "HEALTHY",
+      "http_status": 200
+    },
+    {
+      "control": "stale",
+      "state": "UNKNOWN",
+      "http_status": 200
+    },
+    {
+      "control": "fresh",
+      "state": "HEALTHY",
+      "http_status": 200
+    }
+  ],
+  "optical_first_real_confirmed": true,
+  "optical_stale_and_old_metrics_removed_confirmed": true,
+  "optical_recovery_confirmed": true,
+  "operator_no_intervention_confirmed": true,
+  "exact_reset_and_timer_wake_cause_verified": false,
+  "physical_etag_304_in_this_session": false,
+  "physical_no_transfer_verified": false,
+  "cleanup": {
+    "route_priority_5100_absent": true,
+    "collector_timer_active": true,
+    "gateway_active": true,
+    "gateway_loopback_only": true,
+    "tcp8443_only_loopback_listeners": true,
+    "collector_restore_guard_inactive": true
+  },
+  "electrical_measurements": "DEFERRED",
+  "permanent_lan_deployment": false,
+  "suspend_logout": "not_executed",
+  "physical_threshold_transitions": "not_executed",
+  "software_validation": {
+    "python_tests_passed": 199,
+    "ruff_passed": true,
+    "code_commit": "a3a9681db106275e41c8d3f121ddf6f1b47e41c6",
+    "ci_push_passed": 39337111002,
+    "ci_pr_passed": 39337118480
+  }
+}

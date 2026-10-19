@@ -1,0 +1,1 @@
+{"alerts":[{"detail":"CPU 8% RAM 40% DSK 40%","title":"NODO WORKSTATION"},{"detail":"MUESTRA 08:02:00Z","title":"TEMP CPU UNKNOWN"}],"counts":{"critical":0,"healthy":1,"unknown":0,"warning":0},"device_id":"badge-lab","expires_at":1800000300,"generated_at":1800000120,"revision":1,"schema_version":1,"simulated":false,"status":"HEALTHY"}

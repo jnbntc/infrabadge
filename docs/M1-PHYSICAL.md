@@ -19,7 +19,7 @@ eFuses y no se modifica Secure Boot/Flash Encryption.
 2. Compilar y ejecutar regresiones M0 y M1 desde el host, sin acceso a hardware:
 
 ```bash
-bash /var/home/juanb/Proyectos/infrabadge/tools/build-m1.sh --all
+bash $HOME/Proyectos/infrabadge/tools/build-m1.sh --all
 ```
 
 3. Revisar `results/m1-build-FECHA-SUFIJO/ui.json` y su `result.json` passed. Dentro

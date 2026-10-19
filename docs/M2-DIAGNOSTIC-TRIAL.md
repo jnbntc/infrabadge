@@ -61,7 +61,7 @@ La autorización anterior cubría una sola carga del binario0553e5bb y ya se us�
 No ejecutar el comando siguiente hasta obtener autorización para este nuevo SHA:
 
 ```sh
-python3 /var/home/juanb/Proyectos/infrabadge/tools/m2/physical_diagnostic.py --authorized-m2-diagnostic
+python3 $HOME/Proyectos/infrabadge/tools/m2/physical_diagnostic.py --authorized-m2-diagnostic
 ```
 
 ## Secuencia con NVS conservada

@@ -25,12 +25,12 @@ from phase_a import ROOT, SDK, save, source_check
 from provision import read_private, wire
 from sanitize_logs import ANSI, sanitize
 
-LAB = Path('/var/home/juanb/.local/share/infrabadge-lab/phase-a-20261017T220757Z')
+LAB = (Path.home() / '.local/share/infrabadge-lab/phase-a-20261017T220757Z')
 PHASE_A = ROOT / 'results/m2-phase-a-20261017T220757Z'
 APP_SHA = '0553e5bb71ba22c45e520af3523b74aedbcb2d37b718160b66e45bacdc613878'
 CA_SHA = 'adc0ebe766de4d216ce759bc261926cc896e8760a0b5ae8fbdd23b2efa019baa'
-FACTORY = Path('/var/home/juanb/Backups/esp32/infrabadge/waveshare-v2-factory-8mb.bin')
-FACTORY_RECORD = Path('/var/home/juanb/.codex/attachments/51fb069a-8fe3-4cbc-900a-00ddbe2f5a11/Pasted text.txt')
+FACTORY = (Path.home() / 'Backups/esp32/infrabadge/waveshare-v2-factory-8mb.bin')
+FACTORY_RECORD = (Path.home() / '.codex/attachments/51fb069a-8fe3-4cbc-900a-00ddbe2f5a11/Pasted text.txt')
 
 
 class StopTest(Exception):

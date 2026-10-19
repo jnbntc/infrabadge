@@ -1,0 +1,8 @@
+**
+!gateway/
+!gateway/requirements.lock
+!gateway/infrabadge_gateway/
+!gateway/infrabadge_gateway/*.py
+!deploy/
+!deploy/m3/
+!deploy/m3/Containerfile

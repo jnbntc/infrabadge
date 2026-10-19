@@ -1,0 +1,1 @@
+{"alerts":[{"detail":"DATOS CADUCADOS","title":"NODO WORKSTATION"},{"detail":"METRICAS NO VIGENTES","title":"COLLECTOR NO ACTUALIZADO"}],"counts":{"critical":0,"healthy":0,"unknown":1,"warning":0},"device_id":"badge-lab","expires_at":1800000480,"generated_at":1800000300,"revision":2,"schema_version":1,"simulated":false,"status":"UNKNOWN"}

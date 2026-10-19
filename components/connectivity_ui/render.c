@@ -19,6 +19,7 @@ bool ib_connectivity_render(const ib_cycle_t *s,uint8_t *frame,size_t size)
     ib_ui_model_t m={0};m.simulated=true;ib_screen_t view=IB_SUMMARY;
     char detail[29];
     if(s->live){
+        if(!s->last.simulated)view=IB_ALERTS;
         m.status=s->last.status;m.healthy=s->last.healthy;m.warnings=s->last.warning;m.critical=s->last.critical;m.unavailable=s->last.unknown;
         m.nodes=m.healthy+m.warnings+m.critical+m.unavailable;m.alert_count=s->last.alert_count;
         for(unsigned i=0;i<m.alert_count;++i)m.alerts[i]=(ib_ui_alert_t){s->last.titles[i],s->last.details[i]};
@@ -31,9 +32,14 @@ bool ib_connectivity_render(const ib_cycle_t *s,uint8_t *frame,size_t size)
     if(!ib_ui_render(&m,view,frame,size))return false;
     /* Wipe the M1 tag, clock footer and controls; body geometry/fonts stay M1. */
     for(unsigned py=5;py<20;++py)for(unsigned px=170;px<196;++px)frame[py*25+px/8]&=(uint8_t)~(0x80u>>(px&7));
-    text(frame,174,9,"M2",true);clear(frame,164,15,false);
+    bool real=s->last.valid&&!s->last.simulated;
+    text(frame,174,9,real?"M3":"M2",true);clear(frame,164,15,false);
+    if(real){
+        for(unsigned py=30;py<41;++py)for(unsigned px=8;px<196;++px)frame[py*25+px/8]|=(uint8_t)(0x80u>>(px&7));
+        text(frame,8,32,"WORKSTATION",false);text(frame,168,32,"REAL",false);
+    }
     text(frame,s->clock_synced?46:28,168,s->clock_synced?"HORA VERIFICADA":"RELOJ NO SINCRONIZADO",true);
-    clear(frame,180,20,true);text(frame,8,181,"ULTIMA CONSULTA / SIM",false);
+    clear(frame,180,20,true);text(frame,8,181,real?"ULTIMA MUESTRA / REAL":"ULTIMA CONSULTA / SIM",false);
     if(s->live&&s->clock_synced){
         char expiry[25];unsigned minute=(s->last.expires_at/60u)%1440u;
         snprintf(expiry,sizeof(expiry),"VENCE: %02u:%02uZ",minute/60u,minute%60u);

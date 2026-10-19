@@ -1,0 +1,24 @@
+# EXAMPLE ONLY: copy after explicit approval, prepare the image and private TLS.
+# Rootless Quadlet, user namespaces; collector remains on the host.
+[Unit]
+Description=InfraBadge M3 LAN gateway
+
+[Container]
+Image=localhost/infrabadge-gateway:m3
+ContainerName=infrabadge-gateway-m3
+UserNS=keep-id:uid=10001,gid=10001
+User=10001:10001
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=all
+PublishPort=127.0.0.1:8443:8443
+# Add only the explicitly selected Wi-Fi LAN address after network review:
+# PublishPort=192.0.2.10:8443:8443
+Volume=%h/.config/infrabadge/gateway:/run/infrabadge:ro,Z
+LogDriver=none
+
+[Service]
+TimeoutStartSec=90
+
+[Install]
+WantedBy=default.target

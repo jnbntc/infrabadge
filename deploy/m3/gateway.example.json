@@ -1,0 +1,31 @@
+{
+  "devices": {
+    "badge-lab": {
+      "node_id": "workstation",
+      "token_sha256": ["REPLACE_WITH_DEVICE_TOKEN_SHA256"]
+    }
+  },
+  "collectors": {
+    "workstation": {
+      "display_name": "WORKSTATION",
+      "token_sha256": ["REPLACE_WITH_SEPARATE_COLLECTOR_TOKEN_SHA256"],
+      "policy": {
+        "sample_ttl_seconds": 180,
+        "min_interval_seconds": 30,
+        "max_gap_seconds": 120,
+        "cpu_warning": 85.0,
+        "cpu_critical": 95.0,
+        "cpu_samples": 3,
+        "available_warning": 15.0,
+        "available_critical": 5.0,
+        "recovery_samples": 2,
+        "cpu_hysteresis": 5.0,
+        "available_hysteresis": 3.0,
+        "temperature_warning": null,
+        "temperature_critical": null,
+        "temperature_hysteresis": 3.0
+      }
+    }
+  },
+  "enable_faults": false
+}

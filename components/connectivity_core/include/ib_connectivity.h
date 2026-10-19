@@ -12,7 +12,7 @@ typedef struct {
     uint32_t generated_at,expires_at,revision;
     char device_id[33];ib_status_t status;
     unsigned healthy,warning,critical,unknown,alert_count;
-    char titles[2][25],details[2][29];bool valid;
+    char titles[2][25],details[2][29];bool valid,simulated;
 } ib_snapshot_t;
 typedef struct { uint32_t anchor; bool trusted; } ib_clock_t;
 typedef struct { int status;size_t length;char body[IB_SNAPSHOT_MAX+1],etag[IB_ETAG_SIZE];uint32_t server_now; } ib_http_reply_t;
