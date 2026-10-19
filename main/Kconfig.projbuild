@@ -10,6 +10,8 @@ config IB_M0_SLEEP
     bool "3: One deep-sleep/wake cycle"
 config IB_M1_UI
     bool "M1: offline display and button navigation"
+config IB_M11_TIMER_DIAG
+    bool "M1.1: manual start, three autonomous timer-only cycles"
 endchoice
 config IB_M0_SLEEP_SECONDS
     int "Deep sleep duration (seconds)"

@@ -1,5 +1,10 @@
 # Validación M0
 
+Informe histórico de la etapa M0: sus referencias a CI pendiente, firmware
+instalado y pruebas todavía abiertas describen aquel cierre. El estado consolidado
+del PR #1 y las pruebas M1/M1.1 posteriores están en
+[M1-M11-VALIDATION.md](M1-M11-VALIDATION.md). Los manifiestos M0 no se sobrescriben.
+
 ## Ejecutado hasta ahora
 
 - Inspección de raíz Git y remoto: `jnbntc/infrabadge`, carpeta independiente.

@@ -1,5 +1,10 @@
 # Arquitectura M0
 
+El perfil temporal M1.1 añade `timer_diag` (estado RTC y renderizador portables) y
+`main/timer_diag_main.c` (orquestación). Reutiliza HAL/panel sin cambios y amplía el
+Power Manager con una opción timer exclusivo; la API usada por M1 mantiene wake
+por botones. Selección, invariantes y límites: [POWER-BASELINE.md](POWER-BASELINE.md).
+
 M0 valida el acceso básico a hardware; no incluye red, gateway, MQTT ni Prometheus.
 ESP-IDF nativo y CMake, objetivo `esp32s3`, SDK 5.5.5 fijado por commit.
 

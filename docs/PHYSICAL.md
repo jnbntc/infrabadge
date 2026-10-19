@@ -1,5 +1,9 @@
 # InfraBadge M0 — validación física, 17 de octubre de 2026
 
+Evidencia histórica M0. Las validaciones posteriores de UI por USB y timer con
+batería, junto con el firmware actualmente instalado, se resumen en
+[M1-M11-VALIDATION.md](M1-M11-VALIDATION.md).
+
 Estado: **pruebas funcionales básicas verificadas con USB; caracterización eléctrica pendiente**.
 
 Trabajo realizado en el repositorio independiente jnbntc/infrabadge. El usuario autorizó expresamente las cargas de los tres perfiles M0. No se modificó distrobox-stack.

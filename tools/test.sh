@@ -30,3 +30,14 @@ python3 tools/simulate_ui.py --check
     -I components/hal_waveshare_v2/include -I components/ib_core/include \
     components/power_manager/power.c tests/native/test_power.c -o "$native_dir/test-power"
 "$native_dir/test-power"
+"${CC:-cc}" "${flags[@]}" -I components/timer_diag/include -I components/ui/generated \
+    components/timer_diag/state.c components/timer_diag/render.c tests/native/test_timer_diag.c \
+    -o "$native_dir/test-timer-diag"
+"$native_dir/test-timer-diag"
+"${CC:-cc}" "${flags[@]}" -I tests/native/timer_stubs -I tests/native/stubs \
+    -I components/timer_diag/include -I components/ui/generated -I components/hal_waveshare_v2/include \
+    -I components/power_manager/include -I components/ib_core/include -I components/epaper/include \
+    components/timer_diag/state.c components/timer_diag/render.c tests/native/test_timer_app.c \
+    -o "$native_dir/test-timer-app"
+"$native_dir/test-timer-app"
+python3 tools/simulate_timer.py --check

@@ -1,4 +1,4 @@
-# InfraBadge — M1
+# InfraBadge — M1 / diagnóstico M1.1
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -12,13 +12,22 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ## Estado
 
+El [PR #1](https://github.com/jnbntc/infrabadge/pull/1) fue fusionado con M1.
+M1.1 y la documentación conjunta se publicaron después en `feat/m1-ui` y siguen
+fuera de ese merge. [El informe consolidado](docs/M1-M11-VALIDATION.md)
+distingue tests/CI, validación M1 por USB, tres retornos M1.1 sólo con batería y
+mediciones pendientes. La placa conserva el diagnóstico M1.1 instalado.
+Por elección del usuario, #1 conserva la evidencia complementaria y no se abrió
+otro PR para los cambios de la rama.
+
 La matriz de conexiones se contrastó con el esquemático oficial N8R8 y los ejemplos
 ESP-IDF **V2**. [HARDWARE.md](docs/HARDWARE.md) documenta señales, polaridades,
 referencias fijadas y los límites del esquemático compartido con la variante Touch.
 Los tres perfiles M0 compilaron y pasaron los tests sin hardware. Se validaron
 físicamente pantalla, lecturas RTC/SHTC3, ADC, botones y un ciclo de deep sleep con
 retorno por temporizador y reconexión USB. La fecha del RTC es incorrecta y no se
-modificó. Consumo, precisión del ADC y operación sólo con batería siguen pendientes.
+modificó. Consumo y precisión del ADC siguen pendientes; M1.1 confirmó posteriormente
+tres retornos por timer sólo con batería, como se detalla más abajo.
 Ver [el informe físico y sus límites](docs/PHYSICAL.md). Los binarios antiguos de
 la prueba anterior no deben flashearse.
 
@@ -27,9 +36,10 @@ la prueba anterior no deben flashearse.
 M1 añade tres vistas offline (resumen, alertas y diagnóstico), cuatro estados
 HEALTHY/WARNING/CRITICAL/OFFLINE y navegación por BOOT/PWR. Los datos son simulados;
 el RTC se declara no sincronizado y no se modifica. Se reutilizan HAL y protocolo
-M0, sin añadir dependencias gráficas, radios ni red. **M1 está instalado y su validación funcional por USB está cerrada:**
+M0, sin añadir dependencias gráficas, radios ni red. **La validación funcional M1 por USB está cerrada:**
 12 pantallas, navegación, reposo y retorno de deep sleep por timer/BOOT/PWR.
-Consumo, operación sólo con batería y otras pruebas dirigidas siguen pendientes.
+Consumo y otras pruebas dirigidas siguen pendientes. La prueba posterior M1.1
+cerró tres retornos por timer sólo con batería, con su perfil de diagnóstico.
 
 - [Arquitectura, controles y decisiones de energía](docs/UI.md).
 - [Galería de 12 capturas simuladas](docs/ui/index.html).
@@ -52,6 +62,30 @@ BOOT corto cambia de vista; PWR corto cambia de escenario; PWR mantenido ≥1,2 
 **y soltado** solicita deep sleep. Hay espera entre refrescos completos, sin envíos
 si el framebuffer no cambió. El panel es síncrono: esperar el refresco antes de pulsar.
 Dormido, los botones despiertan; no navegan hasta soltar y volver a pulsar.
+
+## Diagnóstico M1.1 de timer con batería
+
+Perfil temporal separado: inicio manual con BOOT tras retirar USB, tres deep sleeps
+de 60 s, contador en RTC RAM y resultado terminal sin cuarto ciclo. Sólo cuentan
+retornos con reset de deep sleep, causa TIMER y registro íntegro previamente armado.
+El HAL y el driver del panel se reutilizan; la UI M1 conserva sus controles.
+
+El usuario confirmó encendido y ambos botones sólo con batería LiPo AT 502535
+(3,7 V / 400 mAh nominales; 4,03 V medidos en circuito abierto). Los tres retornos
+autónomos **están confirmados funcionalmente**: el operador observó un RUN 0/3
+nuevo y 1/3 → 2/3 → PASS 3/3 sólo con batería, sin USB ni intervención, con
+RESET:8 / WAKE:4 comunicados en el resultado. M1.1 fue cargado con autorización
+para esta prueba temporal; reemplazó M1 y permanece instalado. No se realizó
+restauración de M1 ni de fábrica. Consumo y autonomía siguen sin medirse.
+
+```bash
+bash tools/build-timer.sh --all  # tests, tres perfiles M0, M1 UI y diagnóstico timer
+```
+
+Artefactos del diagnóstico: `build-m11/timer/`. [POWER-BASELINE.md](docs/POWER-BASELINE.md)
+incluye diseño, simulaciones, pruebas, cierre físico y procedimiento de carga
+controlada. Cualquier otra carga requiere autorización explícita nueva. Un PASS
+dibujado por el simulador o una imagen retenida no es evidencia física de la secuencia.
 
 ## Entorno fijado
 
@@ -124,12 +158,16 @@ python3 tools/generate_screen.py
 python3 tools/generate_screen.py --check
 ```
 
-El workflow `.github/workflows/m0.yml` compila los tres perfiles M0 y M1 con
+El workflow `.github/workflows/m0.yml` prepara los tres perfiles M0, M1 y M1.1 con
 imagen/acciones fijadas, red deshabilitada durante el build y sin dispositivos.
 La [ejecución por push de M1](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
-pasó el 17 de octubre de 2026. M1 sigue en [PR #1 en borrador](https://github.com/jnbntc/infrabadge/pull/1),
-con la validación funcional física cerrada y sin fusionar con `main`.
+pasó el 17 de octubre de 2026. M1 se fusionó mediante el
+[PR #1](https://github.com/jnbntc/infrabadge/pull/1), con validación funcional física
+cerrada; M1.1 se publicó posteriormente y todavía no está integrado en `main`.
 Los límites y mediciones pendientes están en el informe físico.
+El estado de CI de la revisión consolidada se consulta en las ejecuciones de Actions
+de `feat/m1-ui` para el SHA correspondiente;
+la ejecución histórica M1 no sustituye la validación de la revisión vigente.
 
 El PNG se compara por píxeles descomprimidos, no por su flujo de compresión zlib.
 La imagen es una simulación del diseño, no una captura de la placa.
@@ -139,11 +177,12 @@ La imagen es una simulación del diseño, no una captura de la placa.
 - [Arquitectura y contratos](docs/ARCHITECTURE.md).
 - [Alimentación, ADC y deep sleep](docs/POWER.md).
 - [Flashing manual, monitor y rollback](docs/FLASHING.md).
-- [Resultados de validación](docs/VALIDATION.md).
+- [Validación consolidada M1 + M1.1](docs/M1-M11-VALIDATION.md).
+- [Resultados históricos M0](docs/VALIDATION.md).
 - [Reglas para agentes](AGENTS.md).
 
 El backup privado de fábrica queda fuera de Git y CI. Se cargaron los tres perfiles
-M0 tras autorización explícita del usuario. La placa conserva M1 tras una carga posterior autorizada;
-fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
+M0 tras autorización explícita del usuario. Después se cargó M1 y, para el diagnóstico
+actual, M1.1 con autorización nueva; fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
 cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. La licencia general del código
 original se elegirá antes de publicar; los avisos Waveshare ya están preservados.

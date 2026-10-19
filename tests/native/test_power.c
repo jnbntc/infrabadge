@@ -24,6 +24,10 @@ int main(void)
     preparation=ESP_OK;
     assert(ib_power_sleep(60)==ESP_OK);
     assert(entered==1 && recovered==2 && delayed==100);
+    assert(ib_power_sleep_mode(60,false)==ESP_OK);
+    assert(duration==60 && !buttons && entered==2 && delayed==200);
+    assert(ib_power_sleep(60)==ESP_OK);
+    assert(buttons && entered==3 && delayed==300); /* original M1 remains timer + buttons */
     puts("PASS M1 Power Manager: refusal/recovery, timer + buttons, explicit sleep only");
     return 0;
 }

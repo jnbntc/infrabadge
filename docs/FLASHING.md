@@ -1,5 +1,10 @@
 # Flashing manual y rollback
 
+El estado de firmware instalado que aparece en los párrafos M0 siguientes describe
+esa etapa. Actualmente la placa conserva el diagnóstico M1.1; ver
+[el informe consolidado](M1-M11-VALIDATION.md). Ningún comando de este documento
+autoriza por sí mismo volver a cargar M0/M1 ni restaurar fábrica.
+
 **Las cargas físicas M0 fueron autorizadas expresamente y ejecutadas el 17 de
 octubre de 2026.** La placa conserva el perfil sleep y no se restauró fábrica;
 ver [PHYSICAL.md](PHYSICAL.md). Este documento sigue siendo un procedimiento manual:

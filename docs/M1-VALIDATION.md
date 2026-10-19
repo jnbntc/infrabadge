@@ -1,5 +1,10 @@
 # M1 — resultados y límites
 
+Este informe conserva el cierre del M1 original. Para el alcance actual del PR #1,
+incluidos M1.1 con batería y los distintos binarios, ver
+[M1-M11-VALIDATION.md](M1-M11-VALIDATION.md). Las referencias a cuatro perfiles y
+artefactos corresponden a esta etapa; el workflow consolidado cubre cinco.
+
 Implementación en `feat/m1-ui`, repositorio `jnbntc/infrabadge`. Base M0 local:
 `910bf9f`. Sin nuevas dependencias externas; SDK y entorno mantienen los locks M0.
 
@@ -28,7 +33,7 @@ fallidos se conservan bajo results junto al intento final para trazabilidad.
 **Validación local completa el 17 de octubre de 2026.** Ejecución en iot-dev desde
 la terminal normal del usuario, revisada contra código y artefactos por el asistente.
 Resultado global: passed; intento final 5, cuatro comandos con código de salida 0.
-El fingerprint de fuentes actual coincide con el del resultado aprobado.
+Al cerrar esa ejecución, el fingerprint coincidió con el del resultado aprobado.
 
 | Comprobación | Resultado |
 | --- | --- |
@@ -42,7 +47,7 @@ El fingerprint de fuentes actual coincide con el del resultado aprobado.
 | Perfil ui M1 / aplicación 214.128 bytes | passed |
 | Configuración USB/8MB/seguridad y cierre sin radios | passed |
 | Símbolos UI presentes sólo en M1 | passed |
-| SHA-256 y tamaños de 16 artefactos actuales contra los resultados | passed |
+| SHA-256 y tamaños de los 16 artefactos de aquella ejecución contra sus resultados | passed |
 | Generadores, sintaxis Python/Bash y git diff --check | passed |
 | Workflow YAML y Actionlint local | passed |
 
@@ -74,7 +79,8 @@ El workflow `.github/workflows/m0.yml` cubre los cuatro perfiles y los tests
 nativos/visuales con las mismas acciones e imagen fijadas. El 17 de octubre de 2026
 se publicaron la base M0 `910bf9f` en `main` y M1 `ff353a4` en `feat/m1-ui`, tras
 autorización del usuario. El [PR #1](https://github.com/jnbntc/infrabadge/pull/1)
-permanece en borrador, sin fusionar.
+quedó entonces en borrador. Se fusionó posteriormente con M1 como head `62b0556`;
+los commits M1.1 publicados después quedan fuera de ese merge.
 
 La [ejecución GitHub Actions por push](https://github.com/jnbntc/infrabadge/actions/runs/39060431040)
 terminó con **success** para `ff353a494f760f4ef12933e3c28e384ca002e1ac`.
@@ -99,7 +105,9 @@ EXT1 sin máscara GPIO, por lo que la atribución individual se apoya también e
 la observación humana. Ver [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md).
 
 Permanecen pendientes la prueba física dirigida de cancelar un frame idéntico,
-consumo de placa completa, contraste con instrumentos, operación sólo con batería,
-PSRAM y rollback físico. La omisión/cancelación de frames idénticos está probada en
+consumo de placa completa, contraste con instrumentos, PSRAM y rollback físico.
+La operación sólo con batería se comprobó después para tres retornos con el perfil
+M1.1, no para todos los escenarios UI: ver [POWER-BASELINE.md](POWER-BASELINE.md).
+La omisión/cancelación de frames idénticos está probada en
 los tests nativos. El reloj continúa explícitamente no sincronizado y no se ajustó.
 Procedimiento para futuras pruebas/cargas: [M1-PHYSICAL.md](M1-PHYSICAL.md).
