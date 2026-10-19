@@ -35,9 +35,13 @@
   observe_gateway,provision_session,physical_session}.py and docs/M3-LAB.md.
   Localhost observer verified,199 Python tests passed. The separately approved
   no-flash session224036Z stopped before any TX (SerialException); cleanup passed.
-  See docs/m3-observation-attempt.json. Preserve its consumed marker; one-provision
-  authorization remains unused. A new linked continuation must verify no TX/ACK
-  and unchanged scope. Never continue an uncertain TX automatically.
+  See docs/m3-observation-attempt.json. Its linked continuation224512Z completed
+  one TX/ACK, autonomous real polling, stale UNKNOWN and fresh recovery. Operator
+  confirmed the corresponding screens with no intervention. Both approvals/
+  markers are now consumed: no further provision or reuse. Preserve both records.
+  See docs/m3-observation-results.json. Independent cleanup passed.
+  A zero-TX continuation must verify no TX/ACK and unchanged scope; never
+  continue an uncertain TX automatically.
   The user approved one UTC provisioning and bounded
   LAN/route/collector pause; no firmware write path exists. Do not reuse the old
   execution marker. Keep USB closed during autonomous observations. Gateway

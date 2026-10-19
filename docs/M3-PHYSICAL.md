@@ -211,3 +211,41 @@ remain intact. [Allowlisted attempt index](m3-observation-attempt.json).
 A continuation may preserve this consumed marker and use a new linked record
 under the same still-unused one-provision authorization, only after verifying
 that no TX/ACK occurred. An uncertain TX must never qualify for this continuation.
+
+## Completed autonomous observation — 2026-10-19
+
+Current follow-up index: [m3-observation-results.json](m3-observation-results.json).
+Private result `m3-observation-20261019T224512Z` is distinct from both earlier
+partial attempts; their raw evidence and consumed markers remain unchanged.
+The continuation verified zero TX in its parent before using the still-unused
+one-provision authorization. One configuration TX returned IBPROV_OK; no firmware
+was loaded. Wi-Fi, CA and individual token were retained, UTC refreshed.
+
+The installed app made successive authenticated HTTPS200 requests while USB
+remained closed. The host then paused its real collector: the next stale control
+response was UNKNOWN. After collector restoration the response returned HEALTHY
+with fresh metrics. The operator explicitly confirmed the initial REAL screen,
+OFFLINE/REAL with DATOS CADUCADOS and removal of old metric values, then restored
+CPU/RAM/disk/REAL. They confirmed no buttons, resets, USB disconnection, monitor
+opening or other client using the token after provisioning. These are separate
+gateway observations and human optical evidence; neither substitutes for the other.
+
+Independent cleanup confirmed priority5100 absent, no LAN TCP8443 listener,
+gateway bound only127.0.0.1:8443, active original gateway/collector timer and
+inactive collector-restoration guard. The original gateway container was never
+restarted or republished by this observer. M3 stays installed. Once the temporary
+LAN endpoint closes, later ESP32 queries can become OFFLINE; permanent LAN
+deployment was not authorized by this window.
+
+This confirms autonomous polling and real stale/recovery UI behavior under the
+operator's no-intervention statement. The observer does not capture reset/wake
+registers: **exact reset8/wake4 remains unverified for this M3 follow-up**. The
+run returned200, not304; physical304/no-transfer, forced threshold transitions,
+exact simultaneous numeric comparison, suspend/logout and energy remain outside
+this result. Electrical/battery/autonomy measurements stay DEFERRED.
+
+Software source a3a9681 passed199 Python tests, pinned Ruff and all four CI
+checks, including seven firmware profiles and native C/ASan/UBSan/visual checks:
+[push](https://github.com/jnbntc/infrabadge/actions/runs/39337111002),
+[PR](https://github.com/jnbntc/infrabadge/actions/runs/39337118480).
+This closeout changes documentation only; consult the final head checks separately.

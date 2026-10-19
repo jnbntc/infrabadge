@@ -225,3 +225,22 @@ unchanged. New autonomous requests, stale/recovery screens and exact wake cause
 are not claimed until a separately approved session supplies the matching evidence.
 Electrical measurements remain DEFERRED; no dependency upgrade was performed for
 the existing non-failing Starlette TestClient deprecation warning.
+
+## Completed autonomous observation — 2026-10-19
+
+The separately authorized no-flash continuation completed one TX/ACK and
+subsequent autonomous HTTPS queries with USB closed. Real collector pause and
+restoration produced UNKNOWN/stale followed by HEALTHY/fresh. The operator
+confirmed the initial, stale and recovered screens plus no intervention.
+Independent cleanup verified route removal, localhost-only gateway, active
+collector and removal of the temporary observer. Full evidence/limits:
+[M3-PHYSICAL](M3-PHYSICAL.md#completed-autonomous-observation--2026-10-19) and
+[m3-observation-results.json](m3-observation-results.json).
+
+Code a3a9681 passed199 local Python tests, pinned Ruff and all four CI checks:
+[push](https://github.com/jnbntc/infrabadge/actions/runs/39337111002),
+[PR](https://github.com/jnbntc/infrabadge/actions/runs/39337118480), including
+seven firmware profiles and C/ASan/UBSan/visual regression. This final evidence
+update changes documentation only; check its head separately. Exact M3 wake
+registers, physical304/no-transfer, threshold forcing, numeric agreement,
+suspend/logout and electrical measurements remain outside this result.

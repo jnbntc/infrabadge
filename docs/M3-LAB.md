@@ -135,7 +135,7 @@ permanent LAN deployment is outside this bounded approval.
 
 ## Validation performed
 
-- 199 Python tests passed, including47 new observer/session cases: role/path
+- 199 Python tests passed, including55 new observer/session cases: role/path
   isolation, duplicate auth, fixed upstream/header forwarding, malformed/oversized/
   expired/foreign/simulated replies, ETag/304 and TTL, total timeout, CA/SAN/dates,
   wildcard rejection, private bounded journal, one configuration TX, SSID-versus-
@@ -164,3 +164,14 @@ has `attempted=false`, `ack=false`, no firmware write, completed cleanup and the
 same interface/address/network/port/time/provisioning scope. Any prior TX/ACK or
 changed scope is rejected. It never removes or reuses an execution marker. Four
 additional tests cover this guard, including refusal after an uncertain TX.
+
+## Physical result
+
+The linked continuation224512Z completed one UTC provision without flashing,
+then observed autonomous REAL queries, stale UNKNOWN after collector pause and
+fresh HEALTHY after restoration. The operator confirmed all three screen stages
+and no intervention. Independent route/listener/collector cleanup passed.
+See [M3-PHYSICAL](M3-PHYSICAL.md#completed-autonomous-observation--2026-10-19)
+and [the separate sanitized index](m3-observation-results.json). Exact wake
+registers, physical304/no-transfer and electrical consumption remain unverified.
+Both execution markers are consumed; this result is not permission to rerun.

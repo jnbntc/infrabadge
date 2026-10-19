@@ -28,8 +28,11 @@ instalados y activos, con HTTPS sólo en localhost. Se verificaron caducidad,
 recuperación y reinicio del gateway. No se cambió la red ni se habilitó linger.
 La carga M3 fue autorizada y realizada una vez: la placa recibió HTTPS200 y el
 usuario confirmó métricas reales, REAL, hora verificada y vencimiento en pantalla.
-La captura USB se detuvo al reconectar, por lo que el nuevo retorno por timer
-no quedó confirmado. M3 permanece instalado; los backups M2/fábrica se conservan.
+La sesión posterior, sin otra carga de firmware y con USB cerrado tras la provisión,
+confirmó consultas autónomas, caducidad y recuperación al pausar/restaurar el
+collector. El usuario confirmó ambas transiciones en pantalla y ausencia de
+intervención. La causa exacta reset/wake no se capturó. M3 permanece instalado;
+los backups M2/fábrica se conservan.
 
 - [Arquitectura, modelo de salud y seguridad](docs/M3-ARCHITECTURE.md).
 - [Pruebas ejecutadas y límites](docs/M3-VALIDATION.md).
@@ -40,7 +43,8 @@ no quedó confirmado. M3 permanece instalado; los backups M2/fábrica se conserv
 La prueba usó temporalmente la Wi-Fi del laboratorio; la regla de retorno y la
 publicación LAN se retiraron y verificaron al finalizar. El gateway vuelve a
 localhost: no quedó habilitado permanentemente para la placa. Suspensión/logout,
-observación del próximo timer y mediciones eléctricas continúan pendientes.
+registro exacto de causa de despertar y mediciones eléctricas continúan pendientes.
+[Resultados de la sesión autónoma](docs/m3-observation-results.json).
 
 Referencia **sintética**, generada por el renderizador C real; no es una foto
 ni expone métricas de la notebook:
