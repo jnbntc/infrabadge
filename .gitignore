@@ -13,3 +13,10 @@ __pycache__/
 /results/
 /build-m1/
 /build-m11/
+/build-m2/
+/gateway/.venv/
+/gateway/.pytest_cache/
+*.pem
+*.key
+/gateway/private/
+/build-m2-auto/

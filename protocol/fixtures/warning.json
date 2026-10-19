@@ -1,0 +1,1 @@
+{"schema_version":1,"device_id":"badge-lab","revision":1,"simulated":true,"generated_at":1800000000,"expires_at":1800001800,"status":"WARNING","counts":{"healthy":11,"warning":1,"critical":0,"unknown":0},"alerts":[{"title":"CPU ALTA","detail":"NODO-02 / CPU 84%"}]}

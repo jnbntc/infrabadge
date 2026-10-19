@@ -1,0 +1,1 @@
+{"schema_version":1,"device_id":"badge-lab","revision":1,"simulated":true,"generated_at":1800000000,"expires_at":1800001800,"status":"CRITICAL","counts":{"healthy":10,"warning":0,"critical":2,"unknown":0},"alerts":[{"title":"SERVICIO CAIDO","detail":"NODO-03 / API"},{"title":"DISCO LLENO","detail":"NODO-07 / USO 99%"}]}

@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "Alert": {
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "maxLength": 24,
+          "minLength": 1,
+          "pattern": "^[A-Z0-9 .:/_%+\\-]+$",
+          "title": "Title",
+          "type": "string"
+        },
+        "detail": {
+          "maxLength": 28,
+          "minLength": 1,
+          "pattern": "^[A-Z0-9 .:/_%+\\-]+$",
+          "title": "Detail",
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "detail"
+      ],
+      "title": "Alert",
+      "type": "object"
+    },
+    "Counts": {
+      "additionalProperties": false,
+      "properties": {
+        "healthy": {
+          "maximum": 999,
+          "minimum": 0,
+          "title": "Healthy",
+          "type": "integer"
+        },
+        "warning": {
+          "maximum": 999,
+          "minimum": 0,
+          "title": "Warning",
+          "type": "integer"
+        },
+        "critical": {
+          "maximum": 999,
+          "minimum": 0,
+          "title": "Critical",
+          "type": "integer"
+        },
+        "unknown": {
+          "maximum": 999,
+          "minimum": 0,
+          "title": "Unknown",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "healthy",
+        "warning",
+        "critical",
+        "unknown"
+      ],
+      "title": "Counts",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "maximum": 1,
+      "minimum": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "device_id": {
+      "pattern": "^[a-z0-9][a-z0-9_-]{0,31}$",
+      "title": "Device Id",
+      "type": "string"
+    },
+    "revision": {
+      "maximum": 2147483647,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "simulated": {
+      "title": "Simulated",
+      "type": "boolean"
+    },
+    "generated_at": {
+      "maximum": 4102444800,
+      "minimum": 1577836800,
+      "title": "Generated At",
+      "type": "integer"
+    },
+    "expires_at": {
+      "maximum": 4102444800,
+      "minimum": 1577836800,
+      "title": "Expires At",
+      "type": "integer"
+    },
+    "status": {
+      "enum": [
+        "HEALTHY",
+        "WARNING",
+        "CRITICAL",
+        "OFFLINE",
+        "UNKNOWN"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "counts": {
+      "$ref": "#/$defs/Counts"
+    },
+    "alerts": {
+      "items": {
+        "$ref": "#/$defs/Alert"
+      },
+      "maxItems": 2,
+      "title": "Alerts",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "device_id",
+    "revision",
+    "simulated",
+    "generated_at",
+    "expires_at",
+    "status",
+    "counts",
+    "alerts"
+  ],
+  "title": "Snapshot",
+  "type": "object"
+}

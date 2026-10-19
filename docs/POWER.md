@@ -86,3 +86,49 @@ con timer de 60 s y wake por botones. El funcionamiento por USB se verificó:
 reposo sin refrescos, entrada/retorno por timer/BOOT/PWR y retención de imagen/vista.
 No se midió consumo ni se probó operación sólo con batería. Ver [UI.md](UI.md),
 [M1-PHYSICAL-RESULTS.md](M1-PHYSICAL-RESULTS.md) y [M1-PHYSICAL.md](M1-PHYSICAL.md).
+
+## M2: impacto esperado, todavía sin mediciones
+
+M2 añade asociación Wi-Fi y handshake/consulta TLS a cada wake. El intervalo
+inicial es 900 s de sueño DESPUÉS del tiempo activo; configurable 60..3600 s.
+Un éxito limita además el sueño al TTL restante, si es menor que el intervalo.
+Tras fallos la espera se duplica, como máximo3600 s; un éxito restaura el intervalo
+base. Máximo tres intentos STA por ciclo, con 1/2 s entre intentos, presupuesto
+configurable hasta15 s desde radio iniciada. HTTPS hasta10 s configurables para
+socket/transferencia, más la resolución DNS finita de lwIP anterior al socket y
+costes SDK/limpieza. No se afirma un límite total de pared sin medirlo.
+
+Se registra asociación `wifi_us`, consulta `https_us`, total `active_us` (incluye
+arranque/ventana inicial/render) y sueño solicitado `sleep_s`. Es tiempo, no
+corriente ni energía. No hay refresco periódico en bucle. El framebuffer idéntico
+se omite incluso tras deep sleep con RTC RAM válido. ETag/304 ahorra cuerpo y
+procesamiento, aunque sigue costando asociación y handshake. No hay mantenimiento
+Wi-Fi durante sueño ni NVS writes para un 304. Panel y protocolo M0 se conservan.
+
+Estimación estructural, sin números de corriente inventados:
+
+`I_media ≈ (I_activa × t_activa + I_sueño × t_sueño) / (t_activa + t_sueño)`
+
+Más precisamente integrar por separado asociación, TLS, refresco y resto del ciclo;
+el término activo único es sólo una aproximación. Cada segundo activo por ciclo
+900 s supone aproximadamente 0,11% adicional de ocupación si es pequeño frente al
+sueño. Como ejemplos de TIEMPO hipotético: 5 s activos →0,55%; 20 s →2,17%.
+No son tiempos medidos ni predicciones de autonomía. La LiPo nominal400 mAh no
+basta para calcular días de uso: faltan corriente real, eficiencia del regulador,
+capacidad utilizable, autodescarga, temperatura y umbral de corte.
+
+La provisión abre30 s adicionales sólo cuando falta configuración o el operador
+solicita la ventana con BOOT; arranque normal espera2 s antes de consultarla.
+La confianza de hora dura3600 s desde su ancla y se renueva sólo por HTTPS ya
+verificado. Una interrupción larga puede requerir intervención USB, aunque todavía
+exista batería. El RTC externo2056 no se usa para desbloquear TLS.
+
+La placa conserva ahora el diagnóstico autónomo M2 93277e2e (corrección401), cuyo primer ensayo
+se interrumpió y no valida consumo. La evidencia anterior con733f7b9b de consultas,
+estados y recuperación está en [M2-PHYSICAL-RESULTS.md](M2-PHYSICAL-RESULTS.md).
+No son mediciones energéticas. El2026-10-18 el operador decidió «Deja las
+mediciones pendientes»: corriente, energía, batería y autonomía quedan DEFERRED.
+Una futura medición separada deberá cubrir batería/USB retirado, corriente de
+sueño, picos/energía de Wi-Fi/TLS/panel y duración real del ciclo. No convertir
+los nominales400mAh, timestamps o logs en una estimación de autonomía validada.
+Ver [M2-AUTOMATION.md](M2-AUTOMATION.md) para el perfil compilado y los límites de automatización.
