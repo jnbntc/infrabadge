@@ -51,7 +51,10 @@ sin MQTT, collectors, base de datos ni despliegue de producción. PR #3 depende 
 - Mínimos de heap/stack y WCET no instrumentados. Los tiempos activos del MCU
   no certifican una cota de tiempo real, incluido el resolver anterior al socket.
 - Contadores del driver confirman supresión de llamadas, no todos los píxeles.
-  Observación terminal humana: no recabada; excluida del aprobado por journal.
+  El2026-10-19 el operador confirmó la imagen terminal actual: OFFLINE,
+  mensaje COMPLETE,26/26 casos y25 timers. Es una observación posterior de una
+  imagen que puede estar retenida; no confirma retrospectivamente la secuencia
+  visual original ni ausencia de intervención durante aquel ensayo.
 - UTC inicial desde USB confiable; RTC2056 excluido. Reset frío o pérdida de
   continuidad exigen UTC fresco. Cortes durante NVS, expiración prolongada y
   pérdida física de alimentación no ensayados en este grupo.

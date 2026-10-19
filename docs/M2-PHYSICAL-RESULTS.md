@@ -418,3 +418,19 @@ firmware: la placa conserva el diagnóstico terminal10037379. La exportación US
 posterior no cuenta como timer adicional del grupo. No se publican configuración,
 tokens, identificadores de placa, logs USB ni backups. Consumo/energía/batería/
 autonomía M2 DEFERRED; cliente externo omitido por decisión del usuario.
+
+## Confirmación visual posterior —2026-10-19
+
+El operador indicó que no recordaba la pantalla al finalizar el ensayo original.
+Al revisar la pantalla actual informó OFFLINE, mensaje COMPLETE, CASOS26/26 y
+TIMER25. Transcripción privada conservada; el firmware identifica ese estado con
+el rótulo DIAG COMPLETE. OFFLINE es el encabezado fijo del modelo diagnóstico
+terminal y no indica un fallo del grupo; los contadores coinciden con su journal.
+
+La comprobación de hoy se resolvió observando la imagen existente. No se abrió
+USB desde las herramientas, no se reinició, cargó, aprovisionó o repitió el grupo.
+Es confirmación humana del contenido terminal actual; la retención e-paper no
+prueba actividad actual del MCU, un refresco nuevo o reposo eléctrico. Tampoco
+aporta una declaración retrospectiva sobre botones, alimentación u otros clientes
+durante el ensayo original. La evidencia de26 casos/25 timers sigue siendo el
+journal ya validado. Corriente/energía/batería/autonomía permanecen DEFERRED.

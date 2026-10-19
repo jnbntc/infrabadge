@@ -24,7 +24,7 @@
   "battery_only_m2_validation": false,
   "external_client_test": "omitted_by_user",
   "full_m2_validation": false,
-  "operator_terminal_confirmation": "not_yet_collected",
+  "operator_terminal_confirmation": "current_retained_screen_confirmed_separately_2026_10_19",
   "cases": [
     {
       "index": 0,
@@ -494,5 +494,24 @@
       "https_ms": 1226,
       "active_ms": 7275
     }
-  ]
+  ],
+  "post_run_visual_observation": {
+    "date_client": "2026-10-19",
+    "timezone": "America/Argentina/Buenos_Aires",
+    "method": "operator_report_of_current_screen",
+    "reported_header": "OFFLINE",
+    "reported_completion_message": "DIAS COMPLETE",
+    "reported_completed_cases": 26,
+    "reported_total_cases": 26,
+    "reported_timer_returns": 25,
+    "matches_expected_terminal_counts": true,
+    "fresh_refresh_observed": false,
+    "original_run_visual_sequence_recalled": false,
+    "original_run_no_intervention_confirmed": false,
+    "usb_connection_confirmed": null,
+    "board_accessed_by_tools": false,
+    "firmware_written": false,
+    "provisioned": false,
+    "reset_requested": false
+  }
 }
