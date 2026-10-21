@@ -325,6 +325,11 @@ def test_candidate_bundle_is_explicit_private_reproducible_and_no_wildcards(tmp_
         module.render(policy(), bundle)
     with pytest.raises(ValueError):
         module.render(policy(), ROOT / "results/m31-not-allowed")
+    link = tmp_path / "dangling"
+    link.symlink_to(tmp_path / "unexpected")
+    with pytest.raises(ValueError):
+        module.render(policy(), link)
+    assert not (tmp_path / "unexpected").exists()
 
 
 def test_policy_private_loading_duplicate_fields_and_unknown_keys(tmp_path):

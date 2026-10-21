@@ -36,6 +36,7 @@ def render(policy, output):
     output = output.expanduser().absolute()
     if (
         output.exists()
+        or output.is_symlink()
         or output.is_relative_to(ROOT)
         or any(p.is_symlink() for p in output.parents)
     ):
