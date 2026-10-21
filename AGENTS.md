@@ -1,6 +1,24 @@
 # InfraBadge development instructions
 
-## Current M3 scope (supersedes historical M2-only restrictions below)
+## Current M3.1 scope (supersedes historical M3/M2 integration gates)
+
+- The user explicitly authorized merging audited PR #4 on2026-10-19. It is merged
+  as df11e98a8514e1262ce2aaa27378c0249033c84d; main CI39342160696 passed.
+  Local main was fast-forwarded cleanly and feat/m3-fedora-monitoring preserved.
+- Develop M3.1 only on feat/m3.1-lan-deployment from that main. Prepare declarative
+  rootless LAN configuration, tests, four M3.1 documents and a DRAFT PR. No merge.
+- Do not change installed gateway/collector, host units, firewall, DNS, VPN,
+  NetworkManager profiles, router, linger or board state. No flashing, reset,
+  provisioning, NVS/eFuse/security writes or new host packages. Actual deployment
+  and any return-route exception require a separate reviewed authorization.
+- Keep firmware/M2 contract and validated collector/HAL/Power Manager unchanged.
+  Prefer one gateway process sharing state between local full API and LAN
+  device-read-only entry. No wildcard host publication, host network or privileged
+  service. A private expiring host-network guard is a candidate, not installed.
+- Preserve separation between simulated fixtures, CI and existing M3 physical
+  evidence; electrical measurements and actual M3.1 deployment remain pending.
+
+## Historical M3 scope
 
 - Main includes merged M1.1 #2 and M2 #3. Work M3 on
   feat/m3-fedora-monitoring, branched from updated main19a9a00.

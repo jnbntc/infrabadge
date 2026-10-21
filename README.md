@@ -1,4 +1,4 @@
-# InfraBadge — M3 Fedora Atomic Monitoring
+# InfraBadge — Fedora Atomic Monitoring
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -11,6 +11,22 @@ Este repositorio es **jnbntc/infrabadge**. `jnbntc/distrobox-stack` sigue admini
 exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente.
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
+
+## M3.1: candidato de operación continua en LAN
+
+M3 se integró con autorización mediante [PR #4](https://github.com/jnbntc/infrabadge/pull/4),
+merge `df11e98a8514e1262ce2aaa27378c0249033c84d`, con
+[CI aprobada](https://github.com/jnbntc/infrabadge/actions/runs/39342160696).
+M3.1 se prepara en `feat/m3.1-lan-deployment`, sin desplegar ni fusionar.
+Conserva collector y firmware M3: un gateway comparte estado entre ingreso local
+por TLS y consulta de dispositivo por una IP LAN explícita. Incluye política de
+red, permiso temporal, cuotas y telemetría privada; no instala servicios ni cambia
+firewall, DNS o VPN. El despliegue real requiere revisión y autorización separadas.
+
+- [Arquitectura y comportamiento de red/sesión](docs/M3.1-ARCHITECTURE.md).
+- [Preparación reproducible, instalación controlada y rollback](docs/M3.1-LAN-SETUP.md).
+- [Amenazas, límites y rotación TLS/credenciales](docs/M3.1-SECURITY.md).
+- [Pruebas y pendientes de autorización](docs/M3.1-VALIDATION.md).
 
 ## M3: monitoreo de la notebook
 
@@ -66,12 +82,13 @@ Ruta temporal retirada y gateways de ensayo cerrados; gateway original reabierto
 **M2 queda cerrado funcionalmente con exclusiones documentadas.** Consumo,
 energía, batería y autonomía M2 están diferidos por decisión del usuario. No se
 certifican todos los píxeles, cortes físicos de energía/NVS o seguridad de
-producción. La placa conserva el diagnóstico terminal, sin restauración automática.
+producción. Al cerrar M2 la placa conservaba el diagnóstico terminal; posteriormente se cargó M3
+con autorización, como se documenta arriba. No se restauró fábrica.
 Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-results.json).
 
 M1.1 se integró mediante [PR #2](https://github.com/jnbntc/infrabadge/pull/2) y M2
 mediante [PR #3](https://github.com/jnbntc/infrabadge/pull/3), con autorización del
-usuario. Ambos están fusionados en main. M3 se propone por separado, sin merge automático.
+usuario. Ambos están fusionados en main. M3 también se integró con autorización mediante #4.
 
 ```sh
 bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware

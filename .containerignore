@@ -7,3 +7,5 @@
 !deploy/
 !deploy/m3/
 !deploy/m3/Containerfile
+!deploy/m31/
+!deploy/m31/Containerfile

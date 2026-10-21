@@ -1,4 +1,4 @@
-name: InfraBadge M0 to M3
+name: InfraBadge M0 to M3.1
 
 on:
   push:
@@ -59,3 +59,4 @@ jobs:
           /tmp/infrabadge-gateway/bin/python tools/m3/build_collector.py --output /tmp/infrabadge-collector.pyz
           /tmp/infrabadge-gateway/bin/python -I /tmp/infrabadge-collector.pyz --help
           systemd-analyze verify deploy/m3/infrabadge-collector.service deploy/m3/infrabadge-collector.timer
+          /tmp/infrabadge-gateway/bin/python tools/m31/check_candidate.py

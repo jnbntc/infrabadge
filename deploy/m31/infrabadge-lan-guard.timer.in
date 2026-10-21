@@ -1,0 +1,13 @@
+[Unit]
+Description=Refresh InfraBadge LAN authorization without waking the notebook
+
+[Timer]
+OnActiveSec=1s
+OnUnitActiveSec=10s
+AccuracySec=1s
+Persistent=false
+WakeSystem=false
+Unit=infrabadge-lan-guard.service
+
+[Install]
+WantedBy=timers.target

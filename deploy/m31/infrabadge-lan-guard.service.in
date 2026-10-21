@@ -1,0 +1,15 @@
+[Unit]
+Description=Read-only authorization check for InfraBadge LAN
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I %h/.local/share/infrabadge-lan-guard/infrabadge-lan-guard.pyz --policy %h/.config/infrabadge/m31/policy.json --lease %t/infrabadge-lan-guard/lease.json
+RuntimeDirectory=infrabadge-lan-guard
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=yes
+UMask=0077
+TimeoutStartSec=9s
+NoNewPrivileges=true
+LockPersonality=true
+RestrictSUIDSGID=true
+Nice=10

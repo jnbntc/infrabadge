@@ -70,7 +70,10 @@ def fixture(
 
 
 def create_app(
-    config: GatewayConfig, clock: Callable[[], float] = time.time, snapshot_ttl_seconds: int = 1800
+    config: GatewayConfig,
+    clock: Callable[[], float] = time.time,
+    snapshot_ttl_seconds: int = 1800,
+    events: Callable | None = None,
 ) -> FastAPI:
     if type(snapshot_ttl_seconds) is not int or not 0 < snapshot_ttl_seconds <= 3600:
         raise ValueError("snapshot TTL outside protocol bounds")
@@ -79,12 +82,20 @@ def create_app(
     cached: dict[str, Snapshot] = {}
     nodes = {key: Evaluation() for key in config.collectors}
 
+    def authorize(authorization, identity):
+        try:
+            authenticate(authorization, identity)
+        except HTTPException:
+            if events:
+                events("auth_rejected")
+            raise
+
     @app.post("/api/v1/collectors/{node_id}/metrics", status_code=202)
     async def ingest(
         node_id: str, request: Request, authorization: Annotated[str | None, Header()] = None
     ):
         collector = config.collectors.get(node_id)
-        authenticate(authorization, collector)
+        authorize(authorization, collector)
         if request.headers.get("content-type", "").split(";")[0] != "application/json":
             raise HTTPException(415, "JSON required")
         if request.headers.get("content-encoding", "identity") != "identity":
@@ -119,6 +130,12 @@ def create_app(
             ):
                 raise HTTPException(429, "sample interval too short")
             evaluation.ingest(sample, collector.policy)
+        if events:
+            events(
+                "collector_accepted",
+                collected_at=sample.collected_at,
+                ttl_seconds=collector.policy.sample_ttl_seconds,
+            )
         return {"accepted": True}
 
     @app.get("/api/v1/devices/{device_id}/status")
@@ -129,7 +146,7 @@ def create_app(
         fault: Annotated[str | None, Query(max_length=32)] = None,
     ):
         device = config.devices.get(device_id)
-        authenticate(authorization, device)
+        authorize(authorization, device)
         now = int(clock())
         headers = {"X-InfraBadge-Now": str(now), "Cache-Control": "private, no-cache"}
         fault = fault or device.fault
@@ -187,6 +204,16 @@ def create_app(
                 data["schema_version"] = 99
             body = json.dumps(data, separators=(",", ":"), sort_keys=True).encode("ascii")
             etag = '"' + hashlib.sha256(body).hexdigest() + '"'
+        if events and device.node_id is not None:
+            details = {alert.detail for alert in old.alerts}
+            control = (
+                "stale"
+                if "DATOS CADUCADOS" in details
+                else "absent"
+                if "SIN MUESTRA" in details
+                else "fresh"
+            )
+            events("snapshot_built", state=old.status, control=control)
         headers["ETag"] = etag
         if if_none_match == etag:
             return Response(status_code=304, headers=headers)

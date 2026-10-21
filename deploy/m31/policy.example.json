@@ -1,0 +1,14 @@
+{
+  "interface": "wifi-test",
+  "address": "10.23.42.10",
+  "network": "10.23.42.0/24",
+  "connection_uuid": "12345678-1234-4234-8234-123456789abc",
+  "ssid_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "firewall_zone": "lab",
+  "firewall_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "hostname": "badge-gateway.test",
+  "image": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "devices": [
+    "badge"
+  ]
+}
