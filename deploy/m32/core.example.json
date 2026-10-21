@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "sites": {
+    "home": {
+      "display_name": "HOME",
+      "enabled": false
+    },
+    "work": {
+      "display_name": "WORK",
+      "enabled": false
+    },
+    "mobile": {
+      "display_name": "MOBILE",
+      "enabled": false
+    }
+  },
+  "nodes": {},
+  "collectors": {},
+  "devices": {},
+  "readers": {},
+  "edges": {},
+  "require_edge": true
+}

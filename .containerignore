@@ -7,3 +7,8 @@
 !deploy/
 !deploy/m3/
 !deploy/m3/Containerfile
+
+!gateway/infrabadge_gateway/distributed/
+!gateway/infrabadge_gateway/distributed/*.py
+!deploy/m32/
+!deploy/m32/Containerfile

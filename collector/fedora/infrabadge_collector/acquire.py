@@ -123,13 +123,19 @@ def cpu_temperature(hwmon_root):
     for chip in sorted(Path(hwmon_root).glob("hwmon[0-9]*"))[:64]:
         try:
             driver = read_text(chip / "name", 128).strip()
-            if driver not in ("coretemp", "k10temp", "zenpower"):
+            if driver not in ("coretemp", "k10temp", "zenpower", "cpu_thermal"):
                 continue
             for channel in sorted(chip.glob("temp[0-9]*_input"))[:64]:
                 stem = channel.name[:-6]
                 try:
-                    label = read_text(chip / (stem + "_label"), 128).strip()
-                    if driver == "coretemp" and re.fullmatch(r"Package id [0-9]+", label):
+                    label = (
+                        read_text(chip / (stem + "_label"), 128).strip()
+                        if driver != "cpu_thermal"
+                        else "cpu-thermal"
+                    )
+                    if driver == "cpu_thermal" and channel.name == "temp1_input":
+                        priority, sensor = 0, "cpu_die"
+                    elif driver == "coretemp" and re.fullmatch(r"Package id [0-9]+", label):
                         priority, sensor = 0, "cpu_package"
                     elif driver == "coretemp" and re.fullmatch(r"Core [0-9]+", label):
                         priority, sensor = 1, "cpu_core"

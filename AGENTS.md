@@ -1,3 +1,17 @@
+# Current M3.2 scope (supersedes historical branch and database restrictions)
+
+- User explicitly requested feat/m3.2-distributed-core from updated main df11e98.
+  PR #5 remains draft at9fbe3b0; do not modify, merge or duplicate its history.
+- Implement distributed core, SQLite versioned persistence, scoped identities,
+  local HTTPS edge, Linux collectors and inert ARM64/rootless deployment artifacts.
+- Reuse M3 metrics/health and M2 wire contract. No firmware changes unless proven
+  essential. No SSH, real service installation, network/Tailscale/firewall/DNS/NM
+  changes, board writes, secrets or private inventory publication. Draft PR only.
+- Real requested inventory must stay outside Git. Use explicitly synthetic test
+  fixtures; work nodes disabled until organizational approval. No invented IPs.
+- Validate SQLite migration/recovery/replay/expiry, multisite isolation, HTTPS and
+  ARM64 build in CI. Keep physical/deployment/energy evidence separate.
+
 # InfraBadge development instructions
 
 ## Current M3 scope (supersedes historical M2-only restrictions below)
