@@ -1,4 +1,31 @@
-# Current M3.3 scope: READ-ONLY preflight A/B/C (2026-10-22)
+# Current M3.3 scope: authorized phase D completed (2026-10-22)
+
+- The user explicitly authorized the concrete phase D after A/B/C: private
+  rollback copies, one new independent collector token, migration of the one
+  existing Fedora collector, central node/scoped identity and ONE exact
+  notebook/32->core/32 TCP9443 tailscale0 rule plus its own persistence line.
+  One short core-only restart was authorized; socket/core timer stayed active.
+- D completed in the private 20261022T154403Z run. Two independent Fedora samples
+  (UNKNOWN/cpu_warmup then HEALTHY/delta), fresh HEALTHY core/NAS samples,
+  TLS1.3/CA/name/date and four scoped401 rejections verified. Subsequent Fedora
+  timer deliveries succeeded. Installed M3 zipapp and all units are unchanged.
+- The previous153358Z attempt failed at Python config import before network or
+  core mutation. The launcher was corrected to match service PYTHONPATH/CWD;
+  the consumed attempt and unused token were preserved, continuation reused it.
+  Do not rerun either consumed execution marker or generate replacement tokens.
+- Central config/firewall copies and coherent SQLite backup were verified with
+  restore into a NEW destination. Live DB inode preserved; no old DB overwrite.
+  Local original M3 config/token/CA/baseline/image/units remain private.
+- Old local gateway remains in its pre-existing failed/protocol state. Do not
+  repair/start it or claim functional rollback delivery. No NAS SSH/Docker,
+  Grants, routes/DNS/NM/VPN/clock/linger, firmware or host reboot changes.
+- Further collector pause, transport interruption, suspend/resume, network
+  switch or logout tests require separate authorization. D does NOT close all
+  M3.3 acceptance criteria. Energy, external backup and DR remain deferred.
+- Update only sanitized evidence/docs and draft PR7; never publish addresses,
+  credentials, private configs or raw journals. Keep draft, no merge.
+
+# Historical M3.3 scope: READ-ONLY preflight A/B/C (2026-10-22)
 
 - Work on feat/m3.3-fedora-mobile from main da4a3ff. M3.2 PR6 is merged;
   M3.1 PR5 closed without merge, both historical branches preserved.

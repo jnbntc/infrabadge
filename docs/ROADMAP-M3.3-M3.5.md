@@ -1,8 +1,9 @@
 # InfraBadge — roadmap posterior a M3.2
 
 Plan priorizado. M3.2 se integró con autorización en da4a3ff y CI de main aprobó.
-M3.3 tiene ahora un [preflight A/B/C](M3.3-FEDORA-PREFLIGHT.md) y propuesta separada,
-todavía sin migración. M3.4–M3.5 no se implementan ni abren PR en esta etapa.
+M3.3 completó el [preflight A/B/C](M3.3-FEDORA-PREFLIGHT.md) y la
+[migración D autorizada](M3.3-DEPLOYMENT-RESULTS.md), con tres nodos reales.
+Las pruebas de interrupción y movilidad E/F siguen pendientes. M3.4–M3.5 no se implementan ni abren PR en esta etapa.
 Las deudas operativas aceptadas se conservan sin nuevos bloqueos retroactivos.
 
 ## P1 — M3.3: nodo móvil Fedora Atomic

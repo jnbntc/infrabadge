@@ -12,24 +12,27 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
-## M3.3: preflight de la notebook móvil
+## M3.3: notebook incorporada; movilidad pendiente
 
-Rama `feat/m3.3-fedora-mobile`, sólo auditoría y propuesta A/B/C. Se verificaron
-Fedora, el collector instalado, el gateway local y el core por lectura autorizada.
-Los dos nodos existentes tienen muestras frescas; la notebook aún no se dio de
-alta. Su collector M3 puede reutilizarse sin modificar código o unidades.
-TCP9443 no la admite todavía y el gateway local anterior está fallido: no se
-presenta su mera conservación como rollback funcional probado.
+La fase D autorizada incorporó la notebook como tercer nodo independiente al
+core mediante HTTPS/Tailscale. Reutiliza el collector M3 y su único timer, sin
+cambiar código ni unidades. Se verificaron TLS1.3, identidad exclusiva, entregas
+reales y tres nodos frescos HEALTHY tras el reinicio corto sólo del core.
+SQLite y las copias de rollback se verificaron; socket y timer centrales siguen
+intactos. El gateway local anterior conserva su fallo preexistente.
 
+- [Resultados reales y límites de la fase D](docs/M3.3-DEPLOYMENT-RESULTS.md).
 - [Arquitectura y compatibilidad](docs/M3.3-ARCHITECTURE.md).
-- [Preflight real, hallazgos y límites](docs/M3.3-FEDORA-PREFLIGHT.md).
-- [Migración propuesta y autorizaciones pendientes](docs/M3.3-MIGRATION.md).
-- [Matriz de movilidad, todavía sin ejecutar](docs/M3.3-MOBILITY-VALIDATION.md).
+- [Preflight histórico y hallazgos](docs/M3.3-FEDORA-PREFLIGHT.md).
+- [Cambios aplicados y límites de autorización](docs/M3.3-MIGRATION.md).
+- [Matriz de movilidad y pruebas pendientes](docs/M3.3-MOBILITY-VALIDATION.md).
 - [Rollback y límites de la instalación anterior](docs/M3.3-ROLLBACK.md).
 
-No se modificaron servicios, credenciales, firewall, rutas, DNS, Tailscale o la
-placa. No se suspendió ni cambió la red de la notebook. La migración D necesita
-otra autorización y no está cubierta por el permiso de auditoría.
+**M3.3 aún no está cerrada:** faltan caducidad/recuperación por interrupción de
+este collector, transporte, suspensión, cambio de red y sesión. Requieren permiso
+separado antes de interrumpir la notebook o sus entregas. No se modificaron
+Grants, DNS, rutas, VPN ni la placa; mediciones eléctricas siguen diferidas.
+PR7 permanece en borrador, sin fusión automática.
 
 ## M3.2: núcleo distribuido y piloto Linux
 
@@ -47,7 +50,7 @@ actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
   y [persistencia](docs/M3.2-PERSISTENCE.md).
 - [Seguridad y Tailscale](docs/M3.2-SECURITY.md), [instalación nativa/ARM64 y rollback](docs/M3.2-DEPLOYMENT.md),
   [pruebas software](docs/M3.2-VALIDATION.md).
-- [Roadmap M3.3–M3.5, sin implementar](docs/ROADMAP-M3.3-M3.5.md).
+- [Roadmap M3.3–M3.5 y pendientes](docs/ROADMAP-M3.3-M3.5.md).
 
 PR5/M3.1 fue cerrado sin fusionar, con explicación y rama conservadas. PR6/M3.2
 se integró con autorización mediante `da4a3ff`; CI de main aprobada. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
@@ -68,7 +71,9 @@ La validación de software incluye adquisición real de Fedora → HTTPS tempora
 localhost → snapshot M2 y304, sin instalación automática. El usuario autorizó
 después los servicios locales: en aquella validación el collector periódico y
 gateway rootless quedaron activos, con HTTPS sólo en localhost. Su estado actual
-se informa en el preflight M3.3, donde ambos servicios aparecen fallidos. Se verificaron caducidad,
+quedó registrado en el preflight M3.3 como fallido. Tras la migración autorizada
+el collector envía al core y el gateway local conserva su fallo anterior. Durante
+la validación original M3 se verificaron caducidad,
 recuperación y reinicio del gateway. No se cambió la red ni se habilitó linger.
 La carga M3 fue autorizada y realizada una vez: la placa recibió HTTPS200 y el
 usuario confirmó métricas reales, REAL, hora verificada y vencimiento en pantalla.
