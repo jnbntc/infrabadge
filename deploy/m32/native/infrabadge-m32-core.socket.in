@@ -1,0 +1,14 @@
+# INERT: render approved private values; never install automatically.
+[Unit]
+Description=InfraBadge exact localhost and Tailscale sockets
+
+[Socket]
+ListenStream=127.0.0.1:9443
+ListenStream=@TAILNET_IPV4@:9443
+Accept=no
+FreeBind=yes
+Backlog=16
+Service=infrabadge-m32-core.service
+
+[Install]
+WantedBy=sockets.target

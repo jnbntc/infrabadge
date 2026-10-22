@@ -38,7 +38,11 @@ def load_config(path):
         "interval_seconds",
         "timeout_seconds",
     }
-    if not isinstance(value, dict) or set(value) != required:
+    if (
+        not isinstance(value, dict)
+        or not required <= set(value)
+        or set(value) - required - {"delivery_attempts"}
+    ):
         raise ValueError("config_fields")
     if not isinstance(value["node_id"], str) or not re.fullmatch(
         r"[a-z0-9][a-z0-9_-]{0,31}", value["node_id"]
@@ -66,6 +70,11 @@ def load_config(path):
     for key, low, high in (("interval_seconds", 10, 3600), ("timeout_seconds", 1, 15)):
         if type(value[key]) is not int or not low <= value[key] <= high:
             raise ValueError("config_interval")
+    if (
+        type(value.get("delivery_attempts", 1)) is not int
+        or not 1 <= value.get("delivery_attempts", 1) <= 2
+    ):
+        raise ValueError("bounded delivery attempts required")
     return value
 
 

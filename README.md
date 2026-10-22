@@ -1,4 +1,4 @@
-# InfraBadge — M3 Fedora Atomic Monitoring
+# InfraBadge — distributed monitoring core
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -11,6 +11,31 @@ Este repositorio es **jnbntc/infrabadge**. `jnbntc/distrobox-stack` sigue admini
 exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente.
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
+
+## M3.2: núcleo distribuido y piloto Linux
+
+Core multisitio, collectors con identidad propia, SQLite transaccional e históricos
+explícitos. El piloto nativo ARM64/Python/systemd de dos nodos aprobó HTTPS privado,
+autenticación, scopes, duplicados/replay, caducidad independiente y recuperación.
+Las capturas Linux pertenecen a la aplicación b2ae0de; esta consolidación no
+actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
+
+- [Auditoría de integración, comparación M3.1 y propuesta de cierre](docs/M3.2-INTEGRATION-AUDIT.md).
+- [Evidencia real de hosts y separación del dispositivo](docs/M3.2-PHYSICAL-VALIDATION.md).
+- [Incidencia transitoria: recuperación, causa no confirmada](docs/M3.2-COLLECTOR-INCIDENT.md).
+- [Limitaciones y deuda aceptada](docs/M3.2-KNOWN-LIMITATIONS.md).
+- [Arquitectura y salud](docs/M3.2-ARCHITECTURE.md), [inventario](docs/M3.2-INVENTORY.md)
+  y [persistencia](docs/M3.2-PERSISTENCE.md).
+- [Seguridad y Tailscale](docs/M3.2-SECURITY.md), [instalación nativa/ARM64 y rollback](docs/M3.2-DEPLOYMENT.md),
+  [pruebas software](docs/M3.2-VALIDATION.md).
+- [Roadmap M3.3–M3.5, sin implementar](docs/ROADMAP-M3.3-M3.5.md).
+
+PR5/M3.1 es candidato a cierre por cambio arquitectónico; sigue sin fusionar y
+su cierre requiere autorización. PR6 se prepara para revisión; merge necesita
+permiso explícito. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
+efectivo en el central sin memory controller; LimitAS no equivale a cap de RAM.
+Backup externo, segunda tarjeta, DR y estabilidad prolongada siguen diferidos por
+el operador, sin convertirse en bloqueos nuevos del piloto validado.
 
 ## M3: monitoreo de la notebook
 
@@ -71,7 +96,7 @@ Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-resu
 
 M1.1 se integró mediante [PR #2](https://github.com/jnbntc/infrabadge/pull/2) y M2
 mediante [PR #3](https://github.com/jnbntc/infrabadge/pull/3), con autorización del
-usuario. Ambos están fusionados en main. M3 se propone por separado, sin merge automático.
+usuario. Ambos están fusionados en main. M3 está integrada mediante PR #4. M3.2 se propone por separado, sin merge automático.
 
 ```sh
 bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware

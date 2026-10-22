@@ -29,9 +29,10 @@ def main():
     try:
         require_host()
         if args.sample:
-            _, baseline = acquire("workstation", "/var/home", "HOME")
+            sample_mount = "/var/home" if Path("/var/home").is_dir() else "/"
+            _, baseline = acquire("workstation", sample_mount, "HOME")
             time.sleep(1)
-            metrics, _ = acquire("workstation", "/var/home", "HOME", baseline)
+            metrics, _ = acquire("workstation", sample_mount, "HOME", baseline)
             print(json.dumps(metrics, allow_nan=False, separators=(",", ":")))
             return 0
         if not args.config or not args.token_file:

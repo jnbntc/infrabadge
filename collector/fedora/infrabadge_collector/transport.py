@@ -1,4 +1,4 @@
-"""One bounded HTTPS POST. No proxy environment, redirect, subprocess or retry."""
+"""Bounded HTTPS POST: opt-in second network attempt within ONE total deadline."""
 
 import contextlib
 import http.client
@@ -44,24 +44,34 @@ def submit(config, token_file, metrics):
         raise ValueError("verified_https_required")
     context = ssl.create_default_context(cafile=config["ca_file"])
     context.minimum_version = ssl.TLSVersion.TLSv1_2
-    connection = http.client.HTTPSConnection(
-        url.hostname, url.port or 443, timeout=config["timeout_seconds"], context=context
-    )
-    try:
-        with deadline(config["timeout_seconds"]):
-            connection.request(
-                "POST",
-                "/api/v1/collectors/" + config["node_id"] + "/metrics",
-                body,
-                {"Authorization": "Bearer " + token, "Content-Type": "application/json"},
+    attempts = config.get("delivery_attempts", 1)
+    if type(attempts) is not int or not 1 <= attempts <= 2:
+        raise ValueError("bounded delivery attempts required")
+    with deadline(config["timeout_seconds"]):
+        for attempt in range(attempts):
+            connection = http.client.HTTPSConnection(
+                url.hostname, url.port or 443, timeout=config["timeout_seconds"], context=context
             )
-            response = connection.getresponse()
-            content = response.read(1025)
-            if len(content) > 1024:
-                raise ValueError("gateway_response_size")
-            if response.status != 202:
-                raise ValueError("gateway_rejected")  # Never log response/error bodies.
-            if json.loads(content) != {"accepted": True}:
-                raise ValueError("gateway_ack")
-    finally:
-        connection.close()
+            try:
+                connection.request(
+                    "POST",
+                    "/api/v1/collectors/" + config["node_id"] + "/metrics",
+                    body,
+                    {"Authorization": "Bearer " + token, "Content-Type": "application/json"},
+                )
+                response = connection.getresponse()
+                content = response.read(1025)
+                if len(content) > 1024:
+                    raise ValueError("gateway_response_size")
+                if response.status != 202:
+                    raise ValueError("gateway_rejected")
+                if json.loads(content) != {"accepted": True}:
+                    raise ValueError("gateway_ack")
+                return
+            except (TimeoutError, ssl.SSLError):
+                raise  # Never retry certificate/authentication/configuration failures.
+            except (OSError, http.client.HTTPException):
+                if attempt + 1 >= attempts:
+                    raise
+            finally:
+                connection.close()

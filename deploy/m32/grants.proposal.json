@@ -1,0 +1,33 @@
+{
+  "not_a_tailnet_policy": true,
+  "requires_organizational_approval": true,
+  "proposed_grants": [
+    {
+      "src": [
+        "tag:ib-collector"
+      ],
+      "dst": [
+        "tag:ib-core"
+      ],
+      "ip": [
+        "tcp:9443"
+      ]
+    },
+    {
+      "src": [
+        "tag:ib-edge"
+      ],
+      "dst": [
+        "tag:ib-core"
+      ],
+      "ip": [
+        "tcp:9443"
+      ]
+    }
+  ],
+  "deny_expectations": [
+    "collector-to-admin-port",
+    "edge-to-admin-port",
+    "unrelated-to-core"
+  ]
+}

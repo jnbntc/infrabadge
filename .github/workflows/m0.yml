@@ -1,4 +1,4 @@
-name: InfraBadge M0 to M3
+name: InfraBadge M0 to M3.2
 
 on:
   push:
@@ -59,3 +59,73 @@ jobs:
           /tmp/infrabadge-gateway/bin/python tools/m3/build_collector.py --output /tmp/infrabadge-collector.pyz
           /tmp/infrabadge-gateway/bin/python -I /tmp/infrabadge-collector.pyz --help
           systemd-analyze verify deploy/m3/infrabadge-collector.service deploy/m3/infrabadge-collector.timer
+          /tmp/infrabadge-gateway/bin/python tools/m32/check_templates.py
+          /tmp/infrabadge-gateway/bin/python tools/m32/check_native.py --verify-systemd
+
+
+  distributed-image:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            architecture: amd64
+          - runner: ubuntu-24.04-arm
+            architecture: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Fixed BuildKit, two clean native OCI builds
+        run: |
+          docker buildx create --name ib-m32 --driver docker-container --driver-opt image=moby/buildkit@sha256:cec9f139f45e93c5c69c60f8b07cfad9f43f4ef6b6a6cd917527fea5ff2e3dea --use
+          for attempt in 1 2; do
+            docker buildx build --no-cache --provenance=false --sbom=false \
+              --platform linux/${{ matrix.architecture }} --build-arg SOURCE_DATE_EPOCH=0 \
+              --output type=oci,dest=/tmp/m32-$attempt.tar,rewrite-timestamp=true \
+              --output type=docker,name=infrabadge-m32:ci,dest=/tmp/m32-load.tar,rewrite-timestamp=true \
+              -f deploy/m32/Containerfile .
+          done
+          python3 tools/m32/compare_oci.py /tmp/m32-1.tar /tmp/m32-2.tar > /tmp/oci-reproducibility.json
+          docker load --input /tmp/m32-load.tar
+      - name: Native non-root offline SQLite and M2 smoke
+        run: |
+          cat tools/m32/m32_fixtures.py tools/m32/smoke.py | docker run --rm -i \
+            --network none --cap-drop all --security-opt no-new-privileges \
+            --read-only --tmpfs /tmp:rw,nosuid,nodev,size=16m,mode=1777 \
+            --entrypoint python infrabadge-m32:ci - > /tmp/native-smoke.json
+          python3 -c 'import json; x=json.load(open("/tmp/native-smoke.json")); assert x["native_machine"]=="${{ matrix.architecture }}".replace("amd64","x86_64").replace("arm64","aarch64")'
+      - name: Public build evidence only
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: m32-${{ matrix.architecture }}-build-evidence
+          path: |
+            /tmp/oci-reproducibility.json
+            /tmp/native-smoke.json
+
+  native-python:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13.5'
+      - name: Native Python version and architecture
+        run: python -c 'import platform; print(platform.python_version(), platform.machine())'
+      - name: Locked native runtime and full regression
+        run: |
+          python -m venv /tmp/infrabadge-native
+          /tmp/infrabadge-native/bin/python -m pip install --require-hashes -r deploy/m32/native/requirements-runtime.lock
+          /tmp/infrabadge-native/bin/python -m pip check
+          /tmp/infrabadge-native/bin/python -m pip install --require-hashes -r gateway/requirements.lock -r tools/m3/style.lock
+          /tmp/infrabadge-native/bin/python -m pytest -c pytest.ini
+          /tmp/infrabadge-native/bin/python tools/m32/check_native.py --verify-systemd

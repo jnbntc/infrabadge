@@ -1,3 +1,35 @@
+# Current M3.2 integration consolidation (2026-10-22)
+
+- The user requests audit/consolidation of PR6, not new monitoring features.
+- Existing private pilot reports are evidence: native ARM64 systemd core plus local
+  and remote collectors, application b2ae0de; socket/credential adaptations were
+  deployed separately. Version only generic inert copies, no private inventory.
+- No host access is needed for this consolidation: review existing evidence;
+  never restart, install, reprovision, change network or update deployed services.
+- Preserve root/0440 credential rejection; stage owned0600 per oneshot as in pilot.
+  MemoryMax is ineffective without memory controller; LimitAS is NOT a RAM cap.
+- Historical collector failure has generic code only. Early timer/min-interval is
+  a supported hypothesis, not proven429 or a solved cause. Test timing semantics.
+- External backup, spare card, DR and long stability remain operator-deferred;
+  do not turn them into new gates for the validated pilot or software integration.
+- Update PR6 with exact-HEAD CI, may mark Ready after checks/review; merge requires
+  explicit new user authorization. Prepare PR5 closure comment only; no posting,
+  closure, merge or branch deletion without authorization. Roadmap only M3.3–M3.5.
+
+# Current M3.2 scope (supersedes historical branch and database restrictions)
+
+- User explicitly requested feat/m3.2-distributed-core from updated main df11e98.
+  PR #5 remains draft at9fbe3b0; do not modify, merge or duplicate its history.
+- Implement distributed core, SQLite versioned persistence, scoped identities,
+  local HTTPS edge, Linux collectors and inert ARM64/rootless deployment artifacts.
+- Reuse M3 metrics/health and M2 wire contract. No firmware changes unless proven
+  essential. No SSH, real service installation, network/Tailscale/firewall/DNS/NM
+  changes, board writes, secrets or private inventory publication. Draft PR only.
+- Real requested inventory must stay outside Git. Use explicitly synthetic test
+  fixtures; work nodes disabled until organizational approval. No invented IPs.
+- Validate SQLite migration/recovery/replay/expiry, multisite isolation, HTTPS and
+  ARM64 build in CI. Keep physical/deployment/energy evidence separate.
+
 # InfraBadge development instructions
 
 ## Current M3 scope (supersedes historical M2-only restrictions below)
