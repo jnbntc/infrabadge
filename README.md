@@ -21,19 +21,23 @@ reales y tres nodos frescos HEALTHY tras el reinicio corto sólo del core.
 SQLite y las copias de rollback se verificaron; socket y timer centrales siguen
 intactos. El gateway local anterior conserva su fallo preexistente.
 
-- [Resultados reales y límites de la fase D](docs/M3.3-DEPLOYMENT-RESULTS.md).
+- [Resultados reales y límites de las fases D/E/F](docs/M3.3-DEPLOYMENT-RESULTS.md).
 - [Arquitectura y compatibilidad](docs/M3.3-ARCHITECTURE.md).
 - [Preflight histórico y hallazgos](docs/M3.3-FEDORA-PREFLIGHT.md).
 - [Cambios aplicados y límites de autorización](docs/M3.3-MIGRATION.md).
 - [Matriz de movilidad y pruebas pendientes](docs/M3.3-MOBILITY-VALIDATION.md).
-- [Preflight F y plan de transporte, todavía sin ejecutar](docs/M3.3-TRANSPORT-PREFLIGHT.md).
+- [Transporte F: resultado real y restauración automática](docs/M3.3-TRANSPORT-RESULTS.md).
+- [Diseño y preflight histórico F](docs/M3.3-TRANSPORT-PREFLIGHT.md).
 - [Rollback y límites de la instalación anterior](docs/M3.3-ROLLBACK.md).
 
 **La pausa autorizada del collector también pasó:** caducidad UNKNOWN/OFFLINE,
 datos históricos explícitos y recuperación con warmup/delta nuevos, sin afectar
 a los otros nodos. El timer quedó activo y su watchdog temporal se retiró.
 
-**M3.3 aún no está cerrada:** faltan fallo de transporte, suspensión, cambio de
+**El transporte F también pasó:** UNKNOWN/OFFLINE ante destino inaccesible y
+recuperación con muestras nuevas; restauración independiente dentro de390s.
+
+**M3.3 aún no está cerrada:** faltan suspensión, cambio de
 red y sesión. Duplicados/replay sobre esta identidad siguen sólo en fixtures.
 Los ensayos que interrumpen la operación requieren permiso
 separado antes de interrumpir la notebook o sus entregas. No se modificaron

@@ -1,4 +1,22 @@
-# Current M3.3 scope: F READ-ONLY preflight/design only (2026-10-22)
+# Current M3.3 scope: exclusively F completed after specific approval (2026-10-22)
+
+- User authorized ONLY F: fresh nodes, Fedora H/W baseline allowed without health
+  policy changes; abort critical memory/pressure/OOM/deterioration. No G/H/I.
+- Actual trial started three HEALTHY/fresh, memory improved. Only collector URL
+  port9443->9444 changed; same hostname/CA/token/identity. Original timer stayed
+  active; acquisitions continued. UNKNOWN/OFFLINE and two NEW real CPU-delta
+  recovery samples observed. Core/NAS remained HEALTHY/fresh and advanced.
+- Independent systemd user helper was exercised first, then watchdog armed
+  BEFORE fault. Exact config restoration within390s proven in its journal;
+  hashes/UID/GID/mode intact, timer enabled/active and oneshot success, transient
+  timers removed. Private consumed marker/evidence retained; NEVER repeat it.
+- See docs/M3.3-TRANSPORT-RESULTS.md. This is unreachable configured endpoint,
+  NOT physical link loss, suspend, roaming/logout or power evidence. No network,
+  central service, NAS, firmware, policy or credential change. Keep PR7 draft.
+- Do not suspend, change Wi-Fi/Tailscale/firewall/Grants, restart, logout, enable
+  linger, repair old M3 gateway or begin another disruptive trial under F approval.
+
+# Historical M3.3 scope: F READ-ONLY preflight/design (2026-10-22)
 
 - The new request explicitly authorizes ONLY F audit/design, then STOP for
   approval before any transport/service/session/network interruption. D/E
