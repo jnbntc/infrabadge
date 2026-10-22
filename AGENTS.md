@@ -1,4 +1,30 @@
-# Current M3.3 scope: authorized collector expiry/recovery E completed (2026-10-22)
+# Current M3.3 scope: F READ-ONLY preflight/design only (2026-10-22)
+
+- The new request explicitly authorizes ONLY F audit/design, then STOP for
+  approval before any transport/service/session/network interruption. D/E
+  approvals and consumed markers do not authorize F/G/H/I.
+- Revalidated base49e1927, PR7 draft and12 successful checks; Fedora collector
+  one timer active/enabled, three real nodes HEALTHY/fresh, TLS1.3 verified.
+- Proposed F changes ONLY gateway_url port9443->9444 on SAME hostname/CA/token.
+  Central unprivileged SSH found no9444 listener; unauthenticated2s TCP probe
+  timed out;9443 reader stayed available. This is an unreachable configured
+  endpoint test, NOT physical network loss or blocking original9443.
+- Candidate/config copy/private restoration helper and17 synthetic tests are
+  prepared outside Git. Pending manifests approved=false; authorized manifest
+  absent; no fault applied or watchdog armed. Never turn it on without approval.
+- Proposed watchdog390s (inside480s), same user manager, self-contained stdlib
+  restore; no daemon-reload/unit edits, no stop/restart of collector or core.
+  Abort on drift/observer/other-node failure; preserve all markers/evidence.
+- Acquire/save baseline precedes POST in installed M3; during transport failure
+  CPU may remain valid. Do not require warmup solely due to network failure.
+- Later reader smoke observed notebook WARNING/fresh from low available RAM;
+  core/NAS stayed HEALTHY. Do not force health or close apps. Before F, require
+  three HEALTHY nodes again or an explicitly revised baseline authorization.
+- G preparation follows completion of F; suspend requires separate permission.
+  H is plan-only; I no logout/reboot/linger. No NAS SSH/Docker/board, Grants,
+  global firewall/DNS/routes/VPN/NM or local gateway repair. Keep PR7 draft.
+
+# Historical M3.3 scope: authorized collector expiry/recovery E completed (2026-10-22)
 
 - After D, the user explicitly authorized pausing ONLY the Fedora collector for
   at most8min, observing expiry/recovery and automatically restoring its timer.

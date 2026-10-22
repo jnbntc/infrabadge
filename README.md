@@ -26,6 +26,7 @@ intactos. El gateway local anterior conserva su fallo preexistente.
 - [Preflight histórico y hallazgos](docs/M3.3-FEDORA-PREFLIGHT.md).
 - [Cambios aplicados y límites de autorización](docs/M3.3-MIGRATION.md).
 - [Matriz de movilidad y pruebas pendientes](docs/M3.3-MOBILITY-VALIDATION.md).
+- [Preflight F y plan de transporte, todavía sin ejecutar](docs/M3.3-TRANSPORT-PREFLIGHT.md).
 - [Rollback y límites de la instalación anterior](docs/M3.3-ROLLBACK.md).
 
 **La pausa autorizada del collector también pasó:** caducidad UNKNOWN/OFFLINE,
