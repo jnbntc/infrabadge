@@ -1,0 +1,14 @@
+# INERT: render approved private values; never install automatically.
+[Unit]
+Description=InfraBadge periodic host collector
+
+[Timer]
+OnActiveSec=5s
+OnUnitInactiveSec=@INTERVAL_SECONDS@s
+AccuracySec=1s
+Persistent=false
+WakeSystem=false
+Unit=@COLLECTOR_UNIT@.service
+
+[Install]
+WantedBy=timers.target

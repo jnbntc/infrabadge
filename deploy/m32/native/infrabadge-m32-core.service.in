@@ -1,0 +1,53 @@
+# INERT: render approved private values; never install automatically.
+[Unit]
+Description=InfraBadge M3.2 core (one writer, two approved sockets)
+After=local-fs.target time-sync.target infrabadge-m32-core.socket
+Requires=infrabadge-m32-core.socket
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=@CORE_USER@
+Group=@CORE_GROUP@
+WorkingDirectory=/var/lib/infrabadge/m32
+Environment=PYTHONPATH=@RELEASE_DIR@/gateway
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=PYTHONUNBUFFERED=1
+Sockets=infrabadge-m32-core.socket
+ExecStart=@RELEASE_DIR@/venv/bin/python -B @ADAPTER_PATH@ --config /etc/infrabadge/m32/core.json --database /var/lib/infrabadge/m32/core.db --cert /etc/infrabadge/m32/tls/core.pem --key /etc/infrabadge/m32/tls/core.key --listener 127.0.0.1 --listener @TAILNET_IPV4@
+Restart=on-failure
+RestartSec=5s
+TimeoutStopSec=20s
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+ReadWritePaths=/var/lib/infrabadge/m32
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+# Requires memory controller; LimitAS is virtual address space, not a RAM cap.
+MemoryMax=256M
+LimitAS=512M
+TasksMax=32
+LimitNOFILE=256
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,38 @@
+# INERT: render approved private values; never install automatically.
+[Unit]
+Description=InfraBadge M3.2 real host collector
+After=network.target
+
+[Service]
+Type=oneshot
+User=@COLLECTOR_USER@
+Group=@COLLECTOR_GROUP@
+WorkingDirectory=@COLLECTOR_STATE_DIR@
+RuntimeDirectory=@COLLECTOR_UNIT@
+RuntimeDirectoryMode=0700
+RuntimeDirectoryPreserve=no
+ExecStartPre=/usr/bin/install -m 0600 %d/collector-token /run/@COLLECTOR_UNIT@/collector.token
+ExecStart=@RELEASE_DIR@/venv/bin/python -I -B @RELEASE_DIR@/infrabadge-collector.pyz --config @COLLECTOR_CONFIG_DIR@/collector.json --token-file /run/@COLLECTOR_UNIT@/collector.token
+LoadCredential=collector-token:@COLLECTOR_CREDENTIAL@
+UMask=0077
+TimeoutStartSec=15s
+Nice=10
+IOSchedulingClass=idle
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+# Requires memory controller; LimitAS is virtual address space, not a RAM cap.
+MemoryMax=64M
+LimitAS=128M
+TasksMax=8
+LimitNOFILE=64
+StandardOutput=journal
+StandardError=journal
+# Keep /proc, /sys and the root filesystem visible as on the host for acquisition.

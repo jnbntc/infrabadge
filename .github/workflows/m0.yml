@@ -60,6 +60,7 @@ jobs:
           /tmp/infrabadge-gateway/bin/python -I /tmp/infrabadge-collector.pyz --help
           systemd-analyze verify deploy/m3/infrabadge-collector.service deploy/m3/infrabadge-collector.timer
           /tmp/infrabadge-gateway/bin/python tools/m32/check_templates.py
+          /tmp/infrabadge-gateway/bin/python tools/m32/check_native.py --verify-systemd
 
 
   distributed-image:
@@ -103,3 +104,28 @@ jobs:
           path: |
             /tmp/oci-reproducibility.json
             /tmp/native-smoke.json
+
+  native-python:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.13.5'
+      - name: Native Python version and architecture
+        run: python -c 'import platform; print(platform.python_version(), platform.machine())'
+      - name: Locked native runtime and full regression
+        run: |
+          python -m venv /tmp/infrabadge-native
+          /tmp/infrabadge-native/bin/python -m pip install --require-hashes -r deploy/m32/native/requirements-runtime.lock
+          /tmp/infrabadge-native/bin/python -m pip check
+          /tmp/infrabadge-native/bin/python -m pip install --require-hashes -r gateway/requirements.lock -r tools/m3/style.lock
+          /tmp/infrabadge-native/bin/python -m pytest -c pytest.ini
+          /tmp/infrabadge-native/bin/python tools/m32/check_native.py --verify-systemd

@@ -12,20 +12,30 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
-## M3.2: núcleo distribuido, sin desplegar
+## M3.2: núcleo distribuido y piloto Linux
 
-Nuevo core opt-in desde main M3: inventario por sitio, collectors independientes,
-SQLite transaccional/históricos explícitos, agregación de salud y entradas locales
-HTTPS que consultan la misma fuente. Conserva el contrato y firmware M3. M3.1
-permanece separado en PR5; no se desplegó ni fusionó. No hay SSH, cambios reales
-Tailscale/red/servicios ni carga del ESP32. Inventario real y secretos fuera de Git.
+Core multisitio, collectors con identidad propia, SQLite transaccional e históricos
+explícitos. El piloto nativo ARM64/Python/systemd de dos nodos aprobó HTTPS privado,
+autenticación, scopes, duplicados/replay, caducidad independiente y recuperación.
+Las capturas Linux pertenecen a la aplicación b2ae0de; esta consolidación no
+actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
 
-- [Arquitectura y salud](docs/M3.2-ARCHITECTURE.md).
-- [Contrato de inventario](docs/M3.2-INVENTORY.md).
-- [Persistencia, replay y recuperación](docs/M3.2-PERSISTENCE.md).
-- [Seguridad y Tailscale](docs/M3.2-SECURITY.md).
-- [ARM64, migración y rollback](docs/M3.2-DEPLOYMENT.md).
-- [Validaciones y límites](docs/M3.2-VALIDATION.md).
+- [Auditoría de integración, comparación M3.1 y propuesta de cierre](docs/M3.2-INTEGRATION-AUDIT.md).
+- [Evidencia real de hosts y separación del dispositivo](docs/M3.2-PHYSICAL-VALIDATION.md).
+- [Incidencia transitoria: recuperación, causa no confirmada](docs/M3.2-COLLECTOR-INCIDENT.md).
+- [Limitaciones y deuda aceptada](docs/M3.2-KNOWN-LIMITATIONS.md).
+- [Arquitectura y salud](docs/M3.2-ARCHITECTURE.md), [inventario](docs/M3.2-INVENTORY.md)
+  y [persistencia](docs/M3.2-PERSISTENCE.md).
+- [Seguridad y Tailscale](docs/M3.2-SECURITY.md), [instalación nativa/ARM64 y rollback](docs/M3.2-DEPLOYMENT.md),
+  [pruebas software](docs/M3.2-VALIDATION.md).
+- [Roadmap M3.3–M3.5, sin implementar](docs/ROADMAP-M3.3-M3.5.md).
+
+PR5/M3.1 es candidato a cierre por cambio arquitectónico; sigue sin fusionar y
+su cierre requiere autorización. PR6 se prepara para revisión; merge necesita
+permiso explícito. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
+efectivo en el central sin memory controller; LimitAS no equivale a cap de RAM.
+Backup externo, segunda tarjeta, DR y estabilidad prolongada siguen diferidos por
+el operador, sin convertirse en bloqueos nuevos del piloto validado.
 
 ## M3: monitoreo de la notebook
 

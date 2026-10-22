@@ -1,3 +1,5 @@
+# LAN DEPLOYMENT GATE: M3.1 interface/route/lease guard is not ported.
+# Do not expose until per-site origin/firewall/DNS/return-route authorization.
 # INERT TEMPLATE: substitute approved immutable image/IP; review site preflight first.
 [Unit]
 Description=InfraBadge M3.2 edge
