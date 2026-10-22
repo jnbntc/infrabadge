@@ -12,6 +12,25 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
+## M3.3: preflight de la notebook móvil
+
+Rama `feat/m3.3-fedora-mobile`, sólo auditoría y propuesta A/B/C. Se verificaron
+Fedora, el collector instalado, el gateway local y el core por lectura autorizada.
+Los dos nodos existentes tienen muestras frescas; la notebook aún no se dio de
+alta. Su collector M3 puede reutilizarse sin modificar código o unidades.
+TCP9443 no la admite todavía y el gateway local anterior está fallido: no se
+presenta su mera conservación como rollback funcional probado.
+
+- [Arquitectura y compatibilidad](docs/M3.3-ARCHITECTURE.md).
+- [Preflight real, hallazgos y límites](docs/M3.3-FEDORA-PREFLIGHT.md).
+- [Migración propuesta y autorizaciones pendientes](docs/M3.3-MIGRATION.md).
+- [Matriz de movilidad, todavía sin ejecutar](docs/M3.3-MOBILITY-VALIDATION.md).
+- [Rollback y límites de la instalación anterior](docs/M3.3-ROLLBACK.md).
+
+No se modificaron servicios, credenciales, firewall, rutas, DNS, Tailscale o la
+placa. No se suspendió ni cambió la red de la notebook. La migración D necesita
+otra autorización y no está cubierta por el permiso de auditoría.
+
 ## M3.2: núcleo distribuido y piloto Linux
 
 Core multisitio, collectors con identidad propia, SQLite transaccional e históricos
@@ -30,9 +49,8 @@ actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
   [pruebas software](docs/M3.2-VALIDATION.md).
 - [Roadmap M3.3–M3.5, sin implementar](docs/ROADMAP-M3.3-M3.5.md).
 
-PR5/M3.1 es candidato a cierre por cambio arquitectónico; sigue sin fusionar y
-su cierre requiere autorización. PR6 se prepara para revisión; merge necesita
-permiso explícito. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
+PR5/M3.1 fue cerrado sin fusionar, con explicación y rama conservadas. PR6/M3.2
+se integró con autorización mediante `da4a3ff`; CI de main aprobada. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
 efectivo en el central sin memory controller; LimitAS no equivale a cap de RAM.
 Backup externo, segunda tarjeta, DR y estabilidad prolongada siguen diferidos por
 el operador, sin convertirse en bloqueos nuevos del piloto validado.
@@ -48,8 +66,9 @@ Datos ausentes/caducados se muestran UNKNOWN, separados del fallo de red de la p
 
 La validación de software incluye adquisición real de Fedora → HTTPS temporal en
 localhost → snapshot M2 y304, sin instalación automática. El usuario autorizó
-después los servicios locales: collector periódico y gateway rootless quedaron
-instalados y activos, con HTTPS sólo en localhost. Se verificaron caducidad,
+después los servicios locales: en aquella validación el collector periódico y
+gateway rootless quedaron activos, con HTTPS sólo en localhost. Su estado actual
+se informa en el preflight M3.3, donde ambos servicios aparecen fallidos. Se verificaron caducidad,
 recuperación y reinicio del gateway. No se cambió la red ni se habilitó linger.
 La carga M3 fue autorizada y realizada una vez: la placa recibió HTTPS200 y el
 usuario confirmó métricas reales, REAL, hora verificada y vencimiento en pantalla.
@@ -96,7 +115,7 @@ Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-resu
 
 M1.1 se integró mediante [PR #2](https://github.com/jnbntc/infrabadge/pull/2) y M2
 mediante [PR #3](https://github.com/jnbntc/infrabadge/pull/3), con autorización del
-usuario. Ambos están fusionados en main. M3 está integrada mediante PR #4. M3.2 se propone por separado, sin merge automático.
+usuario. Ambos están fusionados en main. M3 está integrada mediante PR #4. M3.2 está integrada mediante PR #6; M3.3 se prepara aparte, sin merge automático.
 
 ```sh
 bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware

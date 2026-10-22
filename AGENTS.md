@@ -1,3 +1,22 @@
+# Current M3.3 scope: READ-ONLY preflight A/B/C (2026-10-22)
+
+- Work on feat/m3.3-fedora-mobile from main da4a3ff. M3.2 PR6 is merged;
+  M3.1 PR5 closed without merge, both historical branches preserved.
+- This task authorizes Fedora read-only audit, plans, docs and a draft PR only.
+  No collector migration, service control, credential/firewall/Grants/DNS/routes/
+  NetworkManager/VPN/clock change, install, suspend/logout/reboot or board access.
+- The user separately authorized read-only SSH inspection of the central host,
+  including its existing administrative account. Strict known-host verification
+  is mandatory; operator entered sudo locally. Never access NAS or work hosts.
+- Existing installed M3 zipapp is compatible: prefer retaining code and user
+  units, one collector/timer. Do not run installer or generate live credentials.
+- Core firewall currently rejects notebook9443; old local gateway is failed.
+  Do not claim a working delivery rollback or third-node/mobility validation.
+- All proposed real addresses/config deltas/evidence stay private outside Git.
+  Next gate is explicit authorization for D, including a short core-only restart,
+  which makes retained samples historical until fresh deliveries. Grants and
+  disruptive mobility tests require separate review/authorization.
+
 # Current M3.2 integration consolidation (2026-10-22)
 
 - The user requests audit/consolidation of PR6, not new monitoring features.
