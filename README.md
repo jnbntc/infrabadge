@@ -28,8 +28,13 @@ intactos. El gateway local anterior conserva su fallo preexistente.
 - [Matriz de movilidad y pruebas pendientes](docs/M3.3-MOBILITY-VALIDATION.md).
 - [Rollback y límites de la instalación anterior](docs/M3.3-ROLLBACK.md).
 
-**M3.3 aún no está cerrada:** faltan caducidad/recuperación por interrupción de
-este collector, transporte, suspensión, cambio de red y sesión. Requieren permiso
+**La pausa autorizada del collector también pasó:** caducidad UNKNOWN/OFFLINE,
+datos históricos explícitos y recuperación con warmup/delta nuevos, sin afectar
+a los otros nodos. El timer quedó activo y su watchdog temporal se retiró.
+
+**M3.3 aún no está cerrada:** faltan fallo de transporte, suspensión, cambio de
+red y sesión. Duplicados/replay sobre esta identidad siguen sólo en fixtures.
+Los ensayos que interrumpen la operación requieren permiso
 separado antes de interrumpir la notebook o sus entregas. No se modificaron
 Grants, DNS, rutas, VPN ni la placa; mediciones eléctricas siguen diferidas.
 PR7 permanece en borrador, sin fusión automática.

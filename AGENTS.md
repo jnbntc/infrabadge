@@ -1,4 +1,22 @@
-# Current M3.3 scope: authorized phase D completed (2026-10-22)
+# Current M3.3 scope: authorized collector expiry/recovery E completed (2026-10-22)
+
+- After D, the user explicitly authorized pausing ONLY the Fedora collector for
+  at most8min, observing expiry/recovery and automatically restoring its timer.
+- E used the existing HTTPS reader identity, no new credentials or sudo. A
+  transient user watchdog was armed BEFORE pause to reactivate the SAME timer
+  at7min; normal cleanup restored it earlier and removed the watchdog.
+- The real API observed notebook UNKNOWN/stale atTTL180, OFFLINE at360, with
+  current metrics absent and explicit historical data; other two nodes remained
+  fresh and independently advanced. Resume produced NEW warmup/UNKNOWN then
+  valid CPU delta with health from current metrics. No queued old payloads or
+  duplicate collector.
+- This is collector-pause evidence, NOT network outage, suspend/resume, network
+  switching or logout. Those remain unexecuted and require separate approval.
+  No central service/config, firewall, DNS/routes/VPN/Grants, NAS or board change.
+- E consumed marker/results stay private and must not be rerun. Keep PR7 draft;
+  publish sanitized docs/results only, no secrets/raw inventory/journals.
+
+# Historical M3.3 scope: authorized phase D completed (2026-10-22)
 
 - The user explicitly authorized the concrete phase D after A/B/C: private
   rollback copies, one new independent collector token, migration of the one
