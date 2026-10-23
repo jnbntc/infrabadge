@@ -12,6 +12,14 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
+## M3.5: preparación ESP32 y periféricos
+
+[Auditoría y entregables](docs/M3.5-PREPARATION.md): esquema V2, matriz GPIO,
+arquitectura ESP32↔Edge↔Core y propuesta de ocho vistas con trece capturas
+sintéticas. [Galería offline](docs/m35-ui/index.html). Rama independiente desde
+main; M3.3/PR7 siguen separados. Sin despliegue, puertos, firmware/NVS o drivers
+nuevos. Las validaciones físicas y eléctricas están pendientes.
+
 ## M3.2: núcleo distribuido y piloto Linux
 
 Core multisitio, collectors con identidad propia, SQLite transaccional e históricos

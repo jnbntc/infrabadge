@@ -1,0 +1,366 @@
+{
+  "board": "Waveshare ESP32-S3-ePaper-1.54 V2 non-touch",
+  "prototype_only": true,
+  "physical_new_peripherals_validated": false,
+  "reference_commit": "aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956",
+  "sources": [
+    {
+      "path": "04_Hardware/Schematics/ESP32-S3-Touch-ePaper-1.54-Schematic.pdf",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956/04_Hardware/Schematics/ESP32-S3-Touch-ePaper-1.54-Schematic.pdf",
+      "sha256": "be6871527a397606189fff060750326003197ac828e2f0e499ad1206104aee2e",
+      "size": 580111
+    },
+    {
+      "path": "02_Example/ESP-IDF/V2/08_Audio_Test/components/codec_board/board_cfg.txt",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956/02_Example/ESP-IDF/V2/08_Audio_Test/components/codec_board/board_cfg.txt",
+      "sha256": "fd11b5351b359d901465e77872c96a99d77ce070bb7bdcf9ab6f7ae88c710b79",
+      "size": 2779
+    },
+    {
+      "path": "02_Example/ESP-IDF/V2/08_Audio_Test/components/audio_bsp/audio_bsp.c",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956/02_Example/ESP-IDF/V2/08_Audio_Test/components/audio_bsp/audio_bsp.c",
+      "sha256": "910ce6b303e7e7e93e9cb20f6edcdb76f690669528f4881c8e663b30c13118b5",
+      "size": 3165
+    },
+    {
+      "path": "02_Example/ESP-IDF/V2/08_Audio_Test/main/user_config.h",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956/02_Example/ESP-IDF/V2/08_Audio_Test/main/user_config.h",
+      "sha256": "a5f9bb2aeb0cb96e0973737be761667d3687a96c732f38b003d7c1e99aba330f",
+      "size": 1071
+    },
+    {
+      "path": "02_Example/ESP-IDF/V2/12_RTC_Sleep_Test/components/board_power_bsp/board_power_bsp.cpp",
+      "url": "https://raw.githubusercontent.com/waveshareteam/ESP32-S3-ePaper-1.54/aaf395c1bbd86f7c5b7a2f9f0401241ff5c44956/02_Example/ESP-IDF/V2/12_RTC_Sleep_Test/components/board_power_bsp/board_power_bsp.cpp",
+      "sha256": "6974257ad417a06e9950b3358652f0e27606eddf838c63f540b100e9f2605156",
+      "size": 3465
+    }
+  ],
+  "extra_primary_references": [
+    "https://docs.waveshare.com/ESP32-S3-ePaper-1.54/Resources-And-Documents",
+    "https://documentation.espressif.com/esp32-s3-pico-1_datasheet_en.html",
+    "https://docs.espressif.com/projects/esp-idf/en/v5.5.5/esp32s3/api-reference/peripherals/gpio.html"
+  ],
+  "gpio": [
+    {
+      "name": "battery-adc",
+      "gpio": [
+        4
+      ],
+      "hal_macro": "IB_PIN_BAT_ADC",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "rtc-int",
+      "gpio": [
+        5
+      ],
+      "hal_macro": "IB_PIN_RTC_INT",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "epd-rail",
+      "gpio": [
+        6
+      ],
+      "hal_macro": "IB_PIN_EPD_POWER",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "epd-busy",
+      "gpio": [
+        8
+      ],
+      "hal_macro": "IB_PIN_EPD_BUSY",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "epd-reset",
+      "gpio": [
+        9
+      ],
+      "hal_macro": "IB_PIN_EPD_RESET",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "epd-dc",
+      "gpio": [
+        10
+      ],
+      "hal_macro": "IB_PIN_EPD_DC",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "epd-cs",
+      "gpio": [
+        11
+      ],
+      "hal_macro": "IB_PIN_EPD_CS",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "epd-clock",
+      "gpio": [
+        12
+      ],
+      "hal_macro": "IB_PIN_EPD_CLOCK",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "epd-mosi",
+      "gpio": [
+        13
+      ],
+      "hal_macro": "IB_PIN_EPD_MOSI",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "battery-hold",
+      "gpio": [
+        17
+      ],
+      "hal_macro": "IB_PIN_BAT_HOLD",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "boot",
+      "gpio": [
+        0
+      ],
+      "hal_macro": "IB_PIN_BOOT",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "pwr",
+      "gpio": [
+        18
+      ],
+      "hal_macro": "IB_PIN_PWR",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "usb-dm",
+      "gpio": [
+        19
+      ],
+      "hal_macro": "IB_PIN_USB_DM",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "usb-dp",
+      "gpio": [
+        20
+      ],
+      "hal_macro": "IB_PIN_USB_DP",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "audio-rail",
+      "gpio": [
+        42
+      ],
+      "hal_macro": "IB_PIN_AUDIO_POWER",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "i2c-sda",
+      "gpio": [
+        47
+      ],
+      "hal_macro": "IB_PIN_I2C_SDA",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "i2c-scl",
+      "gpio": [
+        48
+      ],
+      "hal_macro": "IB_PIN_I2C_SCL",
+      "classification": "existing-hal",
+      "evidence": "schematic-and-existing-source"
+    },
+    {
+      "name": "led-green",
+      "gpio": [
+        3
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "audio-mclk",
+      "gpio": [
+        14
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "audio-bclk",
+      "gpio": [
+        15
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "audio-adc-to-mcu",
+      "gpio": [
+        16
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "audio-lrck",
+      "gpio": [
+        38
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "audio-mcu-to-dac",
+      "gpio": [
+        45
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "pa-control",
+      "gpio": [
+        46
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "sd-clock",
+      "gpio": [
+        39
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "sd-miso",
+      "gpio": [
+        40
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "sd-mosi",
+      "gpio": [
+        41
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "uart-tx",
+      "gpio": [
+        43
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "uart-rx",
+      "gpio": [
+        44
+      ],
+      "hal_macro": null,
+      "classification": "wired-unused-by-current-app",
+      "evidence": "schematic"
+    },
+    {
+      "name": "expansion-candidates",
+      "gpio": [
+        1,
+        2
+      ],
+      "hal_macro": null,
+      "classification": "candidate-only-no-allocation",
+      "evidence": "schematic"
+    },
+    {
+      "name": "unallocated-board-options",
+      "gpio": [
+        7,
+        21
+      ],
+      "hal_macro": null,
+      "classification": "reserved-out-of-scope",
+      "evidence": "schematic"
+    },
+    {
+      "name": "internal-memory-or-no-package-pad",
+      "gpio": [
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+      ],
+      "hal_macro": null,
+      "classification": "not-available",
+      "evidence": "schematic"
+    }
+  ],
+  "j1": {
+    "1": "GPIO1",
+    "2": "VSYS",
+    "3": "GPIO2",
+    "4": "3V3",
+    "5": "GPIO3 / LED_G",
+    "6": "GND",
+    "7": "GPIO19 / USB D-",
+    "8": "GPIO48 / SCL",
+    "9": "GPIO20 / USB D+",
+    "10": "GPIO47 / SDA",
+    "11": "GPIO43 / UART0 TX",
+    "12": "GPIO44 / UART0 RX"
+  },
+  "unverified": [
+    "MIC2 manufacturer/model and actual speaker fitted/impedance",
+    "PA_CTRL electrical enable/shutdown levels and idle state",
+    "LED/audio/microphone current",
+    "battery capacity/autonomy and PSRAM access"
+  ]
+}

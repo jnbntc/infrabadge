@@ -1,0 +1,51 @@
+{
+  "prototype_version": 0,
+  "synthetic": true,
+  "now": 1800000000,
+  "clock_trusted": true,
+  "transport_ok": true,
+  "nodes": [
+    {
+      "id": "core-demo",
+      "name": "CORE DEMO",
+      "site": "home",
+      "kind": "server",
+      "state": "HEALTHY",
+      "collected_at": 1799999980,
+      "cpu": 12.0,
+      "ram": 42.0,
+      "disk": 32.0,
+      "temperature": 49.0
+    },
+    {
+      "id": "nas-demo",
+      "name": "NAS DEMO",
+      "site": "home",
+      "kind": "server",
+      "state": "HEALTHY",
+      "collected_at": 1799999970,
+      "cpu": 8.0,
+      "ram": 51.0,
+      "disk": 63.0,
+      "temperature": null
+    },
+    {
+      "id": "mobile-demo",
+      "name": "MOVIL DEMO",
+      "site": "home",
+      "kind": "mobile",
+      "state": "WARNING",
+      "collected_at": 1799999960,
+      "cpu": 18.0,
+      "ram": 88.0,
+      "disk": 40.0,
+      "temperature": 61.0
+    }
+  ],
+  "environment": {
+    "collected_at": 1799999990,
+    "temperature": 24.5,
+    "humidity": 46.8,
+    "crc_ok": true
+  }
+}

@@ -1,3 +1,23 @@
+# Current scope: M3.5 preparation and peripheral audit only (2026-10-23)
+
+- Work feat/m3.5-esp32-preparation from main da4a3ff; no M3.3 commits or PR7 edits.
+- User confirmed non-touch Waveshare ESP32-S3-ePaper-1.54 V2/N8R8. No touch
+  research, controller/dependency, GPIO allocation or new peripheral drivers.
+- Preparation only: schematic/firmware audit, offline synthetic UI fixtures,
+  proposed ESP32-edge-core/TLS and independent physical test/rollback plans.
+- Preserve components/, main/, SDK/CMake, v1 wire, HAL/power/framebuffer diff.
+  Prototype Python uses M1 font/PNG codec but is NOT production C or firmware.
+- No USB/serial, flash/NVS/eFuses/provision, listeners, services, host network,
+  firewall/Tailscale/DNS changes, SSH or credentials/PKI generation. No merge.
+- Current v1 is aggregate+two alerts, not per-site/node inventory. New rich
+  display API/decoder requires separate version/security review and commits.
+- Audio rail42 enables shared ES8311/I2C; amplifier control46 is separate and
+  not initialized in current HAL. Do not optimize away validated I2C sequencing.
+- PWR retains electrical/wake role. BOOT navigation is a host-only proposal;
+  startup provisioning/strapping conflict must be resolved before firmware.
+- docs/M3.5-PREPARATION.md indexes evidence and pending permissions. Energy,
+  work-site onboarding and physical peripheral validation remain pending.
+
 # Current M3.2 integration consolidation (2026-10-22)
 
 - The user requests audit/consolidation of PR6, not new monitoring features.

@@ -69,3 +69,12 @@ que no se modificó. La prueba de I²C requirió habilitar PAVCC mediante GPIO42
 niveles pasaron de SDA/SCL=0/0 a 1/1 antes de habilitar los pull-ups internos.
 No se midieron tensiones GPIO con instrumento ni consumo. Precisión ADC, operación
 sólo con batería, retención RTC y wake por botones quedan pendientes. Ver [PHYSICAL.md](PHYSICAL.md).
+
+
+## Ampliación de auditoría M3.5 — 23/10/2026
+
+La [matriz completa y audio/LED/J1](M3.5-HARDWARE.md) contrasta el mismo esquema
+N8R8 y ejemplos V2, con referencias hash fijadas. Diferencia GPIO42/PAVCC de
+GPIO46/PA_CTRL y micrófono analógico→ES8311 de I²S directo. No implica nuevos
+drivers o validación física. La placa confirmada no es táctil; no se implementa
+ni investiga control táctil. El contexto M0 anterior se conserva histórico.
