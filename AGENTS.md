@@ -1,4 +1,21 @@
-# Current scope: M3.5 preparation and peripheral audit only (2026-10-23)
+# M3.5 follow-up: authorized connection/rollback preflight completed (2026-10-23)
+
+- Operator said "autorizo todo, procede" after the concrete preflight proposal.
+  Do not request the same connection/rollback inspection permission again.
+- One 303a:1001 USB/ttyACM was observed, R/W without sudo; alias absent but existing
+  detector has real-port fallback. Metadata only: NO serial open/readback/reset/
+  provision/NVS/flash. Operator later confirmed short BOOT; do not infer wake cause.
+- Factory 8 MiB hash, historical normal M3 app 9311046b/863472 B, table MD5/compatibility
+  and build security settings verified. Factory remains private behind 0700 parent.
+  New inert app rollback packet outside Git; old consumed plans never reused.
+- Application slot 0x10000/1 MiB leaves 185104 B. Candidate M3.5 firmware is NOT built;
+  Python prototype is not flashable. Verify actual binary/plan before any write.
+- Collector timer active; old M3 localhost gateway still failed/protocol, untouched.
+  A stored firmware rollback does not prove HTTPS delivery rollback functional.
+- See docs/M3.5-PREFLIGHT-RESULTS.md. New peripheral/edge-LAN/menu validation remains
+  pending. No host services/network/udev, Core/NAS, firmware or credential changes.
+
+# Historical scope: M3.5 preparation and peripheral audit (2026-10-23)
 
 - Work feat/m3.5-esp32-preparation from main da4a3ff; no M3.3 commits or PR7 edits.
 - User confirmed non-touch Waveshare ESP32-S3-ePaper-1.54 V2/N8R8. No touch
