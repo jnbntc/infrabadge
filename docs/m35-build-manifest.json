@@ -6,12 +6,12 @@
   "flash_size": "8MB",
   "artifacts": {
     "infrabadge.elf": {
-      "bytes": 10033544,
-      "sha256": "0edda93dca8d76558795adcde38a1cd6b146a4c59ed99b5b67753bd9905df82d"
+      "bytes": 10033560,
+      "sha256": "fef0edd7404cfa58e81f7fbab7d0158de8a38740d8ca0e499b5bf2f09d0f0562"
     },
     "infrabadge.bin": {
       "bytes": 885376,
-      "sha256": "7ade4761b3474391845f06d2ca3ab3eb78f6372431cc8e95dbded6b1d88f4f53"
+      "sha256": "902645be8f1d5f7ce3049f8620edee42c19108b832bb5fb0179a6204506cf1d3"
     },
     "bootloader/bootloader.bin": {
       "bytes": 20848,
@@ -24,8 +24,8 @@
   },
   "hardware_validation": "not_performed",
   "flash_performed": false,
-  "source_commit": "e8b6ef7be60cc55116501ebc59470214dac763b9",
-  "firmware_source_sha256": "bc7fa23dc2c150c2cda9b98d91be932b09498d1fcfa036b3fe9b2601a9942ab7",
+  "source_commit": "2d3b2a7f413ec8006b8e83c311bf6f1e2560d977",
+  "firmware_source_sha256": "6c892438d466929cd593bda30fee2e19c2f93c484d4e61dce849e6a2431b0edc",
   "esp_idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
   "schema_version": 2,
   "partition": {
