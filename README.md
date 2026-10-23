@@ -12,6 +12,20 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
+## M3.5: UI multisitio y edge HTTPS
+
+[Implementación](docs/M3.5-IMPLEMENTATION.md): perfil ESP32 separado con cinco
+pantallas C, BOOT, SHTC3, retención RTC y framebuffer diff; proyección device v2
+acotada y edge de dos saltos TLS, conservando v1 y SQLite M3.2.
+[Capturas C](docs/m35-firmware-ui/index.html),
+[validación](docs/M3.5-VALIDATION.md),
+[edge](docs/M3.5-EDGE.md), [plan y rollback](docs/M3.5-PHYSICAL-PLAN.md),
+[resultados físicos](docs/M3.5-PHYSICAL-RESULTS.md).
+Compilar ocho perfiles sin hardware: `bash tools/build-m35.sh --all`.
+Despliegue autorizado: Core y edge cableado operativos, aplicación M3.5 instalada;
+HTTPS y resumen reales confirmados. El informe separa pendientes y capturas
+sintéticas. Energía/audio/micrófono quedan diferidos.
+
 ## M3.2: núcleo distribuido y piloto Linux
 
 Core multisitio, collectors con identidad propia, SQLite transaccional e históricos
@@ -28,7 +42,7 @@ actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
   y [persistencia](docs/M3.2-PERSISTENCE.md).
 - [Seguridad y Tailscale](docs/M3.2-SECURITY.md), [instalación nativa/ARM64 y rollback](docs/M3.2-DEPLOYMENT.md),
   [pruebas software](docs/M3.2-VALIDATION.md).
-- [Roadmap M3.3–M3.5, sin implementar](docs/ROADMAP-M3.3-M3.5.md).
+- [Roadmap histórico M3.3–M3.5](docs/ROADMAP-M3.3-M3.5.md).
 
 PR5/M3.1 es candidato a cierre por cambio arquitectónico; sigue sin fusionar y
 su cierre requiere autorización. PR6 se prepara para revisión; merge necesita

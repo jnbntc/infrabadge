@@ -1,4 +1,4 @@
-name: InfraBadge M0 to M3.2
+name: InfraBadge M0 to M3.5
 
 on:
   push:
@@ -18,13 +18,13 @@ jobs:
           persist-credentials: false
       - name: Pull pinned development image
         run: docker pull ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2
-      - name: Native/visual tests and seven firmware profiles, offline without hardware
+      - name: Native/visual tests and eight firmware profiles, offline without hardware
         run: |
           docker run --rm --network none --cap-drop all --security-opt no-new-privileges \
             --user "$(id -u):$(id -g)" --env HOME=/tmp/infrabadge-home --env IB_SANITIZE=1 \
             --volume "$PWD:/project" --workdir /project \
             ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2 \
-            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/build-m2-auto.sh --inside --all'
+            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/build-m35.sh --inside --all'
       - name: Build logs and verification manifests
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -36,6 +36,10 @@ jobs:
             results/m11-build-*/
             results/m2-build-*/
             results/m2-auto-build-*/
+            results/m35-build-*/
+            build-m35/multisite/infrabadge.bin
+            build-m35/multisite/infrabadge.elf
+            build-m35/multisite/config/sdkconfig.json
           if-no-files-found: ignore
 
   gateway:
@@ -50,10 +54,19 @@ jobs:
           python3 -m venv /tmp/infrabadge-gateway
           /tmp/infrabadge-gateway/bin/python -m pip install --require-hashes -r gateway/requirements.lock
           /tmp/infrabadge-gateway/bin/python -m pip install --require-hashes -r tools/m3/style.lock
+      - name: Native presentation parser for HTTPS-to-C integration
+        run: |
+          docker pull ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2
+          docker run --rm --network none --cap-drop all --security-opt no-new-privileges \
+            --user "$(id -u):$(id -g)" --env HOME=/tmp/infrabadge-home --volume "$PWD:/project" --workdir /project \
+            ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2 \
+            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/m35/test-native.sh --build-only'
       - name: Collector, gateway, integration and protocol regression (deterministic fixtures)
         run: |
           /tmp/infrabadge-gateway/bin/python tools/m2/generate_protocol.py --check
           /tmp/infrabadge-gateway/bin/python tools/m3/generate_fixtures.py --check
+          PYTHONPATH=gateway:tools/m32 /tmp/infrabadge-gateway/bin/python tools/m35/wire_fixtures.py --check
+          /tmp/infrabadge-gateway/bin/python tools/m35/firmware_visuals.py --check
           /tmp/infrabadge-gateway/bin/python -m pytest -c pytest.ini
           PATH="/tmp/infrabadge-gateway/bin:$PATH" bash tools/m3/check_style.sh
           /tmp/infrabadge-gateway/bin/python tools/m3/build_collector.py --output /tmp/infrabadge-collector.pyz

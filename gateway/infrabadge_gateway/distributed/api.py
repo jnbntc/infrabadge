@@ -11,6 +11,7 @@ from ..app import authenticate, bounded_json
 from ..metrics import Metrics
 from .core import Rejected
 from .limits import Budget
+from .presentation import Presentation, project
 from .store import Unavailable
 
 
@@ -123,6 +124,34 @@ def create_app(core, clock=time.time, budget_clock=time.monotonic):
         if request.headers.get("if-none-match") == tag:
             return Response(status_code=304, headers=headers)
         return Response(body, media_type="application/json", headers=headers)
+
+    @app.get("/api/v2/devices/{device_id}/status")
+    def presentation(device_id: str, request: Request):
+        authenticate(request.headers.get("authorization"), core.config.devices.get(device_id))
+        if core.config.require_edge:
+            edge = identity_for(request.headers.get("x-infrabadge-edge"), core.config.edges)
+            if device_id not in edge.device_ids:
+                raise HTTPException(403, "scope rejected")
+        if not core.config.devices[device_id].presentation_v2:
+            raise HTTPException(404, "presentation not enabled")
+        if not device_budgets[device_id].take():
+            raise HTTPException(429, "rate limited")
+        now = int(clock())
+        try:
+            body = project(core, device_id, now)
+            expires = Presentation.model_validate_json(body).expires_at
+        except (ValueError, KeyError, TypeError):
+            raise Unavailable("projection unavailable") from None
+        tag = '"' + hashlib.sha256(body).hexdigest() + '"'
+        metadata = {
+            "ETag": tag,
+            "X-InfraBadge-Now": str(now),
+            "X-InfraBadge-Expires": str(expires),
+            "Cache-Control": "private, no-cache",
+        }
+        if request.headers.get("if-none-match") == tag:
+            return Response(status_code=304, headers=metadata)
+        return Response(body, media_type="application/json", headers=metadata)
 
     @app.get("/api/v1/sites/{site_id}/nodes")
     def inventory(site_id: str, request: Request):

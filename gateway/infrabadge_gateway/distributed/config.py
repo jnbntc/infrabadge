@@ -42,6 +42,10 @@ class ViewIdentity(Identity):
     site_ids: Ids
 
 
+class DisplayIdentity(ViewIdentity):
+    presentation_v2: bool = False
+
+
 class EdgeIdentity(Identity):
     device_ids: Ids
 
@@ -53,7 +57,7 @@ class CoreConfig(Strict):
     collectors: Annotated[dict[DeviceId, Identity], Field(max_length=64)] = Field(
         default_factory=dict
     )
-    devices: Annotated[dict[DeviceId, ViewIdentity], Field(max_length=16)] = Field(
+    devices: Annotated[dict[DeviceId, DisplayIdentity], Field(max_length=16)] = Field(
         default_factory=dict
     )
     readers: Annotated[dict[DeviceId, ViewIdentity], Field(max_length=16)] = Field(
