@@ -21,6 +21,10 @@ def read_private(path):
 
 def wire(value,epoch):
     if type(epoch) is not int or not 1577836800<=epoch<=4102444800:raise ValueError('UTC fuera de rango')
+    # Match the numeric limits enforced by the firmware before opening/sending USB.
+    for field, low, high in (('interval_seconds',60,3600), ('wifi_timeout_ms',1000,15000), ('http_timeout_ms',1000,10000)):
+        if type(value.get(field)) is not int or not low<=value[field]<=high:
+            raise ValueError('Configuration field outside firmware range')
     payload=dict(value,seed_utc=epoch)
     # Firmware accepts printable ASCII with standard escaped PEM newlines, no unicode escapes.
     body=json.dumps(payload,separators=(',',':'),ensure_ascii=False).encode('ascii')
@@ -35,6 +39,7 @@ def main():
     args=parser.parse_args()
     try:
         value=read_private(args.config)
+        wire(value,int(time.time()))  # Validate before importing/opening serial.
         import serial  # Provided by the pinned SDK environment, not another runtime dependency.
         channel=serial.Serial()
         channel.port=args.port;channel.baudrate=115200;channel.timeout=.25;channel.write_timeout=2

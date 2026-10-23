@@ -1,0 +1,6 @@
+{
+  "night_mode_enabled": false,
+  "night_start": "00:00",
+  "night_end": "08:00",
+  "timezone": "America/Argentina/Buenos_Aires"
+}

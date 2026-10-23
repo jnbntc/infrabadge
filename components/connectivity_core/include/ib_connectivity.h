@@ -19,6 +19,7 @@ typedef struct { int status;size_t length;char body[IB_SNAPSHOT_MAX+1],etag[IB_E
 typedef struct {ib_http_reply_t *reply;bool overflow,bad_header,length_seen;} ib_http_collector_t;
 bool ib_http_append(ib_http_collector_t *collector,const void *data,int length);
 bool ib_http_header(ib_http_collector_t *collector,const char *key,const char *value);
+bool ib_http_header_limit(ib_http_collector_t *collector,const char *key,const char *value,size_t maximum);
 typedef struct {
     ib_snapshot_t last;char etag[IB_ETAG_SIZE];unsigned failures;
     bool clock_synced,live;ib_net_error_t error;unsigned sleep_seconds;

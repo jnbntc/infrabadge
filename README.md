@@ -12,6 +12,20 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
+## M3.5: UI multisitio y edge HTTPS
+
+[Implementación](docs/M3.5-IMPLEMENTATION.md): perfil ESP32 separado con cinco
+pantallas C, BOOT, SHTC3, retención RTC y framebuffer diff; proyección device v2
+acotada y edge de dos saltos TLS, conservando v1 y SQLite M3.2.
+[Capturas C](docs/m35-firmware-ui/index.html),
+[validación](docs/M3.5-VALIDATION.md),
+[edge](docs/M3.5-EDGE.md), [plan y rollback](docs/M3.5-PHYSICAL-PLAN.md),
+[resultados físicos](docs/M3.5-PHYSICAL-RESULTS.md).
+Compilar ocho perfiles sin hardware: `bash tools/build-m35.sh --all`.
+Despliegue autorizado: Core y edge cableado operativos, aplicación M3.5 instalada;
+HTTPS y resumen reales confirmados. El informe separa pendientes y capturas
+sintéticas. Energía/audio/micrófono quedan diferidos.
+
 ## M3.3: notebook incorporada; movilidad pendiente
 
 La fase D autorizada incorporó la notebook como tercer nodo independiente al
@@ -37,12 +51,11 @@ a los otros nodos. El timer quedó activo y su watchdog temporal se retiró.
 **El transporte F también pasó:** UNKNOWN/OFFLINE ante destino inaccesible y
 recuperación con muestras nuevas; restauración independiente dentro de390s.
 
-**M3.3 aún no está cerrada:** faltan suspensión, cambio de
-red y sesión. Duplicados/replay sobre esta identidad siguen sólo en fixtures.
-Los ensayos que interrumpen la operación requieren permiso
-separado antes de interrumpir la notebook o sus entregas. No se modificaron
-Grants, DNS, rutas, VPN ni la placa; mediciones eléctricas siguen diferidas.
-PR7 permanece en borrador, sin fusión automática.
+**Cierre acotado D/E/F:** [criterios y compatibilidad](docs/M3.3-CLOSEOUT.md).
+Suspensión G, cambio de red H y sesión I son validaciones operativas futuras,
+no demostradas ni autorizadas por este cierre. Duplicados/replay de la identidad
+real sólo se probaron mediante fixtures. Energía sigue diferida. La integración
+no cambia collector, unidades, Core ni firmware instalados.
 
 ## M3.2: núcleo distribuido y piloto Linux
 
@@ -60,7 +73,7 @@ actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
   y [persistencia](docs/M3.2-PERSISTENCE.md).
 - [Seguridad y Tailscale](docs/M3.2-SECURITY.md), [instalación nativa/ARM64 y rollback](docs/M3.2-DEPLOYMENT.md),
   [pruebas software](docs/M3.2-VALIDATION.md).
-- [Roadmap M3.3–M3.5 y pendientes](docs/ROADMAP-M3.3-M3.5.md).
+- [Roadmap histórico M3.3–M3.5](docs/ROADMAP-M3.3-M3.5.md).
 
 PR5/M3.1 fue cerrado sin fusionar, con explicación y rama conservadas. PR6/M3.2
 se integró con autorización mediante `da4a3ff`; CI de main aprobada. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
@@ -338,3 +351,14 @@ M0 tras autorización explícita del usuario. Después se cargó M1 y, para el d
 actual, M1.1 con autorización nueva; fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
 cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. La licencia general del código
 original se elegirá antes de publicar; los avisos Waveshare ya están preservados.
+
+
+## Preparación M3.6: roaming y reposo nocturno
+
+Perfil independiente `roaming`, todavía no instalado: dos redes/edges fijos,
+TLS verificado y suspensión configurable00:00–08:00 Buenos Aires. Preserva M3.5
+y la configuración existente; sin cambios en Core/collectors/edges actuales.
+[Arquitectura](docs/M3.6-ARCHITECTURE.md), [modo nocturno](docs/NIGHT-MODE.md),
+[tests y tamaño](docs/M3.6-VALIDATION.md), [procedimiento sin ejecución](docs/M3.6-DEPLOYMENT.md).
+Requiere integrar primero PR #8 y autorización separada para cualquier despliegue,
+provisión o carga. La validación física nueva y el consumo permanecen pendientes.

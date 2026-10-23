@@ -1,4 +1,126 @@
-# Current M3.3 scope: exclusively F completed after specific approval (2026-10-22)
+# Current PR consolidation (2026-10-23)
+
+- User explicitly authorizes ready/merge of technically prepared PR8, then PR9,
+  then scoped PR7, respecting main protections. Preserve branches/backups and
+  traceability; this supersedes historical no-merge instructions below.
+- PR8 integrated as c24b0dc; PR9 integrated as 66bf529. Verify post-merge
+  CI before scoped PR7 integration, then verify its exact-HEAD and main CI.
+- NAS root SSH read-only metadata audit was explicitly approved on2026-10-23;
+  this does not authorize deployment, NAS data/key reads or host changes.
+- After integration prepare permanent-edge software/artifacts only. No real
+  services/SSH administration, firewall/DNS/routes/Grants, credentials, firmware,
+  NVS, suspend/roaming tests or host restarts without concrete new approval.
+- M3.3 D/E/F are historical real evidence; G/H/I remain future operational tests.
+
+# Historical M3.6 implementation before consolidation (2026-10-23)
+
+- Work feat/m3.6-multisite-roaming, stacked on unmerged PR8/a4d6c05.
+  Draft PR base feat/m3.5-esp32-preparation; never merge or change PR7.
+- New ninth profile only: mobile_policy and CONFIG_IB_M36_ROAMING, two fixed
+  SSIDs/HTTPS bindings, no CA/auth fallback. Separate ib_m36 bundle; never open
+  ib_m2 or migrate/erase its keys from new provisioning code.
+- Night is opt-in,00–08 Buenos Aires UTC-3; keep legacy3600s clock lease and
+  <=3600s Power Manager timer. A bounded fixed-deadline retained permit checks
+  ESP continuity against read-only PCF relative advance (2056 is NOT UTC).
+  No radio/render on valid night wakes; morning invalidates cache then verifies
+  TLS/server time before fresh data. Invalid clock/RTC cancels long-sleep trust.
+- Tests/mock TLS listeners are loopback only; no real services, USB/NVS/flash,
+  PKI/credentials, LAN listeners, SSH/network/Grants changes or physical tests.
+- tools/build-m36.sh --all: nine profiles plus native app/policy ASan/UBSan,
+  night PNG and previous visual regressions. Root pytest.ini and Ruff remain.
+
+# Current closeout / M3.6 scope (2026-10-23)
+
+- User requests M3.5 stale-recovery fix/review on PR8, then independent M3.6
+  branch/draft PR with bounded roaming and configurable night sleep.
+- No board/USB access, provision/flash, real services/listeners/network/PKI,
+  SSH/deployments or merges. Prior deployment permissions are not reused.
+- Preserve legacy ib_m2 NVS layout/config; future new settings use a separate
+  namespace and explicit provisioning. PCF85063 date2056 is not trusted UTC.
+- Night settings must not enter PR8; keep M3.6 dependency on unmerged PR8 explicit.
+- Do not repeat completed physical tests; electrical/audio/mic remain deferred.
+
+# Current M3.5 deployment pilot (2026-10-23)
+
+- The user subsequently authorized deployment. Core M3.5 and a rootless Fedora
+  edge are deployed; Fedora uses only the selected wired LAN, with Wi-Fi
+  disconnected but its profile retained. Preserve Core collectors, SQLite,
+  unrelated network/firewall/VPN settings and M3.3/PR7.
+- Installed app:885376B at0x10000, SHA902645be8f1d5f7ce3049f8620edee42c19108b832bb5fb0179a6204506cf1d3.
+  One application write; bootloader/table/factory backup unchanged. Do not reuse
+  consumed plans. Later host/docs commits do not identify a different installed app.
+- Initial provision timeout20000ms was rejected by the firmware parser. Corrected
+  config15000ms was accepted. A subsequent UTC renewal had explicit separate
+  authorization after auto-review blocked it; that renewal is now consumed.
+  No automatic reset/provision/flash retry; preserve all partial evidence.
+- Device HTTPS200, a second query75s later without reopening serial (USB connected), real summary/clock and
+  navigation and return to live WARNING after expiry were observed. A host check
+  identified a RAM alert with three fresh nodes; no threshold changes. Consult
+  docs/M3.5-PHYSICAL-RESULTS.md for remaining optical/negative-test limits. No all-hardware, electrical or battery PASS.
+- Host provisioning now rejects numeric limits before opening serial. Preserve
+  TLS/name/date checks and trusted USB UTC/checked RTC continuity; USB observation
+  captured reset11/CLOCK and must not be counted as a timer8/wake4 return.
+- The edge guard owns only its narrow8443 rules/return rule. Fail closed on approved
+  address/profile/interface changes; never broaden it or change DHCP/DNS to avoid
+  a failure. Physical credentials, board identifiers and raw logs stay outside Git.
+- Publish this branch and draft PR8 only; never merge or modify historical branches.
+
+# Current scope: functional M3.5 implementation (2026-10-23)
+
+- User explicitly requests functional firmware, v2 presentation API, adapted edge,
+  tests/eight SDK profiles and draft PR on feat/m3.5-esp32-preparation.
+- Supersedes preparation-only source/build restrictions below. Preserve v1,
+  HAL/power/e-paper/clock/TLS invariants. No audio/mic/touch/OTA in this phase.
+- Use synthetic scoped fixtures; temporary loopback TLS test servers are tests,
+  not deployment. No real board, NVS, services, host network or Core/NAS changes.
+- Publish this branch and draft PR, never merge or modify M3.3/PR7.
+- Functional v2 is /api/v2/devices/{id}/status, opt-in on device and edge;
+  max3 sites/6 nodes/4 alerts/4096B. v1 remains separate. Source model/C/fixtures
+  must agree. SDK source SHA pinned; use tools/build-m35.sh --all.
+- M3.5 retains snapshot/view/framebuffer only across checked deep sleep. Cold
+  boot offers a 10s explicit IBPROV1 host window; no BOOT provision gesture.
+  Do not send any provision transaction or access real USB in software tests.
+- No real PKI/credentials, LAN deployment, flashing or provision without their
+  specific future authorization. Existing USB/rollback preflight is complete.
+
+# Historical M3.5 follow-up: authorized connection/rollback preflight completed (2026-10-23)
+
+- Operator said "autorizo todo, procede" after the concrete preflight proposal.
+  Do not request the same connection/rollback inspection permission again.
+- One 303a:1001 USB/ttyACM was observed, R/W without sudo; alias absent but existing
+  detector has real-port fallback. Metadata only: NO serial open/readback/reset/
+  provision/NVS/flash. Operator later confirmed short BOOT; do not infer wake cause.
+- Factory 8 MiB hash, historical normal M3 app 9311046b/863472 B, table MD5/compatibility
+  and build security settings verified. Factory remains private behind 0700 parent.
+  New inert app rollback packet outside Git; old consumed plans never reused.
+- Application slot 0x10000/1 MiB leaves 185104 B. Candidate M3.5 firmware is NOT built;
+  Python prototype is not flashable. Verify actual binary/plan before any write.
+- Collector timer active; old M3 localhost gateway still failed/protocol, untouched.
+  A stored firmware rollback does not prove HTTPS delivery rollback functional.
+- See docs/M3.5-PREFLIGHT-RESULTS.md. New peripheral/edge-LAN/menu validation remains
+  pending. No host services/network/udev, Core/NAS, firmware or credential changes.
+
+# Historical scope: M3.5 preparation and peripheral audit (2026-10-23)
+
+- Work feat/m3.5-esp32-preparation from main da4a3ff; no M3.3 commits or PR7 edits.
+- User confirmed non-touch Waveshare ESP32-S3-ePaper-1.54 V2/N8R8. No touch
+  research, controller/dependency, GPIO allocation or new peripheral drivers.
+- Preparation only: schematic/firmware audit, offline synthetic UI fixtures,
+  proposed ESP32-edge-core/TLS and independent physical test/rollback plans.
+- Preserve components/, main/, SDK/CMake, v1 wire, HAL/power/framebuffer diff.
+  Prototype Python uses M1 font/PNG codec but is NOT production C or firmware.
+- No USB/serial, flash/NVS/eFuses/provision, listeners, services, host network,
+  firewall/Tailscale/DNS changes, SSH or credentials/PKI generation. No merge.
+- Current v1 is aggregate+two alerts, not per-site/node inventory. New rich
+  display API/decoder requires separate version/security review and commits.
+- Audio rail42 enables shared ES8311/I2C; amplifier control46 is separate and
+  not initialized in current HAL. Do not optimize away validated I2C sequencing.
+- PWR retains electrical/wake role. BOOT navigation is a host-only proposal;
+  startup provisioning/strapping conflict must be resolved before firmware.
+- docs/M3.5-PREPARATION.md indexes evidence and pending permissions. Energy,
+  work-site onboarding and physical peripheral validation remain pending.
+
+# Historical M3.3 scope: exclusively F completed after specific approval (2026-10-22)
 
 - User authorized ONLY F: fresh nodes, Fedora H/W baseline allowed without health
   policy changes; abort critical memory/pressure/OOM/deterioration. No G/H/I.

@@ -16,9 +16,11 @@ from ..app import bounded_json
 from ..base import DeviceId, Strict
 from ..models import Snapshot
 from .limits import Budget
+from .presentation import Presentation
 
 
 class EdgeConfig(Strict):
+    presentation_v2: bool = False
     upstream: str
     device_ids: Annotated[list[DeviceId], Field(min_length=1, max_length=16)]
     ca_file: str
@@ -75,9 +77,11 @@ class Edge:
 
         if not self.global_budget.take():
             return await reject(429)
-        match = re.fullmatch(r"/api/v1/devices/([a-z0-9][a-z0-9_-]{0,31})/status", scope["path"])
+        match = re.fullmatch(r"/api/v[12]/devices/([a-z0-9][a-z0-9_-]{0,31})/status", scope["path"])
+        is_v2 = scope["path"].startswith("/api/v2/")
         if (
-            scope["method"] != "GET"
+            (is_v2 and not self.config.presentation_v2)
+            or scope["method"] != "GET"
             or not match
             or match[1] not in self.device_budgets
             or scope.get("query_string")
@@ -120,6 +124,8 @@ class Edge:
             "Authorization": authorization[0].decode("ascii"),
             "X-InfraBadge-Edge": "Bearer " + self.credential,
         }
+        if is_v2:
+            outgoing["Accept-Encoding"] = "identity"
         if tags:
             outgoing["If-None-Match"] = tags[0].decode("ascii")
         try:
@@ -141,11 +147,31 @@ class Edge:
                         return await reject(403)
                     if not re.fullmatch(r'"[0-9a-f]{64}"', tag):
                         raise ValueError("upstream tag")
+                    if is_v2:
+                        server_now = remote.headers.get("x-infrabadge-now", "")
+                        expires = remote.headers.get("x-infrabadge-expires", "")
+                        if (
+                            not re.fullmatch(r"[0-9]{10}", server_now)
+                            or not re.fullmatch(r"[0-9]{10}", expires)
+                            or abs(int(server_now) - int(self.clock())) > 60
+                            or not int(server_now) < int(expires) <= int(server_now) + 3600
+                            or int(expires) <= int(self.clock())
+                        ):
+                            raise ValueError("upstream lifetime")
                     if remote.status_code == 200:
-                        snapshot = Snapshot.model_validate(bounded_json(body))
+                        if (
+                            is_v2
+                            and remote.headers.get("content-type", "").split(";")[0]
+                            != "application/json"
+                        ):
+                            raise ValueError("upstream media type")
+                        snapshot = (Presentation if is_v2 else Snapshot).model_validate(
+                            bounded_json(body)
+                        )
                         if (
                             snapshot.device_id != match[1]
-                            or snapshot.simulated
+                            or (not is_v2 and snapshot.simulated)
+                            or (is_v2 and snapshot.expires_at != int(expires))
                             or not snapshot.generated_at <= int(self.clock()) < snapshot.expires_at
                             or tag != '"' + hashlib.sha256(body).hexdigest() + '"'
                         ):
@@ -159,7 +185,13 @@ class Edge:
                             k: v
                             for k, v in remote.headers.items()
                             if k.lower()
-                            in ("etag", "x-infrabadge-now", "cache-control", "content-type")
+                            in (
+                                "etag",
+                                "x-infrabadge-now",
+                                "x-infrabadge-expires",
+                                "cache-control",
+                                "content-type",
+                            )
                         },
                     )
         except (httpx.HTTPError, TimeoutError, ValueError, UnicodeError, RecursionError):

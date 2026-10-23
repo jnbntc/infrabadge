@@ -8,7 +8,7 @@ bool ib_http_append(ib_http_collector_t *c,const void *data,int length)
     if(length){memcpy(c->reply->body+c->reply->length,data,(size_t)length);c->reply->length+=(size_t)length;}
     c->reply->body[c->reply->length]=0;return true;
 }
-bool ib_http_header(ib_http_collector_t *c,const char *key,const char *value)
+bool ib_http_header_limit(ib_http_collector_t *c,const char *key,const char *value,size_t maximum)
 {
     if(!strcasecmp(key,"ETag")){
         if(*c->reply->etag||!ib_etag_valid(value)){c->bad_header=true;return false;}
@@ -25,7 +25,10 @@ bool ib_http_header(ib_http_collector_t *c,const char *key,const char *value)
         if(c->length_seen||!length||length>4){c->bad_header=true;return false;}
         c->length_seen=true;
         for(size_t i=0;i<length;++i)if(value[i]<'0'||value[i]>'9'){c->bad_header=true;return false;}
-        if(strtoul(value,NULL,10)>IB_SNAPSHOT_MAX){c->overflow=true;return false;}
+        if(strtoul(value,NULL,10)>maximum){c->overflow=true;return false;}
     }
     return true;
 }
+
+bool ib_http_header(ib_http_collector_t *c,const char *key,const char *value)
+{return ib_http_header_limit(c,key,value,IB_SNAPSHOT_MAX);}

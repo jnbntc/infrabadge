@@ -19,6 +19,14 @@ config IB_M2_AUTO_DIAG
     bool "Separate autonomous M2 validation application (never production defaults)"
     depends on IB_M2_CONNECTIVITY
     default n
+config IB_M35_UI
+    bool "M3.5 bounded multisite UI, separate application"
+    depends on IB_M2_CONNECTIVITY && !IB_M2_AUTO_DIAG
+    default n
+config IB_M36_ROAMING
+    bool "M3.6 bounded roaming and night policy, separate profile"
+    depends on IB_M35_UI
+    default n
 config IB_M0_SLEEP_SECONDS
     int "Deep sleep duration (seconds)"
     range 1 3600

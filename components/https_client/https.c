@@ -13,7 +13,7 @@
 #include <strings.h>
 #include "lwip/sockets.h"
 typedef struct {
-    ib_http_collector_t limits;int64_t deadline;
+    ib_http_collector_t limits;int64_t deadline;char *body;size_t maximum;
     atomic_int socket;SemaphoreHandle_t done;
 } receive_t;
 /* Never log URLs, hostnames, headers, certificates, bodies or credentials. */
@@ -39,19 +39,23 @@ static esp_err_t receive(esp_http_client_event_t *event)
     if(event->event_id==HTTP_EVENT_DISCONNECTED)atomic_store(&r->socket,-1);
     if(esp_timer_get_time()>r->deadline)return ESP_FAIL;
     if(event->event_id==HTTP_EVENT_ON_DATA){
-        if(!ib_http_append(&r->limits,event->data,event->data_len))return ESP_FAIL;
+        ib_http_reply_t *reply=r->limits.reply;
+        if(event->data_len<0||reply->length>r->maximum||(size_t)event->data_len>r->maximum-reply->length){r->limits.overflow=true;return ESP_FAIL;}
+        if(event->data_len){memcpy(r->body+reply->length,event->data,(size_t)event->data_len);reply->length+=(size_t)event->data_len;}
+        r->body[reply->length]=0;
     }else if(event->event_id==HTTP_EVENT_ON_HEADER){
-        if(!ib_http_header(&r->limits,event->header_key,event->header_value))return ESP_FAIL;
+        if(!ib_http_header_limit(&r->limits,event->header_key,event->header_value,r->maximum))return ESP_FAIL;
     }
     return ESP_OK;
 }
-ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,ib_http_reply_t *reply)
+static ib_net_error_t fetch(const ib_device_config_t *config,const char *etag,ib_http_reply_t *reply,unsigned version,char *body,size_t maximum)
 {
     if(!reply||!ib_config_valid(config)||(etag&&!ib_etag_valid(etag)))return IB_NET_CONFIG;
     memset(reply,0,sizeof(*reply));char url[280],authorization[105];
-    int count=snprintf(url,sizeof(url),"%s/api/v1/devices/%s/status",config->base_url,config->device_id);
+    int count=snprintf(url,sizeof(url),"%s/api/v%u/devices/%s/status",config->base_url,version,config->device_id);
     if(count<0||(size_t)count>=sizeof(url))return IB_NET_CONFIG;
-    receive_t context={.limits={.reply=reply},.deadline=esp_timer_get_time()+(int64_t)config->http_timeout_ms*1000};
+    body[0]=0;
+    receive_t context={.limits={.reply=reply},.body=body,.maximum=maximum,.deadline=esp_timer_get_time()+(int64_t)config->http_timeout_ms*1000};
     atomic_init(&context.socket,-1);
     /* IDF5.5.5 ssl_connect_async does not copy TLS errors to the transport
      * error handle. The synchronous path does, preserving CA/SAN/date and DNS
@@ -106,3 +110,8 @@ ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,
     }
     return IB_NET_OK;
 }
+
+ib_net_error_t ib_https_fetch(const ib_device_config_t *config,const char *etag,ib_http_reply_t *reply)
+{if(!reply)return IB_NET_CONFIG;return fetch(config,etag,reply,1,reply->body,IB_SNAPSHOT_MAX);}
+ib_net_error_t ib_https_fetch_presentation(const ib_device_config_t *config,const char *etag,ib_http_reply_t *reply,char body[4097])
+{if(!reply||!body)return IB_NET_CONFIG;return fetch(config,etag,reply,2,body,4096);}

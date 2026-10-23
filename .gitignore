@@ -23,3 +23,6 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 *.token
+
+/build-m35/
+/build-m36/
