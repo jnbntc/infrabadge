@@ -329,3 +329,12 @@ y la configuración existente; sin cambios en Core/collectors/edges actuales.
 [tests y tamaño](docs/M3.6-VALIDATION.md), [procedimiento sin ejecución](docs/M3.6-DEPLOYMENT.md).
 Requiere integrar primero PR #8 y autorización separada para cualquier despliegue,
 provisión o carga. La validación física nueva y el consumo permanecen pendientes.
+
+## Preparación de edges permanentes
+
+[Paquete ejecutable e inerte](docs/PERMANENT-EDGES.md): preflight allowlisted,
+plantillas nativas/systemd, HTTPS probe con identidad propia y rollback limitado
+a sus unidades/tabla. Auditoría CASA autorizada de sólo lectura; ningún servicio
+o regla desplegados. TRABAJO requiere aprobación organizacional.
+[Plan físico futuro](docs/PERMANENT-EDGES-PHYSICAL.md): roaming/noche y energía
+pendientes; M3.5 instalado se conserva.
