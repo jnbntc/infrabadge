@@ -1,0 +1,33 @@
+{
+  "profile": "roaming",
+  "esp_idf": "v5.5.5",
+  "esp_idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
+  "firmware_tree_sha256": "193db30213b77e559d9e03df3c661b0f40db5ef65902f22057fc8e78856d6767",
+  "artifacts": {
+    "infrabadge.bin": {
+      "bytes": 904512,
+      "sha256": "ecfffaa5efc1992d91a103d376284a0f29257a544c3b4e999736eac3c8b7df80"
+    },
+    "infrabadge.elf": {
+      "bytes": 10209060,
+      "sha256": "4299a6264cd1576ef754d70621b0ce2c1c347345d9a011f831d0ab7e5ae62841"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    },
+    "bootloader/bootloader.bin": {
+      "bytes": 20848,
+      "sha256": "0b94a203919dad2470ec3ab58f401eaea6224eaa79366ef0674c497dfa2b0bb0"
+    }
+  },
+  "slot_bytes": 1048576,
+  "free_bytes": 144064,
+  "retained_ui_bytes": 6184,
+  "retained_policy_bytes": 32,
+  "board_io_performed": false,
+  "flash_performed": false,
+  "provision_performed": false,
+  "security_irreversible_enabled": false,
+  "metadata_note": "Local candidate built before publication; CI Git/app metadata may change binary hash."
+}

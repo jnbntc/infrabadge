@@ -25,3 +25,4 @@ __pycache__/
 *.token
 
 /build-m35/
+/build-m36/
