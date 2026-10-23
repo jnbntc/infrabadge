@@ -3,8 +3,10 @@
 - User explicitly authorizes ready/merge of technically prepared PR8, then PR9,
   then scoped PR7, respecting main protections. Preserve branches/backups and
   traceability; this supersedes historical no-merge instructions below.
-- PR8 integrated as c24b0dc, post-merge CI passed. PR9 retargeted to main;
-  its branch merges that base without rewriting history. Verify exact-HEAD CI.
+- PR8 integrated as c24b0dc; PR9 integrated as 66bf529. Verify post-merge
+  CI before scoped PR7 integration, then verify its exact-HEAD and main CI.
+- NAS root SSH read-only metadata audit was explicitly approved on2026-10-23;
+  this does not authorize deployment, NAS data/key reads or host changes.
 - After integration prepare permanent-edge software/artifacts only. No real
   services/SSH administration, firewall/DNS/routes/Grants, credentials, firmware,
   NVS, suspend/roaming tests or host restarts without concrete new approval.
@@ -117,6 +119,114 @@
   startup provisioning/strapping conflict must be resolved before firmware.
 - docs/M3.5-PREPARATION.md indexes evidence and pending permissions. Energy,
   work-site onboarding and physical peripheral validation remain pending.
+
+# Historical M3.3 scope: exclusively F completed after specific approval (2026-10-22)
+
+- User authorized ONLY F: fresh nodes, Fedora H/W baseline allowed without health
+  policy changes; abort critical memory/pressure/OOM/deterioration. No G/H/I.
+- Actual trial started three HEALTHY/fresh, memory improved. Only collector URL
+  port9443->9444 changed; same hostname/CA/token/identity. Original timer stayed
+  active; acquisitions continued. UNKNOWN/OFFLINE and two NEW real CPU-delta
+  recovery samples observed. Core/NAS remained HEALTHY/fresh and advanced.
+- Independent systemd user helper was exercised first, then watchdog armed
+  BEFORE fault. Exact config restoration within390s proven in its journal;
+  hashes/UID/GID/mode intact, timer enabled/active and oneshot success, transient
+  timers removed. Private consumed marker/evidence retained; NEVER repeat it.
+- See docs/M3.3-TRANSPORT-RESULTS.md. This is unreachable configured endpoint,
+  NOT physical link loss, suspend, roaming/logout or power evidence. No network,
+  central service, NAS, firmware, policy or credential change. Keep PR7 draft.
+- Do not suspend, change Wi-Fi/Tailscale/firewall/Grants, restart, logout, enable
+  linger, repair old M3 gateway or begin another disruptive trial under F approval.
+
+# Historical M3.3 scope: F READ-ONLY preflight/design (2026-10-22)
+
+- The new request explicitly authorizes ONLY F audit/design, then STOP for
+  approval before any transport/service/session/network interruption. D/E
+  approvals and consumed markers do not authorize F/G/H/I.
+- Revalidated base49e1927, PR7 draft and12 successful checks; Fedora collector
+  one timer active/enabled, three real nodes HEALTHY/fresh, TLS1.3 verified.
+- Proposed F changes ONLY gateway_url port9443->9444 on SAME hostname/CA/token.
+  Central unprivileged SSH found no9444 listener; unauthenticated2s TCP probe
+  timed out;9443 reader stayed available. This is an unreachable configured
+  endpoint test, NOT physical network loss or blocking original9443.
+- Candidate/config copy/private restoration helper and17 synthetic tests are
+  prepared outside Git. Pending manifests approved=false; authorized manifest
+  absent; no fault applied or watchdog armed. Never turn it on without approval.
+- Proposed watchdog390s (inside480s), same user manager, self-contained stdlib
+  restore; no daemon-reload/unit edits, no stop/restart of collector or core.
+  Abort on drift/observer/other-node failure; preserve all markers/evidence.
+- Acquire/save baseline precedes POST in installed M3; during transport failure
+  CPU may remain valid. Do not require warmup solely due to network failure.
+- Later reader smoke observed notebook WARNING/fresh from low available RAM;
+  core/NAS stayed HEALTHY. Do not force health or close apps. Before F, require
+  three HEALTHY nodes again or an explicitly revised baseline authorization.
+- G preparation follows completion of F; suspend requires separate permission.
+  H is plan-only; I no logout/reboot/linger. No NAS SSH/Docker/board, Grants,
+  global firewall/DNS/routes/VPN/NM or local gateway repair. Keep PR7 draft.
+
+# Historical M3.3 scope: authorized collector expiry/recovery E completed (2026-10-22)
+
+- After D, the user explicitly authorized pausing ONLY the Fedora collector for
+  at most8min, observing expiry/recovery and automatically restoring its timer.
+- E used the existing HTTPS reader identity, no new credentials or sudo. A
+  transient user watchdog was armed BEFORE pause to reactivate the SAME timer
+  at7min; normal cleanup restored it earlier and removed the watchdog.
+- The real API observed notebook UNKNOWN/stale atTTL180, OFFLINE at360, with
+  current metrics absent and explicit historical data; other two nodes remained
+  fresh and independently advanced. Resume produced NEW warmup/UNKNOWN then
+  valid CPU delta with health from current metrics. No queued old payloads or
+  duplicate collector.
+- This is collector-pause evidence, NOT network outage, suspend/resume, network
+  switching or logout. Those remain unexecuted and require separate approval.
+  No central service/config, firewall, DNS/routes/VPN/Grants, NAS or board change.
+- E consumed marker/results stay private and must not be rerun. Keep PR7 draft;
+  publish sanitized docs/results only, no secrets/raw inventory/journals.
+
+# Historical M3.3 scope: authorized phase D completed (2026-10-22)
+
+- The user explicitly authorized the concrete phase D after A/B/C: private
+  rollback copies, one new independent collector token, migration of the one
+  existing Fedora collector, central node/scoped identity and ONE exact
+  notebook/32->core/32 TCP9443 tailscale0 rule plus its own persistence line.
+  One short core-only restart was authorized; socket/core timer stayed active.
+- D completed in the private 20261022T154403Z run. Two independent Fedora samples
+  (UNKNOWN/cpu_warmup then HEALTHY/delta), fresh HEALTHY core/NAS samples,
+  TLS1.3/CA/name/date and four scoped401 rejections verified. Subsequent Fedora
+  timer deliveries succeeded. Installed M3 zipapp and all units are unchanged.
+- The previous153358Z attempt failed at Python config import before network or
+  core mutation. The launcher was corrected to match service PYTHONPATH/CWD;
+  the consumed attempt and unused token were preserved, continuation reused it.
+  Do not rerun either consumed execution marker or generate replacement tokens.
+- Central config/firewall copies and coherent SQLite backup were verified with
+  restore into a NEW destination. Live DB inode preserved; no old DB overwrite.
+  Local original M3 config/token/CA/baseline/image/units remain private.
+- Old local gateway remains in its pre-existing failed/protocol state. Do not
+  repair/start it or claim functional rollback delivery. No NAS SSH/Docker,
+  Grants, routes/DNS/NM/VPN/clock/linger, firmware or host reboot changes.
+- Further collector pause, transport interruption, suspend/resume, network
+  switch or logout tests require separate authorization. D does NOT close all
+  M3.3 acceptance criteria. Energy, external backup and DR remain deferred.
+- Update only sanitized evidence/docs and draft PR7; never publish addresses,
+  credentials, private configs or raw journals. Keep draft, no merge.
+
+# Historical M3.3 scope: READ-ONLY preflight A/B/C (2026-10-22)
+
+- Work on feat/m3.3-fedora-mobile from main da4a3ff. M3.2 PR6 is merged;
+  M3.1 PR5 closed without merge, both historical branches preserved.
+- This task authorizes Fedora read-only audit, plans, docs and a draft PR only.
+  No collector migration, service control, credential/firewall/Grants/DNS/routes/
+  NetworkManager/VPN/clock change, install, suspend/logout/reboot or board access.
+- The user separately authorized read-only SSH inspection of the central host,
+  including its existing administrative account. Strict known-host verification
+  is mandatory; operator entered sudo locally. Never access NAS or work hosts.
+- Existing installed M3 zipapp is compatible: prefer retaining code and user
+  units, one collector/timer. Do not run installer or generate live credentials.
+- Core firewall currently rejects notebook9443; old local gateway is failed.
+  Do not claim a working delivery rollback or third-node/mobility validation.
+- All proposed real addresses/config deltas/evidence stay private outside Git.
+  Next gate is explicit authorization for D, including a short core-only restart,
+  which makes retained samples historical until fresh deliveries. Grants and
+  disruptive mobility tests require separate review/authorization.
 
 # Current M3.2 integration consolidation (2026-10-22)
 

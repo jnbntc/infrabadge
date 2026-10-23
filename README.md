@@ -26,6 +26,37 @@ Despliegue autorizado: Core y edge cableado operativos, aplicación M3.5 instala
 HTTPS y resumen reales confirmados. El informe separa pendientes y capturas
 sintéticas. Energía/audio/micrófono quedan diferidos.
 
+## M3.3: notebook incorporada; movilidad pendiente
+
+La fase D autorizada incorporó la notebook como tercer nodo independiente al
+core mediante HTTPS/Tailscale. Reutiliza el collector M3 y su único timer, sin
+cambiar código ni unidades. Se verificaron TLS1.3, identidad exclusiva, entregas
+reales y tres nodos frescos HEALTHY tras el reinicio corto sólo del core.
+SQLite y las copias de rollback se verificaron; socket y timer centrales siguen
+intactos. El gateway local anterior conserva su fallo preexistente.
+
+- [Resultados reales y límites de las fases D/E/F](docs/M3.3-DEPLOYMENT-RESULTS.md).
+- [Arquitectura y compatibilidad](docs/M3.3-ARCHITECTURE.md).
+- [Preflight histórico y hallazgos](docs/M3.3-FEDORA-PREFLIGHT.md).
+- [Cambios aplicados y límites de autorización](docs/M3.3-MIGRATION.md).
+- [Matriz de movilidad y pruebas pendientes](docs/M3.3-MOBILITY-VALIDATION.md).
+- [Transporte F: resultado real y restauración automática](docs/M3.3-TRANSPORT-RESULTS.md).
+- [Diseño y preflight histórico F](docs/M3.3-TRANSPORT-PREFLIGHT.md).
+- [Rollback y límites de la instalación anterior](docs/M3.3-ROLLBACK.md).
+
+**La pausa autorizada del collector también pasó:** caducidad UNKNOWN/OFFLINE,
+datos históricos explícitos y recuperación con warmup/delta nuevos, sin afectar
+a los otros nodos. El timer quedó activo y su watchdog temporal se retiró.
+
+**El transporte F también pasó:** UNKNOWN/OFFLINE ante destino inaccesible y
+recuperación con muestras nuevas; restauración independiente dentro de390s.
+
+**Cierre acotado D/E/F:** [criterios y compatibilidad](docs/M3.3-CLOSEOUT.md).
+Suspensión G, cambio de red H y sesión I son validaciones operativas futuras,
+no demostradas ni autorizadas por este cierre. Duplicados/replay de la identidad
+real sólo se probaron mediante fixtures. Energía sigue diferida. La integración
+no cambia collector, unidades, Core ni firmware instalados.
+
 ## M3.2: núcleo distribuido y piloto Linux
 
 Core multisitio, collectors con identidad propia, SQLite transaccional e históricos
@@ -44,9 +75,8 @@ actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
   [pruebas software](docs/M3.2-VALIDATION.md).
 - [Roadmap histórico M3.3–M3.5](docs/ROADMAP-M3.3-M3.5.md).
 
-PR5/M3.1 es candidato a cierre por cambio arquitectónico; sigue sin fusionar y
-su cierre requiere autorización. PR6 se prepara para revisión; merge necesita
-permiso explícito. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
+PR5/M3.1 fue cerrado sin fusionar, con explicación y rama conservadas. PR6/M3.2
+se integró con autorización mediante `da4a3ff`; CI de main aprobada. Las plantillas nativas/Quadlet son inertes. MemoryMax no es
 efectivo en el central sin memory controller; LimitAS no equivale a cap de RAM.
 Backup externo, segunda tarjeta, DR y estabilidad prolongada siguen diferidos por
 el operador, sin convertirse en bloqueos nuevos del piloto validado.
@@ -62,8 +92,11 @@ Datos ausentes/caducados se muestran UNKNOWN, separados del fallo de red de la p
 
 La validación de software incluye adquisición real de Fedora → HTTPS temporal en
 localhost → snapshot M2 y304, sin instalación automática. El usuario autorizó
-después los servicios locales: collector periódico y gateway rootless quedaron
-instalados y activos, con HTTPS sólo en localhost. Se verificaron caducidad,
+después los servicios locales: en aquella validación el collector periódico y
+gateway rootless quedaron activos, con HTTPS sólo en localhost. Su estado actual
+quedó registrado en el preflight M3.3 como fallido. Tras la migración autorizada
+el collector envía al core y el gateway local conserva su fallo anterior. Durante
+la validación original M3 se verificaron caducidad,
 recuperación y reinicio del gateway. No se cambió la red ni se habilitó linger.
 La carga M3 fue autorizada y realizada una vez: la placa recibió HTTPS200 y el
 usuario confirmó métricas reales, REAL, hora verificada y vencimiento en pantalla.
@@ -110,7 +143,7 @@ Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-resu
 
 M1.1 se integró mediante [PR #2](https://github.com/jnbntc/infrabadge/pull/2) y M2
 mediante [PR #3](https://github.com/jnbntc/infrabadge/pull/3), con autorización del
-usuario. Ambos están fusionados en main. M3 está integrada mediante PR #4. M3.2 se propone por separado, sin merge automático.
+usuario. Ambos están fusionados en main. M3 está integrada mediante PR #4. M3.2 está integrada mediante PR #6; M3.3 cierra D/E/F con alcance acotado y G/H/I pendientes.
 
 ```sh
 bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware
