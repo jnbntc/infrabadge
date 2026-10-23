@@ -1,0 +1,48 @@
+{
+  "profile": "multisite",
+  "status": "passed",
+  "target": "esp32s3",
+  "esp_idf": "v5.5.5",
+  "flash_size": "8MB",
+  "artifacts": {
+    "infrabadge.elf": {
+      "bytes": 10033544,
+      "sha256": "0edda93dca8d76558795adcde38a1cd6b146a4c59ed99b5b67753bd9905df82d"
+    },
+    "infrabadge.bin": {
+      "bytes": 885376,
+      "sha256": "7ade4761b3474391845f06d2ca3ab3eb78f6372431cc8e95dbded6b1d88f4f53"
+    },
+    "bootloader/bootloader.bin": {
+      "bytes": 20848,
+      "sha256": "a90fe13214fee3f2aa3cf42453d45da07160691ab59e24a89c1113519391962e"
+    },
+    "partition_table/partition-table.bin": {
+      "bytes": 3072,
+      "sha256": "7f00b6c042a89b15b0cac534f82ed988caf29278ff5700b0c511eb1b5bb7c820"
+    }
+  },
+  "hardware_validation": "not_performed",
+  "flash_performed": false,
+  "source_commit": "e8b6ef7be60cc55116501ebc59470214dac763b9",
+  "firmware_source_sha256": "bc7fa23dc2c150c2cda9b98d91be932b09498d1fcfa036b3fe9b2601a9942ab7",
+  "esp_idf_commit": "b774170ff46c393eeb5e495ea37936038d3f4f4f",
+  "schema_version": 2,
+  "partition": {
+    "offset": "0x10000",
+    "bytes": 1048576,
+    "app_bytes": 885376,
+    "free_bytes": 163200,
+    "ota_slots": 0
+  },
+  "memory": {
+    "snapshot_bytes": 1084,
+    "retained_bytes": 6184,
+    "max_json_bytes": 4096,
+    "framebuffer_bytes": 5000
+  },
+  "board_io_performed": false,
+  "provision_performed": false,
+  "edge_deployed": false,
+  "ci_status": "consult exact PR HEAD; local results are not remote CI"
+}

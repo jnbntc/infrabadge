@@ -12,13 +12,16 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
-## M3.5: preparación ESP32 y periféricos
+## M3.5: UI multisitio y edge HTTPS
 
-[Auditoría y entregables](docs/M3.5-PREPARATION.md): esquema V2, matriz GPIO,
-arquitectura ESP32↔Edge↔Core y propuesta de ocho vistas con trece capturas
-sintéticas. [Galería offline](docs/m35-ui/index.html). Rama independiente desde
-main; M3.3/PR7 siguen separados. Sin despliegue, puertos, firmware/NVS o drivers
-nuevos. Las validaciones físicas y eléctricas están pendientes.
+[Implementación](docs/M3.5-IMPLEMENTATION.md): perfil ESP32 separado con cinco
+pantallas C, BOOT, SHTC3, retención RTC y framebuffer diff; proyección device v2
+acotada y edge de dos saltos TLS, conservando v1 y SQLite M3.2.
+[Capturas C](docs/m35-firmware-ui/index.html),
+[validación](docs/M3.5-VALIDATION.md),
+[edge inerte](docs/M3.5-EDGE.md), [prueba física pendiente](docs/M3.5-PHYSICAL-PLAN.md).
+Compilar ocho perfiles sin hardware: `bash tools/build-m35.sh --all`.
+Sin despliegue, flasheo ni provisión; energía/audio/micrófono quedan diferidos.
 
 ## M3.2: núcleo distribuido y piloto Linux
 
@@ -36,7 +39,7 @@ actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
   y [persistencia](docs/M3.2-PERSISTENCE.md).
 - [Seguridad y Tailscale](docs/M3.2-SECURITY.md), [instalación nativa/ARM64 y rollback](docs/M3.2-DEPLOYMENT.md),
   [pruebas software](docs/M3.2-VALIDATION.md).
-- [Roadmap M3.3–M3.5, sin implementar](docs/ROADMAP-M3.3-M3.5.md).
+- [Roadmap histórico M3.3–M3.5](docs/ROADMAP-M3.3-M3.5.md).
 
 PR5/M3.1 es candidato a cierre por cambio arquitectónico; sigue sin fusionar y
 su cierre requiere autorización. PR6 se prepara para revisión; merge necesita

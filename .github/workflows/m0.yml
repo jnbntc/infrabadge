@@ -58,9 +58,9 @@ jobs:
         run: |
           docker pull ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2
           docker run --rm --network none --cap-drop all --security-opt no-new-privileges \
-            --user "$(id -u):$(id -g)" --volume "$PWD:/project" --workdir /project \
+            --user "$(id -u):$(id -g)" --env HOME=/tmp/infrabadge-home --volume "$PWD:/project" --workdir /project \
             ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2 \
-            /usr/local/bin/idf-env bash tools/m35/test-native.sh --build-only
+            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/m35/test-native.sh --build-only'
       - name: Collector, gateway, integration and protocol regression (deterministic fixtures)
         run: |
           /tmp/infrabadge-gateway/bin/python tools/m2/generate_protocol.py --check

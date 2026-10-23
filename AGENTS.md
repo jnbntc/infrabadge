@@ -1,4 +1,22 @@
-# M3.5 follow-up: authorized connection/rollback preflight completed (2026-10-23)
+# Current scope: functional M3.5 implementation (2026-10-23)
+
+- User explicitly requests functional firmware, v2 presentation API, adapted edge,
+  tests/eight SDK profiles and draft PR on feat/m3.5-esp32-preparation.
+- Supersedes preparation-only source/build restrictions below. Preserve v1,
+  HAL/power/e-paper/clock/TLS invariants. No audio/mic/touch/OTA in this phase.
+- Use synthetic scoped fixtures; temporary loopback TLS test servers are tests,
+  not deployment. No real board, NVS, services, host network or Core/NAS changes.
+- Publish this branch and draft PR, never merge or modify M3.3/PR7.
+- Functional v2 is /api/v2/devices/{id}/status, opt-in on device and edge;
+  max3 sites/6 nodes/4 alerts/4096B. v1 remains separate. Source model/C/fixtures
+  must agree. SDK source SHA pinned; use tools/build-m35.sh --all.
+- M3.5 retains snapshot/view/framebuffer only across checked deep sleep. Cold
+  boot offers a 10s explicit IBPROV1 host window; no BOOT provision gesture.
+  Do not send any provision transaction or access real USB in software tests.
+- No real PKI/credentials, LAN deployment, flashing or provision without their
+  specific future authorization. Existing USB/rollback preflight is complete.
+
+# Historical M3.5 follow-up: authorized connection/rollback preflight completed (2026-10-23)
 
 - Operator said "autorizo todo, procede" after the concrete preflight proposal.
   Do not request the same connection/rollback inspection permission again.
