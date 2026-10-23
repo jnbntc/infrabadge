@@ -47,6 +47,17 @@ static void text(uint8_t *f, int x, int y, const char *s, int scale, bool white)
             if (rows[row] & (1u << (4-col))) rect(f,x+col*scale,y+row*scale,scale,scale,white);
     }
 }
+bool ib_ui_text(uint8_t *f,size_t size,const char *s,int x,int y,unsigned scale)
+{
+    if(!f||size!=IB_UI_FRAME_BYTES||!s||!*s||x<0||y<0||!scale||scale>4)return false;
+    size_t length=strlen(s);
+    if(length>33||(unsigned)x+(length*6-1)*scale>200||(unsigned)y+7*scale>200)return false;
+    for(const char *c=s;*c;++c){bool found=false;
+        for(size_t i=0;i<sizeof(ui_glyphs)/sizeof(ui_glyphs[0]);++i)found|=ui_glyphs[i].code==*c;
+        if(!found)return false;
+    }
+    text(f,x,y,s,(int)scale,false);return true;
+}
 static void icon(uint8_t *f, ib_status_t status, int x, int y)
 {
     /* Original 30x30 icons: check, warning triangle, crossed square, disconnected link. */

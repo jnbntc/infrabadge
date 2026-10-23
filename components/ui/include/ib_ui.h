@@ -33,3 +33,6 @@ void ib_ui_input_init(ib_ui_input_t *input, bool boot, bool power, uint32_t now_
 unsigned ib_ui_input_poll(ib_ui_input_t *input, bool boot, bool power, uint32_t now_ms);
 /* Exact-size, MSB-first, 1=white framebuffer. No allocation, clock or hardware I/O. */
 bool ib_ui_render(const ib_ui_model_t *model, ib_screen_t screen, uint8_t *frame, size_t length);
+
+/* Shared bounded M1 font primitive; rejects unsupported glyphs/clipping. */
+bool ib_ui_text(uint8_t *frame,size_t size,const char *text,int x,int y,unsigned scale);

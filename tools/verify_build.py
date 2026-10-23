@@ -59,7 +59,7 @@ def elf_retained_record(data):
 
 def inspect(build, profile):
     config = json.loads((build / 'config/sdkconfig.json').read_text())
-    network_profile = profile in ('connectivity','automation')
+    network_profile = profile in ('connectivity','automation','multisite')
     assert config['IDF_TARGET'] == 'esp32s3', 'Unexpected target'
     assert config['ESPTOOLPY_FLASHSIZE'] == '8MB', 'Flash size must be 8MB'
     assert config.get('ESP_CONSOLE_USB_SERIAL_JTAG'), 'USB Serial/JTAG console required'
@@ -70,11 +70,12 @@ def inspect(build, profile):
     if network_profile:
         assert config.get('MBEDTLS_HAVE_TIME_DATE'), 'TLS certificate date validation required'
     modes = [name for name in ['display', 'sensors', 'sleep'] if config.get(f'IB_M0_{name.upper()}')]
-    assert modes == ([] if profile in ('ui','timer','connectivity','automation') else [profile]), f'Wrong M0 profile: {modes}'
+    assert modes == ([] if profile in ('ui','timer','connectivity','automation','multisite') else [profile]), f'Wrong M0 profile: {modes}'
     assert bool(config.get('IB_M1_UI')) == (profile == 'ui'), 'Wrong M1 selection'
     assert bool(config.get('IB_M11_TIMER_DIAG')) == (profile == 'timer'), 'Wrong M1.1 selection'
     assert bool(config.get('IB_M2_CONNECTIVITY')) == network_profile, 'Wrong M2 selection'
     assert bool(config.get('IB_M2_AUTO_DIAG')) == (profile == 'automation'), 'Wrong autonomous diagnostic selection'
+    assert bool(config.get('IB_M35_UI')) == (profile == 'multisite'), 'Wrong M3.5 selection'
     description = json.loads((build / 'project_description.json').read_text())
     assert description['git_revision'] in ['v5.5.5', '5.5.5'], 'Unexpected IDF version'
     artifacts = {}
@@ -86,6 +87,7 @@ def inspect(build, profile):
             assert data[:4] == b'\x7fELF' and struct.unpack_from('<H', data, 18)[0] == 94, 'Expected Xtensa ELF'
             linked_ui = {'ib_ui_render', 'ib_ui_mock', 'ib_display_present', 'ib_power_sleep'} & elf_symbols(data)
             expected_ui = {'ib_ui_render','ib_ui_mock','ib_display_present','ib_power_sleep'} if profile=='ui' else (
+                {'ib_display_present','ib_power_sleep'} if profile=='multisite' else
                 {'ib_ui_render','ib_display_present'} if profile=='automation' else
                 {'ib_ui_render','ib_display_present','ib_power_sleep'} if network_profile else set())
             assert linked_ui == expected_ui, f'Unexpected UI linkage: {linked_ui}'
@@ -94,7 +96,9 @@ def inspect(build, profile):
             if profile=='timer':
                 elf_retained_record(data)
             network={'ib_cycle_run','ib_snapshot_decode','ib_wifi_start','ib_https_fetch'} & elf_symbols(data)
-            assert (len(network)==4 if network_profile else not network), f'Unexpected network linkage: {network}'
+            assert (network == {'ib_wifi_start'} if profile=='multisite' else len(network)==4 if network_profile else not network), f'Unexpected network linkage: {network}'
+            m35={'ib35_decode','ib35_render','ib35_resume','ib_https_fetch_presentation'} & elf_symbols(data)
+            assert (len(m35)==4 if profile=='multisite' else not m35), 'M3.5 linkage isolation'
             auto={'ib_ma_resume','ib_ma_append','ib_ma_export'} & elf_symbols(data)
             assert (len(auto)==3 if profile=='automation' else not auto), 'Autonomous journal isolation failed'
         elif name == 'infrabadge.bin' and profile == 'automation':
@@ -114,7 +118,7 @@ def inspect(build, profile):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--build', type=Path, required=True)
-    parser.add_argument('--profile', choices=['display', 'sensors', 'sleep', 'ui', 'timer', 'connectivity', 'automation'], required=True)
+    parser.add_argument('--profile', choices=['display', 'sensors', 'sleep', 'ui', 'timer', 'connectivity', 'automation', 'multisite'], required=True)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     result = inspect(args.build, args.profile)
