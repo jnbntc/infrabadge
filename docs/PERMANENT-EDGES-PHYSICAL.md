@@ -24,6 +24,9 @@ El ESP32 actual conserva M3.5. No reutilizar provisiones/planes consumidos.
 7.08:00: invalidar caché y obtener hora/snapshot verificados antes de métricas
    actuales. Con fallo aplicar caducidad. RTC inválido/reinicio cancela permiso
    prolongado y usa fallback acotado;2056 del PCF no es UTC confiable.
+   Para recuperar un cold reset sin tiempo confiable, preparar renovación UTC
+   física autorizada por separado; no bootstrap TLS/NTP inseguro ni aceptar una
+   semilla NVS antigua como hora actual. Registrar CLOCK hasta esa recuperación.
 
 Registrar reset/wake cuando sea necesario sin asumir que abrir USB es pasivo:
 puede reiniciar y cambiar continuidad temporal. E-paper retenida no demuestra
