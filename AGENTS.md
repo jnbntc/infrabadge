@@ -1,3 +1,14 @@
+# Current closeout / M3.6 scope (2026-10-23)
+
+- User requests M3.5 stale-recovery fix/review on PR8, then independent M3.6
+  branch/draft PR with bounded roaming and configurable night sleep.
+- No board/USB access, provision/flash, real services/listeners/network/PKI,
+  SSH/deployments or merges. Prior deployment permissions are not reused.
+- Preserve legacy ib_m2 NVS layout/config; future new settings use a separate
+  namespace and explicit provisioning. PCF85063 date2056 is not trusted UTC.
+- Night settings must not enter PR8; keep M3.6 dependency on unmerged PR8 explicit.
+- Do not repeat completed physical tests; electrical/audio/mic remain deferred.
+
 # Current M3.5 deployment pilot (2026-10-23)
 
 - The user subsequently authorized deployment. Core M3.5 and a rootless Fedora

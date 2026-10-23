@@ -34,6 +34,16 @@ int main(int argc,char **argv)
     assert(ib35_resume(&retained,123,true));assert(!ib35_resume(&retained,123,false));assert(!ib35_resume(&retained,124,true));
     retained.display.last[123]^=1;assert(!ib35_resume(&retained,123,true));
     assert(ib35_sleep_seconds(&snapshot,snapshot.expires_at-2,900,0)==2);
+    assert(ib35_sleep_seconds(&snapshot,snapshot.expires_at,900,0)==60);
+    assert(ib35_sleep_seconds(&snapshot,snapshot.expires_at+120,900,1)==120);
+    assert(ib35_sleep_seconds(NULL,0,900,3)==300);
+    assert(ib35_sleep_seconds(NULL,0,900,100)==300);
+    ib35_snapshot_t unknown=snapshot;unknown.expires_at=unknown.generated_at+1000;unknown.status=IB35_UNKNOWN;
+    assert(ib35_sleep_seconds(&unknown,unknown.generated_at,900,0)==60);
+    unknown.status=IB35_OFFLINE;
+    assert(ib35_sleep_seconds(&unknown,unknown.generated_at,900,1)==120);
+    assert(ib35_sleep_seconds(&snapshot,snapshot.generated_at,900,0)<=snapshot.expires_at-snapshot.generated_at);
+
     ib35_button_t button;ib35_button_init(&button,true,0);
     assert(!ib35_button_poll(&button,false,1));assert(!ib35_button_poll(&button,false,50));
     assert(!ib35_button_poll(&button,true,60));assert(!ib35_button_poll(&button,true,110));

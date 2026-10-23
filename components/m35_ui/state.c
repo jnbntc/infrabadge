@@ -37,8 +37,17 @@ void ib35_navigate(ib35_nav_t *n,unsigned event,unsigned nodes)
 unsigned ib35_sleep_seconds(const ib35_snapshot_t *s,uint32_t now,unsigned interval,unsigned failures)
 {
     if(interval<60||interval>3600)interval=900;
-    for(unsigned i=0;i<failures&&i<3&&interval<3600;++i)interval=interval>1800?3600:interval*2;
-    if(s&&s->valid&&s->expires_at>now&&interval>s->expires_at-now)interval=s->expires_at-now;
+    /* Stale/absent or explicitly UNKNOWN/OFFLINE data gets one bounded retry
+     * per deep-sleep wake, never an awake reconnect loop. No fast retry after a
+     * transport failure: exponential delays remain capped at five minutes. */
+    bool current=ib35_fresh(s,now,true);
+    if(!current||s->status==IB35_UNKNOWN||s->status==IB35_OFFLINE){
+        if(interval>60)interval=60;
+        for(unsigned i=0;i<failures&&i<3;++i)interval=interval>150?300:interval*2;
+    }else{
+        for(unsigned i=0;i<failures&&i<3&&interval<3600;++i)interval=interval>1800?3600:interval*2;
+    }
+    if(current&&interval>s->expires_at-now)interval=s->expires_at-now;
     return interval;
 }
 void ib35_seal(ib35_retained_t *r,uint32_t config_crc)
