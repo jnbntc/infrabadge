@@ -11,9 +11,10 @@
   config15000ms was accepted. A subsequent UTC renewal had explicit separate
   authorization after auto-review blocked it; that renewal is now consumed.
   No automatic reset/provision/flash retry; preserve all partial evidence.
-- Device HTTPS200, a second query75s later without USB, real summary/clock and
-  navigation were observed. Consult docs/M3.5-PHYSICAL-RESULTS.md for limits and
-  current pending confirmations. No all-hardware, electrical or battery PASS.
+- Device HTTPS200, a second query75s later without reopening serial (USB connected), real summary/clock and
+  navigation and return to live WARNING after expiry were observed. A host check
+  identified a RAM alert with three fresh nodes; no threshold changes. Consult
+  docs/M3.5-PHYSICAL-RESULTS.md for remaining optical/negative-test limits. No all-hardware, electrical or battery PASS.
 - Host provisioning now rejects numeric limits before opening serial. Preserve
   TLS/name/date checks and trusted USB UTC/checked RTC continuity; USB observation
   captured reset11/CLOCK and must not be counted as a timer8/wake4 return.
