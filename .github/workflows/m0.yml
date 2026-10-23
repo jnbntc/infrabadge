@@ -1,4 +1,4 @@
-name: InfraBadge M0 to M3.5
+name: InfraBadge M0 to M3.6
 
 on:
   push:
@@ -18,13 +18,13 @@ jobs:
           persist-credentials: false
       - name: Pull pinned development image
         run: docker pull ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2
-      - name: Native/visual tests and eight firmware profiles, offline without hardware
+      - name: Native/visual tests and nine firmware profiles, offline without hardware
         run: |
           docker run --rm --network none --cap-drop all --security-opt no-new-privileges \
             --user "$(id -u):$(id -g)" --env HOME=/tmp/infrabadge-home --env IB_SANITIZE=1 \
             --volume "$PWD:/project" --workdir /project \
             ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2 \
-            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/build-m35.sh --inside --all'
+            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/build-m36.sh --inside --all'
       - name: Build logs and verification manifests
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -37,6 +37,10 @@ jobs:
             results/m2-build-*/
             results/m2-auto-build-*/
             results/m35-build-*/
+            results/m36-build-*/
+            build-m36/roaming/infrabadge.bin
+            build-m36/roaming/infrabadge.elf
+            build-m36/roaming/config/sdkconfig.json
             build-m35/multisite/infrabadge.bin
             build-m35/multisite/infrabadge.elf
             build-m35/multisite/config/sdkconfig.json
@@ -60,7 +64,7 @@ jobs:
           docker run --rm --network none --cap-drop all --security-opt no-new-privileges \
             --user "$(id -u):$(id -g)" --env HOME=/tmp/infrabadge-home --volume "$PWD:/project" --workdir /project \
             ghcr.io/jnbntc/iot-dev@sha256:1856a24089587f0d2d57801ba1bc65a008cd36c751a92118c3e308b23ab4ebb2 \
-            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash tools/m35/test-native.sh --build-only'
+            bash -c 'mkdir -p "$HOME"; exec /usr/local/bin/idf-env bash -c "bash tools/m35/test-native.sh --build-only && bash tools/m36/test-native.sh --build-only"'
       - name: Collector, gateway, integration and protocol regression (deterministic fixtures)
         run: |
           /tmp/infrabadge-gateway/bin/python tools/m2/generate_protocol.py --check

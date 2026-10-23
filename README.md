@@ -318,3 +318,14 @@ M0 tras autorización explícita del usuario. Después se cargó M1 y, para el d
 actual, M1.1 con autorización nueva; fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
 cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. La licencia general del código
 original se elegirá antes de publicar; los avisos Waveshare ya están preservados.
+
+
+## Preparación M3.6: roaming y reposo nocturno
+
+Perfil independiente `roaming`, todavía no instalado: dos redes/edges fijos,
+TLS verificado y suspensión configurable00:00–08:00 Buenos Aires. Preserva M3.5
+y la configuración existente; sin cambios en Core/collectors/edges actuales.
+[Arquitectura](docs/M3.6-ARCHITECTURE.md), [modo nocturno](docs/NIGHT-MODE.md),
+[tests y tamaño](docs/M3.6-VALIDATION.md), [procedimiento sin ejecución](docs/M3.6-DEPLOYMENT.md).
+Requiere integrar primero PR #8 y autorización separada para cualquier despliegue,
+provisión o carga. La validación física nueva y el consumo permanecen pendientes.

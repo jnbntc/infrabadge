@@ -1,3 +1,32 @@
+# Current PR consolidation (2026-10-23)
+
+- User explicitly authorizes ready/merge of technically prepared PR8, then PR9,
+  then scoped PR7, respecting main protections. Preserve branches/backups and
+  traceability; this supersedes historical no-merge instructions below.
+- PR8 integrated as c24b0dc, post-merge CI passed. PR9 retargeted to main;
+  its branch merges that base without rewriting history. Verify exact-HEAD CI.
+- After integration prepare permanent-edge software/artifacts only. No real
+  services/SSH administration, firewall/DNS/routes/Grants, credentials, firmware,
+  NVS, suspend/roaming tests or host restarts without concrete new approval.
+- M3.3 D/E/F are historical real evidence; G/H/I remain future operational tests.
+
+# Historical M3.6 implementation before consolidation (2026-10-23)
+
+- Work feat/m3.6-multisite-roaming, stacked on unmerged PR8/a4d6c05.
+  Draft PR base feat/m3.5-esp32-preparation; never merge or change PR7.
+- New ninth profile only: mobile_policy and CONFIG_IB_M36_ROAMING, two fixed
+  SSIDs/HTTPS bindings, no CA/auth fallback. Separate ib_m36 bundle; never open
+  ib_m2 or migrate/erase its keys from new provisioning code.
+- Night is opt-in,00–08 Buenos Aires UTC-3; keep legacy3600s clock lease and
+  <=3600s Power Manager timer. A bounded fixed-deadline retained permit checks
+  ESP continuity against read-only PCF relative advance (2056 is NOT UTC).
+  No radio/render on valid night wakes; morning invalidates cache then verifies
+  TLS/server time before fresh data. Invalid clock/RTC cancels long-sleep trust.
+- Tests/mock TLS listeners are loopback only; no real services, USB/NVS/flash,
+  PKI/credentials, LAN listeners, SSH/network/Grants changes or physical tests.
+- tools/build-m36.sh --all: nine profiles plus native app/policy ASan/UBSan,
+  night PNG and previous visual regressions. Root pytest.ini and Ruff remain.
+
 # Current closeout / M3.6 scope (2026-10-23)
 
 - User requests M3.5 stale-recovery fix/review on PR8, then independent M3.6
