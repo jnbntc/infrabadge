@@ -143,7 +143,7 @@ Ver [cierre](docs/M2-CLOSEOUT.md) y [evidencia por caso](docs/m2-autonomous-resu
 
 M1.1 se integró mediante [PR #2](https://github.com/jnbntc/infrabadge/pull/2) y M2
 mediante [PR #3](https://github.com/jnbntc/infrabadge/pull/3), con autorización del
-usuario. Ambos están fusionados en main. M3 está integrada mediante PR #4. M3.2 está integrada mediante PR #6; M3.3 se prepara aparte, sin merge automático.
+usuario. Ambos están fusionados en main. M3 está integrada mediante PR #4. M3.2 está integrada mediante PR #6; M3.3 cierra D/E/F con alcance acotado y G/H/I pendientes.
 
 ```sh
 bash tools/build-m2-auto.sh --all  # siete perfiles + tests C/sanitizadores/visuales; no hardware
