@@ -57,6 +57,8 @@ def plan(value):
         raise ValueError("dns_labels")
     if value["service_user"] in ("root", "nobody"):
         raise ValueError("dedicated_unprivileged_user")
+    if any(type(value[k]) is not str for k in ("lan_cidr", "lan_ipv4", "client_ipv4", "core_ipv4")):
+        raise ValueError("address_string_required")
     network = ipaddress.IPv4Network(value["lan_cidr"], strict=True)
     lan, client, core = (
         ipaddress.IPv4Address(value[k]) for k in ("lan_ipv4", "client_ipv4", "core_ipv4")
@@ -233,6 +235,7 @@ def probe(value, clock=time.time, connection_factory=http.client.HTTPSConnection
     """Dedicated probe device identity; never reuse the physical badge's token."""
     from urllib.parse import urlsplit
 
+    from infrabadge_gateway.app import bounded_json
     from infrabadge_gateway.distributed.presentation import Presentation
     from infrabadge_gateway.distributed.private import private_bytes
 
@@ -306,7 +309,7 @@ def probe(value, clock=time.time, connection_factory=http.client.HTTPSConnection
                 ):
                     raise ValueError("probe_response")
                 if response.status == 200:
-                    model = Presentation.model_validate_json(content)
+                    model = Presentation.model_validate(bounded_json(content))
                     if (
                         model.device_id != value["probe_device_id"]
                         or model.expires_at != remote_expiry

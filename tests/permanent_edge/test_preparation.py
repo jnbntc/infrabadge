@@ -28,6 +28,7 @@ def example():
         ("release_sha", "main"),
         ("lan_interface", "lan0;false"),
         ("lan_ipv4", "0.0.0.0"),
+        ("lan_ipv4", 169279490),
         ("lan_ipv4", "10.23.0.255"),
         ("client_ipv4", "10.24.0.2"),
         ("lan_cidr", "0.0.0.0/0"),

@@ -167,8 +167,8 @@ físico posterior en [PERMANENT-EDGES-PHYSICAL.md](PERMANENT-EDGES-PHYSICAL.md).
 
 ## Validación reproducible de este paquete
 
-Suite predeterminada `python -B -m pytest -c pytest.ini`: **438 tests passed**
-en15.62s local, incluido el paquete nuevo33tests; un warning heredado de
+Suite predeterminada `python -B -m pytest -c pytest.ini`: **439 tests passed**
+en15.84s local, incluido el paquete nuevo34tests; un warning heredado de
 Starlette/TestClient. `PATH=<venv>/bin:$PATH bash tools/m3/check_style.sh`:
 Ruff y formato66 archivos aprobados. No dependencias nuevas.
 
