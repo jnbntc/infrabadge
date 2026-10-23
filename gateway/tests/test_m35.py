@@ -325,7 +325,7 @@ def test_c_parser_rejects_invalid_transactionally(tmp_path, native, case):
 
 
 def test_fixtures_reproduce_core(tmp_path):
-    for scenario in ("healthy", "warning", "critical", "missing", "stale", "offline"):
+    for scenario in ("healthy", "warning", "critical", "missing", "stale", "offline", "never"):
         folder = tmp_path / scenario
         folder.mkdir(mode=0o700)
         assert json.loads(body(folder, scenario)) == json.loads(
@@ -471,3 +471,19 @@ def test_native_memory_bounds(native):
     assert result["retained_bytes"] <= 7680
     assert result["snapshot_bytes"] <= 1600
     assert result["max_json_bytes"] == 4096 and result["framebuffer_bytes"] == 5000
+
+
+def test_no_samples_are_unknown_without_zero_metrics_or_fake_age(tmp_path, native):
+    folder = tmp_path / "empty"
+    folder.mkdir(mode=0o700)
+    content = body(folder, "never")
+    model = Presentation.model_validate_json(content)
+    assert model.status == "UNKNOWN" and all(
+        n.sampled_at is None and n.valid_until is None and n.cpu is None for n in model.nodes
+    )
+    source = tmp_path / "never.json"
+    source.write_bytes(content)
+    result = subprocess.run(
+        [str(native), str(source), "0", str(NOW)], capture_output=True, check=True
+    )
+    assert len(result.stdout) == 5011

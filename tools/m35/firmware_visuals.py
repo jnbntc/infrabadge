@@ -13,6 +13,7 @@ from simulate_ui import png, png_pixels
 
 ROOT = Path(__file__).resolve().parents[2]
 CASES = {
+    "no-samples": ("never", 0, 1800000000, 1, -2147483648, -1, 1),
     "summary": ("healthy", 0, 1800000000, 1, -2147483648, -1, 1),
     "sites-empty-work": ("healthy", 1, 1800000000, 1, -2147483648, -1, 1),
     "node": ("healthy", 2, 1800000000, 1, -2147483648, -1, 1),

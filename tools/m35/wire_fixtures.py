@@ -28,7 +28,7 @@ def body(folder, scenario="healthy"):
     store = Store(folder / "core.db")
     core = Core(config(), store)
     try:
-        for node in ("a", "b", "c"):
+        for node in () if scenario == "never" else ("a", "b", "c"):
             m = sample(
                 node=node,
                 available=2
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
-    for scenario in ("healthy", "warning", "critical", "missing", "stale", "offline"):
+    for scenario in ("healthy", "warning", "critical", "missing", "stale", "offline", "never"):
         with tempfile.TemporaryDirectory() as temporary:
             content = body(Path(temporary), scenario)
         target = root / "tests/fixtures/m35-wire" / (scenario + ".json")
@@ -69,4 +69,4 @@ if __name__ == "__main__":
             assert json.loads(target.read_bytes()) == json.loads(content), scenario
         else:
             target.write_bytes(content + b"\n")
-    print("PASS: six synthetic Core v2 fixtures")
+    print("PASS: seven synthetic Core v2 fixtures")

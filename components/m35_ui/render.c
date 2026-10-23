@@ -41,8 +41,8 @@ bool ib35_render(const ib35_snapshot_t *s,const ib35_nav_t *nav,uint32_t now,boo
             snprintf(text,sizeof(text),"%s %.12s %.4s",x->severity==IB35_CRITICAL?"CRIT":"WARN",name,x->metric);
         }else strcpy(text,"SIN ALERTAS ACTIVAS");
         if(!line(f,130,text,1))return false;
-        uint32_t oldest=now;for(unsigned i=0;i<s->node_count;++i)if(s->nodes[i].sampled_at&&s->nodes[i].sampled_at<oldest)oldest=s->nodes[i].sampled_at;
-        age(text,sizeof(text),s->node_count?oldest:0,now);if(!line(f,144,text,1))return false;
+        uint32_t oldest=0;for(unsigned i=0;i<s->node_count;++i)if(s->nodes[i].sampled_at&&(!oldest||s->nodes[i].sampled_at<oldest))oldest=s->nodes[i].sampled_at;
+        age(text,sizeof(text),oldest,now);if(!line(f,144,text,1))return false;
     }else if(nav->view==IB35_SITES_VIEW){
         for(unsigned i=0;i<s->site_count;++i){unsigned count=0;for(unsigned j=0;j<s->node_count;++j)count+=!strcmp(s->nodes[j].site,s->sites[i].id);
             snprintf(text,sizeof(text),"%s  NODOS %u",s->sites[i].name,count);if(!line(f,64+i*29,text,1)||!line(f,76+i*29,count?health(s->sites[i].status):"UNKNOWN / SIN NODOS",1))return false;}
