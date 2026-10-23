@@ -19,9 +19,12 @@ pantallas C, BOOT, SHTC3, retención RTC y framebuffer diff; proyección device 
 acotada y edge de dos saltos TLS, conservando v1 y SQLite M3.2.
 [Capturas C](docs/m35-firmware-ui/index.html),
 [validación](docs/M3.5-VALIDATION.md),
-[edge inerte](docs/M3.5-EDGE.md), [prueba física pendiente](docs/M3.5-PHYSICAL-PLAN.md).
+[edge](docs/M3.5-EDGE.md), [plan y rollback](docs/M3.5-PHYSICAL-PLAN.md),
+[resultados físicos](docs/M3.5-PHYSICAL-RESULTS.md).
 Compilar ocho perfiles sin hardware: `bash tools/build-m35.sh --all`.
-Sin despliegue, flasheo ni provisión; energía/audio/micrófono quedan diferidos.
+Despliegue autorizado: Core y edge cableado operativos, aplicación M3.5 instalada;
+HTTPS y resumen reales confirmados. El informe separa pendientes y capturas
+sintéticas. Energía/audio/micrófono quedan diferidos.
 
 ## M3.2: núcleo distribuido y piloto Linux
 

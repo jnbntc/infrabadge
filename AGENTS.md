@@ -1,3 +1,27 @@
+# Current M3.5 deployment pilot (2026-10-23)
+
+- The user subsequently authorized deployment. Core M3.5 and a rootless Fedora
+  edge are deployed; Fedora uses only the selected wired LAN, with Wi-Fi
+  disconnected but its profile retained. Preserve Core collectors, SQLite,
+  unrelated network/firewall/VPN settings and M3.3/PR7.
+- Installed app:885376B at0x10000, SHA902645be8f1d5f7ce3049f8620edee42c19108b832bb5fb0179a6204506cf1d3.
+  One application write; bootloader/table/factory backup unchanged. Do not reuse
+  consumed plans. Later host/docs commits do not identify a different installed app.
+- Initial provision timeout20000ms was rejected by the firmware parser. Corrected
+  config15000ms was accepted. A subsequent UTC renewal had explicit separate
+  authorization after auto-review blocked it; that renewal is now consumed.
+  No automatic reset/provision/flash retry; preserve all partial evidence.
+- Device HTTPS200, a second query75s later without USB, real summary/clock and
+  navigation were observed. Consult docs/M3.5-PHYSICAL-RESULTS.md for limits and
+  current pending confirmations. No all-hardware, electrical or battery PASS.
+- Host provisioning now rejects numeric limits before opening serial. Preserve
+  TLS/name/date checks and trusted USB UTC/checked RTC continuity; USB observation
+  captured reset11/CLOCK and must not be counted as a timer8/wake4 return.
+- The edge guard owns only its narrow8443 rules/return rule. Fail closed on approved
+  address/profile/interface changes; never broaden it or change DHCP/DNS to avoid
+  a failure. Physical credentials, board identifiers and raw logs stay outside Git.
+- Publish this branch and draft PR8 only; never merge or modify historical branches.
+
 # Current scope: functional M3.5 implementation (2026-10-23)
 
 - User explicitly requests functional firmware, v2 presentation API, adapted edge,
