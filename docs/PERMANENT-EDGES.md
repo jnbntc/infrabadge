@@ -11,8 +11,10 @@ reutilizando gateway M3.2/M3.5 y el lock con hashes
 `deploy/m32/native/requirements-runtime.lock`. No instalar Podman para esta tarea:
 el NAS tiene Docker existente y no necesita otro runtime. Ningún socket Docker,
 volumen NAS, SQLite, collector o backup es necesario para el edge. Mantener el
-release por SHA en `/opt/infrabadge/releases/<sha>`; no ejecutar desde una rama
-mutable. El edge sólo retransmite GET device v1/v2, sin nueva DB ni métricas.
+release por SHA en `/opt/infrabadge-edges/releases/<sha>`; no ejecutar desde una rama
+mutable. Usar `/etc/infrabadge-edge-home` (o work) y prefijo de releases
+propios; no cambiar permisos de `/etc/infrabadge` o `/opt/infrabadge` existentes
+para permitir acceso al nuevo usuario. El edge sólo retransmite GET device v1/v2, sin nueva DB ni métricas.
 
 `tools/permanent_edge/ib_edge_lab.py` ofrece tres modos:
 

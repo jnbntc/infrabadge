@@ -90,7 +90,7 @@ def render(value, template_root):
     pairs = {
         "@SITE@": value["site"],
         "@EDGE_USER@": value["service_user"],
-        "@RELEASE@": "/opt/infrabadge/releases/" + value["release_sha"],
+        "@RELEASE@": "/opt/infrabadge-edges/releases/" + value["release_sha"],
         "@LAN_IPV4@": value["lan_ipv4"],
         "@LAN_INTERFACE@": value["lan_interface"],
         "@LAN_CIDR@": value["lan_cidr"],

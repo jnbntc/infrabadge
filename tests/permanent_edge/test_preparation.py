@@ -54,6 +54,8 @@ def test_templates_exact_bind_nonroot_restart_and_independent_rollback(tmp_path)
     service = files["infrabadge-edge-home.service"]
     assert "User=ibedgehome" in service and "--bind 10.23.0.2 --port 8443" in service
     assert "Restart=on-failure" in service and "CapabilityBoundingSet=\n" in service
+    assert "/etc/infrabadge-edge-home/edge.json" in service
+    assert "/etc/infrabadge/" not in service
     assert "ProtectClock=true" in service and "NoNewPrivileges=true" in service
     assert "OnActiveSec=19min" in files["infrabadge-edge-home-rollback.timer"]
     assert "--execute-authorized-rollback" in files["infrabadge-edge-home-rollback.service"]
@@ -66,7 +68,7 @@ def test_templates_exact_bind_nonroot_restart_and_independent_rollback(tmp_path)
         if name.endswith((".timer", ".service")):
             target = tmp_path / name
             target.write_text(
-                text.replace("/opt/infrabadge/releases/" + p["release_sha"], str(release))
+                text.replace("/opt/infrabadge-edges/releases/" + p["release_sha"], str(release))
             )
             units.append(str(target))
     checked = subprocess.run(

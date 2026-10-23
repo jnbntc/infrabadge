@@ -8,7 +8,7 @@ Type=oneshot
 User=@EDGE_USER@
 Group=@EDGE_USER@
 Environment=PYTHONPATH=@RELEASE@/gateway
-ExecStart=@RELEASE@/venv/bin/python -I -B @RELEASE@/tools/permanent_edge/ib_edge_lab.py probe --config /etc/infrabadge/edge-@SITE@/probe.json
+ExecStart=@RELEASE@/venv/bin/python -I -B @RELEASE@/tools/permanent_edge/ib_edge_lab.py probe --config /etc/infrabadge-edge-@SITE@/probe.json
 TimeoutStartSec=15s
 UMask=0077
 NoNewPrivileges=true
