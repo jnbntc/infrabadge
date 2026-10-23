@@ -1,4 +1,16 @@
-# Current M3.6 implementation (2026-10-23)
+# Current PR consolidation (2026-10-23)
+
+- User explicitly authorizes ready/merge of technically prepared PR8, then PR9,
+  then scoped PR7, respecting main protections. Preserve branches/backups and
+  traceability; this supersedes historical no-merge instructions below.
+- PR8 integrated as c24b0dc, post-merge CI passed. PR9 retargeted to main;
+  its branch merges that base without rewriting history. Verify exact-HEAD CI.
+- After integration prepare permanent-edge software/artifacts only. No real
+  services/SSH administration, firewall/DNS/routes/Grants, credentials, firmware,
+  NVS, suspend/roaming tests or host restarts without concrete new approval.
+- M3.3 D/E/F are historical real evidence; G/H/I remain future operational tests.
+
+# Historical M3.6 implementation before consolidation (2026-10-23)
 
 - Work feat/m3.6-multisite-roaming, stacked on unmerged PR8/a4d6c05.
   Draft PR base feat/m3.5-esp32-preparation; never merge or change PR7.
