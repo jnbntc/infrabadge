@@ -1,4 +1,22 @@
-# Current PR consolidation (2026-10-23)
+# Current permanent-edge preparation (2026-10-23)
+
+- User-authorized consolidation merged PR8/c24b0dc, PR9/66bf529 and scoped
+  PR7/c62f800 with exact-HEAD checks; verify main post-merge CI before reporting
+  completion. Preserve all branches and private backups.
+- Work feat/permanent-edge-preparation only: inert templates, allowlisted
+  preflight, verified TLS probe with distinct synthetic identity, owned rollback,
+  tests and draft PR. This new PR is NOT authorized for merge or deployment.
+- NAS root SSH metadata-only audit was explicitly authorized and completed.
+  No NAS data/keys/socket reads, installs, services, network, credentials or
+  storage changes; no work-host access or corporate telemetry approval.
+- Tests may bind temporary loopback TLS only. No LAN listeners/firewall/routes/
+  DNS/Tailscale/Grants changes, service activation, provisioning/USB/flash/NVS,
+  suspend/roaming/night or electrical trials. M3.5 stays installed; M3.6 physical
+  roaming/night and M3.3 G/H/I remain pending. Energy is operator-deferred.
+- Root rollback code is inert: never execute against systemd/nft on a real host
+  without specific deployment authorization and independently verified timer.
+
+# Historical PR consolidation (2026-10-23)
 
 - User explicitly authorizes ready/merge of technically prepared PR8, then PR9,
   then scoped PR7, respecting main protections. Preserve branches/backups and
