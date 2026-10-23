@@ -1,0 +1,9 @@
+{
+  "presentation_v2": true,
+  "upstream": "https://core.test:9443",
+  "device_ids": ["display-a"],
+  "ca_file": "/run/infrabadge/core-ca.pem",
+  "credential_file": "/run/infrabadge/edge.token",
+  "public_hostname": "edge.test",
+  "public_port": 8443
+}

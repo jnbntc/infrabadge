@@ -8,6 +8,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 EXCLUDED = (
+    "gateway/tests/test_m35.py::test_v2_real_two_hop_tls",
     "gateway/tests/test_m3_observer.py::test_actual_upstream_tls_ca_hostname_dates",
     "gateway/tests/test_https.py::test_real_tls",
     "gateway/tests/test_m3_https.py::test_collector_real_verified_tls",
