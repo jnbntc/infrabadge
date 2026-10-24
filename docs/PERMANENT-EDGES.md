@@ -25,7 +25,7 @@ que no sea el del Core/collector. Los planes NAS schema1 se rechazan.
   cambios de firewall ni control de Core/collector. Ante fallo detiene sólo Edge.
 - `rollback.py`: independiente, sin DB/config Core. Para loopback no ejecuta nft;
   para LAN retira sólo tabla propia y, si consta en el plan, el handle exacto de
-  la excepción8443 con comment/digest intactos. Drift: detiene listener y exige
+  la excepción8443 con comment/digest intactos; CASA LAN rechaza planes sin esa propiedad. Drift: detiene listener y exige
   revisión, sin borrar reglas ajenas. Conserva archivos/evidencia, no los borra.
 
 Unidades separadas, `After=core.socket` sin Requires/BindsTo/PartOf. Si el Core
@@ -123,6 +123,6 @@ fallos/collisiones y rollback propio. CI conserva firmware9perfiles, C/ASan/UBSa
 visuales y Python/OCI ARM64/x86_64. Las pruebas no acreditan despliegue, consumo,
 restauración real de la Raspberry ni visualización nueva en ESP32.
 
-Validación local de esta adaptación: **472 tests PASS**, Ruff/formato68 archivos.
+Validación local de esta adaptación: **473 tests PASS**, Ruff/formato68 archivos.
 Un warning heredado Starlette/TestClient. El CI se exige sobre el HEAD nuevo del
 PR10; el PASS anterior de553cd25 no se hereda.

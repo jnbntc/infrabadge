@@ -12,7 +12,7 @@ import pytest
 import rollback
 from infrabadge_gateway.lab import certificates
 
-from tests.permanent_edge.test_preparation import example, rollback_plan
+from tests.permanent_edge.test_preparation import example, host_rule, rollback_plan
 
 
 @pytest.mark.parametrize(
@@ -190,6 +190,7 @@ def test_loopback_install_and_failures_never_change_core_or_firewall(tmp_path, m
 def test_loopback_rollback_uses_no_firewall_or_core_commands(tmp_path):
     p, _ = rollback_plan(tmp_path)
     p["table_sha256"] = None
+    p.pop("host_accept_rule")
     calls = []
 
     def run(args, **kw):
@@ -199,26 +200,6 @@ def test_loopback_rollback_uses_no_firewall_or_core_commands(tmp_path):
     result = rollback.execute(p, "c" * 64, 1240, unit_root=tmp_path, run=run)
     assert result["listener_stopped"] and not result["firewall_changed"] and len(calls) == 1
     assert "infrabadge-m32-core.service" not in calls[0]
-
-
-def host_rule():
-    return {
-        "family": "inet",
-        "table": "infrabadge_host",
-        "chain": "input",
-        "handle": 90,
-        "comment": "infrabadge-edge-home-allow8443",
-        "expr": [
-            {
-                "match": {
-                    "op": "==",
-                    "left": {"payload": {"protocol": "tcp", "field": "dport"}},
-                    "right": 8443,
-                }
-            },
-            {"accept": None},
-        ],
-    }
 
 
 @pytest.mark.parametrize("drift", [False, True])
@@ -306,3 +287,14 @@ def test_release_manifest_without_git_on_runtime(tmp_path, kind):
     else:
         with pytest.raises(ValueError):
             pilot.validate_release(value, tmp_path, owner=os.getuid())
+
+
+def test_shared_host_lan_refuses_incomplete_firewall_ownership(tmp_path):
+    value, _ = rollback_plan(tmp_path)
+    value.pop("host_accept_rule")
+    calls = []
+    with pytest.raises(ValueError, match="exception_ownership"):
+        rollback.execute(
+            value, "c" * 64, 1240, unit_root=tmp_path, run=lambda *a, **kw: calls.append(a)
+        )
+    assert not calls

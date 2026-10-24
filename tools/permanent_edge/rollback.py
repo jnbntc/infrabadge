@@ -80,6 +80,8 @@ def check(value, boot_hash, boottime):
         ):
             raise ValueError("rollback_id")
     owned = value.get("host_accept_rule")
+    if value["site"] == "home" and value["table_sha256"] is not None and owned is None:
+        raise ValueError("shared_host_lan_requires_exception_ownership")
     if owned is not None and (
         value["site"] != "home"
         or value["table_sha256"] is None

@@ -112,6 +112,26 @@ def test_unavailable_preflight_tools_never_become_pass(tmp_path):
     assert result["services"]["tailscaled.service"] == "unknown"
 
 
+def host_rule():
+    return {
+        "family": "inet",
+        "table": "infrabadge_host",
+        "chain": "input",
+        "handle": 90,
+        "comment": "infrabadge-edge-home-allow8443",
+        "expr": [
+            {
+                "match": {
+                    "op": "==",
+                    "left": {"payload": {"protocol": "tcp", "field": "dport"}},
+                    "right": 8443,
+                }
+            },
+            {"accept": None},
+        ],
+    }
+
+
 def rollback_plan(tmp_path):
     files = {
         "infrabadge-edge-home" + suffix: "synthetic-owned-unit\n"
@@ -131,6 +151,7 @@ def rollback_plan(tmp_path):
         "deadline_boottime": 1240.0,
         "units_sha256": {n: hashlib.sha256(s.encode()).hexdigest() for n, s in files.items()},
         "table_sha256": rollback.table_digest(table),
+        "host_accept_rule": {"handle": 90, "sha256": rollback.table_digest(host_rule())},
         "units_previously_absent": True,
     }, table
 
@@ -141,11 +162,12 @@ def test_rollback_exact_owned_units_and_table_only(tmp_path):
 
     def run(args, **kw):
         actions.append(args)
-        return subprocess.CompletedProcess(args, 0, stdout=json.dumps(table).encode())
+        data = {"nftables": [{"rule": host_rule()}]} if "chain" in args else table
+        return subprocess.CompletedProcess(args, 0, stdout=json.dumps(data).encode())
 
     result = rollback.execute(p, "c" * 64, 1240, unit_root=tmp_path, run=run)
     assert result["listener_stopped"] and result["owned_table_removed"]
-    assert len(actions) == 3 and actions[0][1] == "stop"
+    assert len(actions) == 5 and actions[0][1] == "stop"
     assert actions[-1][-4:] == ["delete", "table", "inet", "infrabadge_edge_home"]
     assert all((tmp_path / name).exists() for name in p["units_sha256"])
 
@@ -165,7 +187,8 @@ def test_rollback_rejects_drift_and_overbroad_plans(tmp_path, kind):
 
     def run(args, **kw):
         actions.append(args)
-        return subprocess.CompletedProcess(args, 0, stdout=json.dumps(table).encode())
+        data = {"nftables": [{"rule": host_rule()}]} if "chain" in args else table
+        return subprocess.CompletedProcess(args, 0, stdout=json.dumps(data).encode())
 
     with pytest.raises(ValueError):
         rollback.execute(
