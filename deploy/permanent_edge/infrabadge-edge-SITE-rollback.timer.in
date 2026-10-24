@@ -1,0 +1,10 @@
+# INERT, never enable persistently. Arm only for the explicitly approved trial.
+[Unit]
+Description=InfraBadge @SITE@ deployment rollback (19min; cleanup margin below20min)
+
+[Timer]
+OnActiveSec=19min
+AccuracySec=1s
+Persistent=false
+WakeSystem=false
+Unit=infrabadge-edge-@SITE@-rollback.service

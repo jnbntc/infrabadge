@@ -1,0 +1,25 @@
+[Unit]
+Description=InfraBadge CASA TLS expiry warning (local journal)
+
+[Service]
+Type=oneshot
+User=ibedgehome
+Group=ibedgehome
+ExecStart=@RELEASE@/venv/bin/python -I -B @RELEASE@/tools/permanent_edge/tls_check.py monitor
+TimeoutStartSec=20s
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX
+RestrictNamespaces=true
+RestrictSUIDSGID=true
+LockPersonality=true
+StandardOutput=journal
+StandardError=journal

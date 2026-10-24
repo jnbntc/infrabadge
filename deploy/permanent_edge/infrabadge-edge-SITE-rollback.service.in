@@ -1,0 +1,18 @@
+# INERT. Arm BEFORE deployment; exact private rollback plan and root approval required.
+[Unit]
+Description=InfraBadge @SITE@ independent deployment rollback
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I -B @RELEASE@/tools/permanent_edge/rollback.py --plan /run/infrabadge-edge-@SITE@/rollback.json --execute-authorized-rollback
+UMask=0077
+TimeoutStartSec=30s
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/run/infrabadge-edge-@SITE@
+RestrictAddressFamilies=AF_NETLINK AF_UNIX

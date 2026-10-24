@@ -1,0 +1,30 @@
+[Unit]
+Description=InfraBadge CASA exact owned firewall objects
+After=network-online.target infrabadge-firewall.service
+Wants=network-online.target
+Before=infrabadge-edge-home.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+RuntimeDirectory=infrabadge-edge-home-admin
+RuntimeDirectoryMode=0700
+ExecStart=/usr/bin/python3 -I -B @RELEASE@/tools/permanent_edge/permanent.py firewall-start --execute-authorized-edge-persistence
+ExecStop=/usr/bin/python3 -I -B @RELEASE@/tools/permanent_edge/permanent.py firewall-stop --execute-authorized-edge-persistence
+TimeoutStartSec=30s
+TimeoutStopSec=20s
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_NET_ADMIN
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_NETLINK
+RestrictNamespaces=true
+RestrictSUIDSGID=true
+LockPersonality=true
+ReadWritePaths=/run/infrabadge-edge-home-admin

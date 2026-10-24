@@ -1,0 +1,56 @@
+# INERT: install only with explicit per-host deployment authorization.
+[Unit]
+Description=InfraBadge permanent @SITE@ HTTPS edge
+After=network-online.target time-sync.target
+Wants=network-online.target
+@CORE_ORDER@
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=@EDGE_USER@
+Group=@EDGE_USER@
+WorkingDirectory=@RELEASE@
+Environment=PYTHONPATH=@RELEASE@/gateway
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=@RELEASE@/venv/bin/python -B -m infrabadge_gateway.distributed.cli edge --config /etc/infrabadge-edge-@SITE@/edge.json --cert /etc/infrabadge-edge-@SITE@/server.pem --key /etc/infrabadge-edge-@SITE@/server.key --bind @EDGE_BIND@ --port 8443
+Restart=on-failure
+RestartSec=15s
+TimeoutStartSec=30s
+TimeoutStopSec=15s
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+ProtectSystem=strict
+ProtectHome=true
+InaccessiblePaths=-/etc/infrabadge -/var/lib/infrabadge -/opt/infrabadge -/var/backups/infrabadge-host
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+SystemCallArchitectures=native
+CPUQuota=25%
+# MemoryMax requires a memory controller; LimitAS is virtual address space.
+MemoryMax=192M
+LimitAS=512M
+TasksMax=16
+LimitNOFILE=256
+StandardOutput=journal
+StandardError=journal
+LogRateLimitIntervalSec=60s
+LogRateLimitBurst=10
+
+[Install]
+WantedBy=multi-user.target
