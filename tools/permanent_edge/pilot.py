@@ -312,6 +312,12 @@ def install_loopback(
         with os.fdopen(fd, "wb") as f:
             f.write(raw)
         os.chown(destination / name, user.pw_uid, user.pw_gid)
+    # daemon-reload can rebase OnActiveSec. Freeze the original deadline before
+    # loading units, on the timer's monotonic clock; never extend it on reload.
+    armed = clock()
+    deadline_monotonic = time.monotonic() + 1140
+    timer = "infrabadge-edge-home-rollback.timer"
+    units[timer] = units[timer].replace("OnActiveSec=19min", f"OnBootSec={deadline_monotonic:.6f}s")
     for name, text in units.items():
         fd = os.open(unit_root / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
         with os.fdopen(fd, "w") as f:
@@ -325,7 +331,6 @@ def install_loopback(
         else config_root / "trial-state"
     )
     state.mkdir(mode=0o700)  # Existing state/consumed trial is never overwritten.
-    armed = clock()
     plan = dict(
         schema_version=1,
         site="home",
@@ -369,7 +374,7 @@ def install_loopback(
         raise ValueError("watchdog_numeric_deadline_required")
     next_us = int(raw_deadline[1])
     left = next_us / 1e6 - time.monotonic()
-    if not 1080 <= left <= 1145:
+    if not 1080 <= left <= 1145 or next_us / 1e6 > deadline_monotonic + 1:
         raise ValueError("watchdog_deadline_no_listener")
     try:
         checked(run, ["/usr/bin/systemctl", "start", "infrabadge-edge-home.service"])

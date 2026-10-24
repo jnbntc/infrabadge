@@ -134,3 +134,15 @@ Validación C1 local: **486 tests PASS**, Ruff/formato69 archivos; un warning
 heredado Starlette/TestClient. Incluye handshake TLS real efímero sin HTTP y
 negativos de CA/SAN/renovación; pruebas de staging y administración con dobles
 locales. CI del nuevo HEAD debe verificarse por separado, sin heredar df9b28e.
+
+Corrección detectada durante C2: el instalador congela el deadline del watchdog
+en OnBootSec absoluto antes de cargar unidades; daemon-reload no puede extenderlo.
+La guardia transaction_guard.py protege la ventana nft/plan con timer60s y
+autoridad180s, hashes exactos y referencia aislada del kernel. No instala sudoers
+ni una API administrativa. El código Edge del piloto real se conserva fijado en
+b8fbe93; esta revisión prepara las siguientes instalaciones, no cambia ese release.
+
+Validación de las correcciones C2: **501 tests PASS**, Ruff/formato71 archivos.
+Incluye deadline absoluto antes de reload, rechazo de extensión y guardia con
+propiedad/deriva/boot/plazo/root/aprobación/prefijo. CI del nuevo HEAD se verifica
+por separado. No se heredan los checks ni se cambia el release físico b8fbe93.

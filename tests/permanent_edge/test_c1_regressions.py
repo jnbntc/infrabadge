@@ -183,3 +183,31 @@ def test_collector_reload_guard_fails_without_a_safe_window():
     with pytest.raises(ValueError, match="reload_window_unavailable"):
         pilot.collector_reload_window(run, clock=lambda: now[0], pause=pause)
     assert not any("daemon-reload" in c for c in calls)
+
+
+def test_installed_watchdog_uses_fixed_boot_deadline_before_daemon_reload(tmp_path, monkeypatch):
+    p, bundle, units, conf, _, _, run, account, calls = transaction(tmp_path, monkeypatch)
+    before = pilot.time.monotonic()
+    observed = []
+
+    def watch_reload(args, **kwargs):
+        if "daemon-reload" in args:
+            text = (units / "infrabadge-edge-home-rollback.timer").read_text()
+            observed.append(text)
+            assert "OnActiveSec=" not in text
+            line = next(x for x in text.splitlines() if x.startswith("OnBootSec="))
+            deadline = float(line.removeprefix("OnBootSec=").removesuffix("s"))
+            assert before + 1140 <= deadline <= pilot.time.monotonic() + 1140
+        return run(args, **kwargs)
+
+    pilot.install_loopback(p, bundle, units, conf, watch_reload, account, clock=lambda: 100)
+    assert len(observed) == 1
+
+
+def test_small_deadline_extension_is_rejected_before_listener(tmp_path, monkeypatch):
+    p, bundle, units, conf, _, _, run, account, calls = transaction(
+        tmp_path, monkeypatch, "extended_by_reload"
+    )
+    with pytest.raises(ValueError, match="watchdog_deadline_no_listener"):
+        pilot.install_loopback(p, bundle, units, conf, run, account, clock=lambda: 100)
+    assert ["/usr/bin/systemctl", "start", "infrabadge-edge-home.service"] not in calls

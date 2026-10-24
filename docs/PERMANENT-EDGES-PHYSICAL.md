@@ -34,8 +34,10 @@ lecturas autorizadas. No instala Edge ni altera Core, SQLite, red o certificados
    exitoso e inactivo hace18–22s, máximo35s de espera. Es una condición del host
    observado (periodo30s,min_interval15s,OnActiveSec5s): si cambia, detener/revisar.
    No parar, reiniciar ni reconfigurar collector. Comprobar continuidad posterior.
-6. Armar watchdog independiente19min y verificar deadline numérico D-Bus antes
-   del listener. No rearmarlo para prolongar una prueba. Iniciar Edge loopback y
+6. Armar watchdog independiente con máximo19min y verificar deadline numérico D-Bus antes
+   del listener. El instalador resuelve el plazo a OnBootSec absoluto monotónico
+   antes de daemon-reload: recargar OnActiveSec puede desplazar el vencimiento.
+   No rearmarlo para prolongar una prueba. Iniciar Edge loopback y
    esperar TLS como UID Edge hasta20s, sin HTTP ni lectura del token. Sólo reintenta
    indisponibilidad de transporte; CA/SAN/fecha/protocolo incorrectos son fatales.
    Después ejecutar probe autenticado200/304/TTL. Un fallo detiene sólo Edge/probe;
@@ -83,11 +85,17 @@ para suplir esa incógnita. TLS8443 desde Wi-Fi no se probó: el puerto sigue ce
    real de tabla y handle/digest de excepción. Publicar atómicamente plan completo
    de rollback LAN con hashes nuevos de unidades y MISMO deadline; comprobar su
    propiedad y watchdog antes del listener. No crear una segunda instancia Core.
-   Si falla entre batch y publicación del plan, mantener Edge apagado y retirar
-   sólo objetos comprobados con el registro privado de ejecución. Hay una ventana
-   entre transacción nft y archivo: no es una transacción atómica conjunta, y el
-   watchdog stop-only aún no sabe retirar esas reglas. Exigir operador/guardia
-   administrativa disponible hasta completar ese paso o no iniciar C2.
+   Antes del batch, armar además guardia de transición independiente: timer60s,
+   autoridad acotada a180s y mismo boot. Referencia canónica del batch obtenida
+   previamente en namespace de red efímero aislado; no altera el host. Sin marca
+   root de plan completo, verifica hashes de unidades, tabla y excepción exactas,
+   detiene sólo Edge y retira ambos objetos en una transacción. Con marca válida,
+   no interviene: queda el watchdog original con plan completo. Drift/boot/plazo
+   incorrecto: no borrar reglas. Ver transaction_guard.py, flag root explícito,
+   registro privado bajo prefijo Edge; sin API genérica ni sudoers. Persisten dos
+   transacciones distintas; guardia/operador verificable antes del listener.
+   Después de cualquier daemon-reload, comprobar que los deadlines absolutos
+   del watchdog y cierre siguen intactos. No sólo comprobar is-active.
 5. Iniciar listener sólo en IP LAN aprobada, TLS completo, credenciales exclusivas;
    comprobar200/304,TTL,scope,errores y cliente real Wi-Fi ligado a su interfaz.
    Ensayar rechazo desde otra fuente sólo si está identificada/aprobada. Comprobar
@@ -123,3 +131,18 @@ M3.5 puede consumir v2 con URL/CA/UTC aprobadas en una provisión futura, identi
 badge exclusiva y backup previo. No suministrar token Edge/Core al dispositivo.
 M3.6, dos bindings, roaming, noche, G/H/I y energía siguen pendientes. Nunca usar
 RTC2056, bypass TLS ni marcadores consumidos para forzar una prueba.
+
+## Hallazgo real C2 del24/10/2026
+
+El instalador corregido completó loopback sin arreglos manuales. La transición
+LAN se detuvo antes de nft/listener al detectar que daemon-reload desplazaba
+OnActiveSec. Se conservaron los plazos originales mediante OnBootSec absoluto
+y se verificaron numéricamente watchdog y cierre. La corrección del instalador
+queda incorporada con pruebas de rechazo incluso de extensión pequeña.
+
+HTTPS200/304 desde Wi-Fi real ligado a su interfaz, TTL/ETag, tokens incorrectos,
+CA/SAN y rechazo de origen overlay fueron observados; fuentes e inventarios quedan
+en informes privados. La guardia de transición tuvo referencia canónica verificada
+en namespace efímero, nueve tests locales y ejecución real independiente. No
+confundir estos resultados con firmware, activación permanente o reboot. Cierre
+y rollback reales se consignan en el informe operativo privado y en PR10.

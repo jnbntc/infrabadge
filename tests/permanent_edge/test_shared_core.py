@@ -123,7 +123,14 @@ def transaction(tmp_path, monkeypatch, kind="success"):
                     (
                         time.monotonic() - 20
                         if args[-1] == "InactiveEnterTimestampMonotonic"
-                        else time.monotonic() + (3000 if kind == "late_watchdog" else 1140)
+                        else time.monotonic()
+                        + (
+                            3000
+                            if kind == "late_watchdog"
+                            else 1142
+                            if kind == "extended_by_reload"
+                            else 1140
+                        )
                     )
                     * 1e6
                 )
