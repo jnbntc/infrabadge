@@ -119,7 +119,14 @@ def transaction(tmp_path, monkeypatch, kind="success"):
             text = '{"nftables":[]}'
         elif args[0].endswith("busctl"):
             text = "t " + str(
-                int((time.monotonic() + (3000 if kind == "late_watchdog" else 1140)) * 1e6)
+                int(
+                    (
+                        time.monotonic() - 20
+                        if args[-1] == "InactiveEnterTimestampMonotonic"
+                        else time.monotonic() + (3000 if kind == "late_watchdog" else 1140)
+                    )
+                    * 1e6
+                )
             )
         elif args[0].endswith("runuser"):
             if kind == "probe_failure":
@@ -127,7 +134,9 @@ def transaction(tmp_path, monkeypatch, kind="success"):
         elif "is-active" in args:
             text = "inactive" if kind == "unarmed" else "active"
         elif "show" in args:
-            if "infrabadge-m32-core.service" in args:
+            if "infrabadge-m32-collector.service" in args:
+                text = "ActiveState=inactive\nResult=success"
+            elif "infrabadge-m32-core.service" in args:
                 shown[0] += 1
                 text = "ActiveState=active\nMainPID=" + (
                     "999" if kind == "core_drift" and shown[0] > 1 else "42"

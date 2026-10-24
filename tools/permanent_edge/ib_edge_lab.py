@@ -2,6 +2,7 @@
 
 import argparse
 import contextlib
+import errno
 import hashlib
 import http.client
 import ipaddress
@@ -37,7 +38,7 @@ def plan(value):
     }
     if (
         type(value) is not dict
-        or set(value) != fields
+        or set(value) not in (fields, fields | {"client_ipv4s"})
         or type(value["schema_version"]) is not int
         or value["schema_version"] != 2
     ):
@@ -92,6 +93,23 @@ def plan(value):
         )
     ):
         raise ValueError("explicit_lan_and_approved_core_required")
+    sources = value.get("client_ipv4s", [value["client_ipv4"]])
+    if (
+        type(sources) is not list
+        or not 1 <= len(sources) <= 16
+        or any(type(x) is not str for x in sources)
+        or len(set(sources)) != len(sources)
+        or value["client_ipv4"] not in sources
+    ):
+        raise ValueError("explicit_client_sources")
+    for source in sources:
+        address = ipaddress.IPv4Address(source)
+        if address not in network or address in (
+            network.network_address,
+            network.broadcast_address,
+            lan,
+        ):
+            raise ValueError("client_source_outside_lan")
     return dict(value)
 
 
@@ -102,10 +120,17 @@ def private_json(path):
     return read_json(path)
 
 
-def render(value, template_root, phase="loopback"):
+def render(value, template_root, phase="loopback", host_accept_position=None):
     value = plan(value)
     if phase not in ("loopback", "lan"):
         raise ValueError("phase")
+    if host_accept_position is not None and (
+        type(host_accept_position) is not int or host_accept_position <= 0
+    ):
+        raise ValueError("host_accept_position")
+    position = "" if host_accept_position is None else " position " + str(host_accept_position)
+    addresses = [x + "/32" for x in value.get("client_ipv4s", [value["client_ipv4"]])]
+    sources = addresses[0] if len(addresses) == 1 else "{ " + ", ".join(addresses) + " }"
     pairs = {
         "@SITE@": value["site"],
         "@EDGE_USER@": value["service_user"],
@@ -113,12 +138,15 @@ def render(value, template_root, phase="loopback"):
         "@LAN_IPV4@": value["lan_ipv4"],
         "@LAN_INTERFACE@": value["lan_interface"],
         "@LAN_CIDR@": value["lan_cidr"],
+        "@LAN_SOURCES@": sources,
         "@EDGE_BIND@": "127.0.0.1" if phase == "loopback" else value["lan_ipv4"],
         "@HOST_ACCEPT@": (
-            'insert rule inet infrabadge_host input iifname "'
+            "insert rule inet infrabadge_host input"
+            + position
+            + ' iifname "'
             + value["lan_interface"]
             + '" ip saddr '
-            + value["lan_cidr"]
+            + sources
             + " ip daddr "
             + value["lan_ipv4"]
             + ' tcp dport 8443 accept comment "infrabadge-edge-home-allow8443"'
@@ -267,6 +295,64 @@ def deadline(seconds):
         signal.signal(signal.SIGALRM, previous)
 
 
+def wait_tls(
+    value,
+    timeout=20,
+    clock=time.monotonic,
+    pause=time.sleep,
+    connection_factory=http.client.HTTPSConnection,
+):
+    """TLS readiness as Edge UID; no HTTP, credentials, insecure retry or CA fallback."""
+    from urllib.parse import urlsplit
+
+    url = urlsplit(value["url"])
+    if (
+        url.scheme != "https"
+        or not url.hostname
+        or url.port != 8443
+        or url.username
+        or url.password
+        or url.path not in ("", "/")
+        or url.query
+        or url.fragment
+        or type(timeout) not in (int, float)
+        or not 0 < timeout <= 20
+    ):
+        raise ValueError("readiness_origin_or_deadline")
+    context = ssl.create_default_context(cafile=value["ca_file"])
+    context.minimum_version = ssl.TLSVersion.TLSv1_2
+    start = clock()
+    attempts = 0
+    while True:
+        left = timeout - (clock() - start)
+        if left <= 0:
+            raise TimeoutError("edge_tls_readiness_deadline")
+        connection = connection_factory(
+            url.hostname, url.port, context=context, timeout=min(1, left)
+        )
+        attempts += 1
+        try:
+            connection.connect()
+            if (
+                ssl.cert_time_to_seconds(connection.sock.getpeercert()["notAfter"]) - time.time()
+                < value["minimum_leaf_seconds"]
+            ):
+                raise ValueError("leaf_renewal_required")
+            return {"event": "edge_tls_ready", "tls_verified": True, "attempts": attempts}
+        except ssl.SSLError:
+            raise  # Untrusted CA, SAN, expiry and TLS/protocol errors are fatal.
+        except OSError as error:
+            if not isinstance(error, TimeoutError) and error.errno not in (
+                errno.ECONNREFUSED,
+                errno.ECONNRESET,
+                errno.ETIMEDOUT,
+            ):
+                raise
+        finally:
+            connection.close()
+        pause(min(0.2, max(0, timeout - (clock() - start))))
+
+
 def probe(value, clock=time.time, connection_factory=http.client.HTTPSConnection):
     """Dedicated probe device identity; never reuse the physical badge's token."""
     from urllib.parse import urlsplit
@@ -374,7 +460,7 @@ def probe(value, clock=time.time, connection_factory=http.client.HTTPSConnection
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("render", "preflight", "probe"))
+    parser.add_argument("mode", choices=("render", "preflight", "wait-tls", "probe"))
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--phase", choices=("loopback", "lan"), default="loopback")
@@ -406,7 +492,7 @@ def main():
         else:
             if os.geteuid() == 0:
                 raise ValueError("unprivileged_probe_required")
-            result = probe(value)
+            result = wait_tls(value) if args.mode == "wait-tls" else probe(value)
         print(json.dumps(result, sort_keys=True))
         return 0
     except Exception:

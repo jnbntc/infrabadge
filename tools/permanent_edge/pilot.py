@@ -12,6 +12,7 @@ import os
 import pwd
 import socket
 import ssl
+import stat
 import subprocess
 import sys
 import time
@@ -71,9 +72,94 @@ def prepare(value, directory, phase="loopback"):
     return {"event": "casa_bundle", "files": len(files), "phase": phase, "installed": False}
 
 
-def checked(run, args):
-    result = run(args, check=True, capture_output=True, text=True, timeout=15)
+def checked(run, args, timeout=15):
+    result = run(args, check=True, capture_output=True, text=True, timeout=timeout)
     return result.stdout.strip()
+
+
+def public_directory(path, owner=0):
+    """Only NEW release directories get chmod; existing private paths are refused."""
+    if any(p.is_symlink() for p in (path, *path.parents)):
+        raise ValueError("release_symlink")
+    created = False
+    try:
+        path.mkdir(mode=0o755)
+        created = True
+    except FileExistsError:
+        pass
+    fd = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        info = os.fstat(fd)
+        if info.st_uid != owner:
+            raise ValueError("release_owner")
+        if created:
+            os.fchmod(fd, 0o755)  # mkdir0755 alone becomes0700 under umask077.
+        elif stat.S_IMODE(info.st_mode) != 0o755:
+            raise ValueError("existing_release_directory_permissions")
+    finally:
+        os.close(fd)
+
+
+def stage_release(value, source, prefix=Path("/opt/infrabadge-edges"), owner=0, run=subprocess.run):
+    """Explicit future root preparation; no accounts, units, services or secrets."""
+    value = lab.plan(value)
+    if value["site"] != "home":
+        raise ValueError("casa_core_only")
+    validate_release(value, source, owner=owner)
+    target = prefix / "releases" / value["release_sha"]
+    if target.exists() or target.is_symlink():
+        raise ValueError("existing_release_preserved")
+    public_directory(prefix, owner)
+    public_directory(prefix / "releases", owner)
+    public_directory(target, owner)
+    for name, file in release_files(source).items():
+        destination = target / name
+        for parent in reversed(destination.relative_to(target).parents):
+            if parent != Path("."):
+                public_directory(target / parent, owner)
+        fd = os.open(destination, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        with os.fdopen(fd, "wb") as out:
+            out.write(file.read_bytes())
+            os.fchmod(out.fileno(), 0o644)
+    fd = os.open(target / "source-manifest.json", os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+    with os.fdopen(fd, "wb") as out:
+        out.write((source / "source-manifest.json").read_bytes())
+    validate_release(value, target, owner=owner)
+    # Child-only umask: code/venv readable by the dedicated UID; secrets stay0600.
+    run(
+        [sys.executable, "-m", "venv", str(target / "venv")],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=90,
+        umask=0o022,
+    )
+    run(
+        [
+            str(target / "venv/bin/python"),
+            "-m",
+            "pip",
+            "--isolated",
+            "install",
+            "--disable-pip-version-check",
+            "--no-cache-dir",
+            "--require-hashes",
+            "--only-binary=:all:",
+            "-r",
+            str(target / "deploy/m32/native/requirements-runtime.lock"),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=240,
+        umask=0o022,
+    )
+    checked(run, [str(target / "venv/bin/python"), "-m", "pip", "check"])
+    return {
+        "event": "casa_release_staged",
+        "source_sha": value["release_sha"],
+        "services_changed": False,
+    }
 
 
 def core_state(run):
@@ -87,6 +173,42 @@ def core_state(run):
     if any("ActiveState=active" not in v.splitlines() for v in values):
         raise ValueError("core_or_collector_not_active")
     return values[0]  # Collector oneshot/PID may advance normally; its timer must stay active.
+
+
+def collector_reload_window(run, clock=time.monotonic, pause=time.sleep):
+    """This host: local period30s, min_interval15s, OnActiveSec5s after reload."""
+    until = clock() + 35
+    while clock() < until:
+        status = checked(
+            run,
+            [
+                "/usr/bin/systemctl",
+                "show",
+                "infrabadge-m32-collector.service",
+                "--property=ActiveState,Result",
+                "--no-pager",
+            ],
+        ).splitlines()
+        if "ActiveState=inactive" in status and "Result=success" in status:
+            stamp = checked(
+                run,
+                [
+                    "/usr/bin/busctl",
+                    "--system",
+                    "get-property",
+                    "org.freedesktop.systemd1",
+                    "/org/freedesktop/systemd1/unit/infrabadge_2dm32_2dcollector_2eservice",
+                    "org.freedesktop.systemd1.Unit",
+                    "InactiveEnterTimestampMonotonic",
+                ],
+            ).split()
+            if len(stamp) != 2 or stamp[0] != "t":
+                raise ValueError("collector_numeric_timestamp_required")
+            age = clock() - int(stamp[1]) / 1e6
+            if 18 <= age <= 22:
+                return age
+        pause(0.2)
+    raise ValueError("collector_reload_window_unavailable")
 
 
 def validate_materials(bundle, value, run):
@@ -127,6 +249,8 @@ def validate_materials(bundle, value, run):
         required.append(("DNS", value["edge_hostname"]))
     if any(s not in decoded.get("subjectAltName", []) for s in required):
         raise ValueError("exact_loopback_and_lan_san_required")
+    if ssl.cert_time_to_seconds(decoded["notAfter"]) - time.time() < 604800:
+        raise ValueError("leaf_renewal_required")
 
 
 def install_loopback(
@@ -193,6 +317,7 @@ def install_loopback(
         with os.fdopen(fd, "w") as f:
             f.write(text)
     # No enable: a failed trial cannot restart itself on boot.
+    reload_age = collector_reload_window(run)
     checked(run, ["/usr/bin/systemctl", "daemon-reload"])
     state = (
         Path("/run/infrabadge-edge-home")
@@ -260,6 +385,23 @@ def install_loopback(
                 "-I",
                 "-B",
                 release + "/tools/permanent_edge/ib_edge_lab.py",
+                "wait-tls",
+                "--config",
+                str(destination / "probe.json"),
+            ],
+            timeout=25,
+        )
+        checked(
+            run,
+            [
+                "/usr/sbin/runuser",
+                "-u",
+                value["service_user"],
+                "--",
+                release + "/venv/bin/python",
+                "-I",
+                "-B",
+                release + "/tools/permanent_edge/ib_edge_lab.py",
                 "probe",
                 "--config",
                 str(destination / "probe.json"),
@@ -293,12 +435,14 @@ def install_loopback(
         "firewall_unchanged": True,
         "watchdog_armed": True,
         "enabled": False,
+        "collector_inactive_age_at_reload": round(reload_age, 3),
     }
 
 
 def release_files(root):
     files = set(root.glob("gateway/infrabadge_gateway/**/*.py"))
     files.update(root.glob("tools/permanent_edge/*.py"))
+    files.update(root.glob("deploy/permanent_edge/*.in"))
     files.update(
         (root / "gateway/requirements.lock", root / "deploy/m32/native/requirements-runtime.lock")
     )
@@ -352,11 +496,12 @@ def validate_release(value, root, owner=0):
 
 def main():
     a = argparse.ArgumentParser(description=__doc__)
-    a.add_argument("mode", choices=("prepare", "manifest", "install-loopback"))
+    a.add_argument("mode", choices=("prepare", "manifest", "stage-release", "install-loopback"))
     a.add_argument("--plan", type=Path, required=True)
     a.add_argument("--directory", type=Path, required=True)
     a.add_argument("--phase", choices=("loopback", "lan"), default="loopback")
     a.add_argument("--execute-authorized-loopback-install", action="store_true")
+    a.add_argument("--execute-authorized-release-preparation", action="store_true")
     args = a.parse_args()
     try:
         value = lab.plan(lab.private_json(args.plan))
@@ -373,6 +518,14 @@ def main():
             result = {"event": "casa_source_manifest", "installed": False}
         elif args.mode == "prepare":
             result = prepare(value, args.directory, args.phase)
+        elif args.mode == "stage-release":
+            if (
+                not args.execute_authorized_release_preparation
+                or os.geteuid() != 0
+                or socket.gethostname().split(".")[0] != "infrabadge-core"
+            ):
+                raise ValueError("specific_release_preparation_approval_required")
+            result = stage_release(value, args.directory)
         else:
             if (
                 not args.execute_authorized_loopback_install

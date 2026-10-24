@@ -172,6 +172,16 @@ def test_probe_verified_tls_own_identity_and_no_lifetime_extension(tmp_path, kin
                     "probe_device_id": "probe-home",
                     "minimum_leaf_seconds": 30 * 86400 if kind == "near_expiry" else 0,
                 }
+                if kind in ("valid", "wrong_ca", "wrong_host", "near_expiry"):
+                    before_requests = requests[0]
+                    if kind == "valid":
+                        assert lab.wait_tls(settings, connection_factory=LocalConnection)[
+                            "tls_verified"
+                        ]
+                    else:
+                        with pytest.raises((ssl.SSLError, ValueError)):
+                            lab.wait_tls(settings, connection_factory=LocalConnection)
+                    assert requests[0] == before_requests  # Handshake only, no HTTP/token.
                 if kind == "core_recovery":
                     available[0] = False
                     with pytest.raises(ValueError):

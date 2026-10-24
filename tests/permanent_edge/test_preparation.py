@@ -59,7 +59,9 @@ def test_templates_exact_bind_nonroot_restart_and_independent_rollback(tmp_path)
     assert "ProtectClock=true" in service and "NoNewPrivileges=true" in service
     assert "OnActiveSec=19min" in files["infrabadge-edge-home-rollback.timer"]
     assert "--execute-authorized-rollback" in files["infrabadge-edge-home-rollback.service"]
-    assert 'iifname "lan-test0" ip saddr 10.23.0.0/24' in files["infrabadge-edge-home.nft.proposed"]
+    assert (
+        'iifname "lan-test0" ip saddr 10.23.0.50/32' in files["infrabadge-edge-home.nft.proposed"]
+    )
     release = tmp_path / "release"
     (release / "venv/bin").mkdir(parents=True)
     (release / "venv/bin/python").symlink_to(sys.executable)

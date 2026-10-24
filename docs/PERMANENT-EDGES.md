@@ -1,6 +1,6 @@
 # Edge CASA en infrabadge-core — PR10
 
-**Preparación; no instalado.** Se abandona el destino nas-01. El NAS conserva
+**C1: A/B real concluido, Edge retirado; LAN sin activar.** Se abandona el destino nas-01. El NAS conserva
 únicamente NAS/Docker/collector. No se accedió a él en esta adaptación.
 
 ESP32 → Wi-Fi doméstica → LAN HTTPS8443 → Edge sin privilegios en Raspberry →
@@ -72,7 +72,7 @@ El host tiene `inet infrabadge_host input` con DROP final. Un accept en otra tab
 no lo vence. El candidato LAN contiene dos piezas, ambas requieren autorización:
 
 1. Tabla nueva `inet infrabadge_edge_home`, puerto8443/destino exacto: acepta
-   loopback local para healthcheck y eth0 desde la subred aprobada; descarta otros
+   loopback local para healthcheck y eth0 desde clientes /32 explícitos; descarta otros
    orígenes a ese listener. Sin wildcard ni listener IPv6.
 2. Una aceptación exacta8443 en la cadena existente, antes del DROP, marcada
    `infrabadge-edge-home-allow8443`. No cambia política,9443,SSH,Tailscale o rutas.
@@ -84,11 +84,12 @@ un listener en boot sin la restricción ya cargada. Si hay drift, no exponer.
 
 Leaf Edge con SAN127.0.0.1 **y** el DNS/IP LAN exacto del badge, fechas válidas y
 cadena a CA aprobada. Renovar leaf con misma CA/SAN conserva confianza; nueva CA
-requiere provisión explícita. DNS/reserva y CA/identidades todavía pendientes.
+requiere provisión explícita. CA/identidades exclusivas del piloto ya registradas; estabilidad de IP y fuentes
+LAN requieren revalidación antes de C2. No se rotaron en C1.
 No confiar en un certificado autofirmado sin CA previamente aprovisionada.
 
-El Core ya admite credenciales Edge/device separadas. El nuevo probe necesita
-una identidad device propia: registrar identidades nuevas puede requerir cambio
+El Core ya admite credenciales Edge/device separadas. El probe usa
+una identidad device propia. Registrar otras identidades puede requerir cambio
 controlado de configuración y recarga Core, **no autorizado aquí**. Alternativa:
 transferir una identidad Edge existente expresamente aprobada; no copiar/reutilizar
 credenciales de Fedora automáticamente ni usar el token del badge para probes.
@@ -112,7 +113,7 @@ en el checkout de desarrollo limpio un inventario SHA de fuentes y locks; el
 instalador valida ese `source-manifest.json` root0600 y cada archivo root sin
 permisos de escritura de grupo/otros. Preparar el venv con el lock y hashes.
 
-La instalación A futura
+Una repetición de la instalación A
 usa `install-loopback --execute-authorized-loopback-install`, root, materiales
 root0600 y release root fijado. No invocar ese modo durante la preparación actual.
 
@@ -123,6 +124,13 @@ fallos/collisiones y rollback propio. CI conserva firmware9perfiles, C/ASan/UBSa
 visuales y Python/OCI ARM64/x86_64. Las pruebas no acreditan despliegue, consumo,
 restauración real de la Raspberry ni visualización nueva en ESP32.
 
-Validación local de esta adaptación: **473 tests PASS**, Ruff/formato68 archivos.
-Un warning heredado Starlette/TestClient. El CI se exige sobre el HEAD nuevo del
-PR10; el PASS anterior de553cd25 no se hereda.
+La validación histórica de df9b28e fue473 tests PASS; no se hereda para C1.
+Las correcciones C1 incorporan staging0755 bajo umask077, espera TLS acotada
+sin HTTP, ventana segura del collector y firewall por /32 con posición revisable.
+Los resultados de C1 se registran tras ejecutar sus pruebas; los tests locales
+no sustituyen el próximo despliegue real. Véase el procedimiento actualizado.
+
+Validación C1 local: **486 tests PASS**, Ruff/formato69 archivos; un warning
+heredado Starlette/TestClient. Incluye handshake TLS real efímero sin HTTP y
+negativos de CA/SAN/renovación; pruebas de staging y administración con dobles
+locales. CI del nuevo HEAD debe verificarse por separado, sin heredar df9b28e.
