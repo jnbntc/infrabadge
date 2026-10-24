@@ -315,7 +315,7 @@ def renew(config, state, now, host, issue, synchronized=True):
         # No interruption until issuance, all checks, durable backup and independent guard.
         verify_runtime(config, host.unit_path)
         for path in (cert, key):
-            atomic(folder / (path.name + ".previous"), path.read_bytes())
+            atomic(folder / (path.name + ".previous"), pki.private(path, config["owner_uid"]))
         transaction = {
             "phase": "prepared",
             "config_sha256": hashlib.sha256(

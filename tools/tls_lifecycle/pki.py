@@ -42,6 +42,8 @@ def private(path, owner, maximum=65536, *, read=True):
         info = os.fstat(fd)
         if not stat.S_ISREG(info.st_mode) or info.st_uid != owner or info.st_mode & 0o077:
             raise ValueError("private_owner_mode")
+        if info.st_size > maximum:
+            raise ValueError("private_size")
         if not read:
             return None
         raw = os.read(fd, maximum + 1)
@@ -53,7 +55,11 @@ def private(path, owner, maximum=65536, *, read=True):
 
 
 def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    with Path(path).open("rb") as stream:
+        raw = stream.read(65537)
+    if len(raw) > 65536:
+        raise ValueError("digest_size_limit")
+    return hashlib.sha256(raw).hexdigest()
 
 
 def dates(path):

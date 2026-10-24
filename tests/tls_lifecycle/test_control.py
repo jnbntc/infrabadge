@@ -137,3 +137,13 @@ def test_postcheck_pins_actual_leaf_and_probe(lab, monkeypatch, failure):  # noq
     else:
         cli.Host(config).probe()
         assert calls[-1][0] == "/usr/sbin/runuser"
+
+
+def test_large_private_material_rejected_even_for_metadata(tmp_path):
+    tmp_path.chmod(0o700)
+    path = tmp_path / "too-large.key"
+    engine.atomic(path, b"synthetic" * 10000)
+    with pytest.raises(ValueError, match="size"):
+        pki.private(path, os.getuid(), read=False)
+    with pytest.raises(ValueError, match="size"):
+        pki.digest(path)

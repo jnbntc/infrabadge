@@ -120,10 +120,10 @@ lee credenciales. Pruebas usan CA/keys descartables y HTTPS127.0.0.1: validació
 estricta, emisión, reemplazo, rollback ante fallos, interrupción entre renames,
 lock, deriva, reloj, alertas autenticadas, duplicados/backoff y sintaxis systemd.
 CI existente ejecuta toda la suite en x86_64/ARM64; mantiene nueve perfiles IDF,
-visuales y C con ASan/UBSan. No cambian fuentes ni tamaño de firmware por esta fase.
+visuales y C con ASan/UBSan. No se modifican fuentes de firmware; sus tamaños se registran en los manifiestos CI.
 CI verifica software; no demuestra timer/reboot, renovación ni notificación reales.
 
-Resultados locales del24/10/2026: **586 tests PASS**, incluidos64 nuevos de ciclo
+Resultados locales del24/10/2026: **587 tests PASS**, incluidos65 nuevos de ciclo
 de vida TLS; Ruff y formato84 archivos. Un warning heredado Starlette/TestClient.
 Plantillas propias verificadas con systemd-analyze; autoridad de comandos de
 administración sustituida por mocks en tests. La única red de tests es loopback.
