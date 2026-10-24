@@ -1,0 +1,34 @@
+# INERT: requires separately authorized installation and channel approval.
+[Unit]
+Description=InfraBadge CASA TLS notify
+After=time-sync.target
+StartLimitIntervalSec=3600
+StartLimitBurst=3
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I -B @RELEASE@/tools/tls_lifecycle/cli.py notify --execute-authorized-notifications
+TimeoutStartSec=45s
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+RestrictSUIDSGID=true
+LockPersonality=true
+LimitAS=512M
+CPUQuota=20%
+TasksMax=16
+ReadWritePaths=/var/lib/infrabadge-tls
+StandardOutput=journal
+StandardError=journal
+LogRateLimitIntervalSec=60s
+LogRateLimitBurst=10
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+InaccessiblePaths=-/etc/infrabadge -/var/lib/infrabadge -/etc/infrabadge-edge-home/server.key -/etc/infrabadge-tls-signer

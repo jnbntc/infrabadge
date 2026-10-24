@@ -1,0 +1,10 @@
+# INERT: activation separately authorized after pilot.
+[Unit]
+Description=InfraBadge supervised CASA renewal schedule
+[Timer]
+OnCalendar=*-*-* *:10:00 UTC
+Persistent=false
+WakeSystem=false
+RandomizedDelaySec=30s
+[Install]
+WantedBy=timers.target

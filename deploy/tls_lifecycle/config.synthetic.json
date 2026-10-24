@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "directory": "/etc/infrabadge-edge-home",
+  "state_directory": "/var/lib/infrabadge-tls",
+  "owner_uid": 998,
+  "owner_gid": 998,
+  "sans": [
+    "127.0.0.1",
+    "192.168.50.10"
+  ],
+  "ca_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "unit_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "issuer_executable": "/opt/infrabadge-tls/issuer-approved",
+  "issuer_config": "/etc/infrabadge-tls-signer/issuer.json",
+  "warning_seconds": 604800,
+  "critical_seconds": 172800,
+  "renew_seconds": 864000,
+  "lifetime_days": 14,
+  "monitor_max_age": 46800,
+  "notification": null,
+  "additional_certificates": []
+}

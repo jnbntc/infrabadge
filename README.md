@@ -371,3 +371,7 @@ a sus unidades/tabla. CASA se prepara en infrabadge-core, con HTTPS loopback hac
 nas-01 queda sólo como NAS/Docker/collector. Ningún servicio o regla desplegados. TRABAJO requiere aprobación organizacional.
 [Plan físico futuro](docs/PERMANENT-EDGES-PHYSICAL.md): roaming/noche y energía
 pendientes; M3.5 instalado se conserva.
+
+Renovación TLS supervisada: [diseño y pruebas](docs/TLS-LIFECYCLE.md),
+[procedimiento de piloto y rollback](docs/TLS-DEPLOYMENT.md). Código preparado,
+sin rotación ni notificaciones productivas habilitadas.

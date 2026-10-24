@@ -1,0 +1,13 @@
+# INERT: never enabled by preparation.
+[Unit]
+Description=InfraBadge CASA TLS notify schedule
+
+[Timer]
+OnCalendar=*-*-* *:0/5:00 UTC
+Persistent=false
+WakeSystem=false
+AccuracySec=30s
+RandomizedDelaySec=15s
+
+[Install]
+WantedBy=timers.target
