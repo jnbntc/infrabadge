@@ -176,6 +176,8 @@ def test_permanent_units_and_manifest_cover_boot_and_tls_without_core_control(tm
     assert "Requires=infrabadge-firewall.service" not in firewall
     assert "RuntimeDirectoryMode=0700" in firewall and "CAP_NET_ADMIN" in firewall
     assert "Requires=infrabadge-edge-home-firewall.service" in dropin
+    # Three failed 20s TLS waits plus bounded stop/restart time must fit in the window.
+    assert "StartLimitIntervalSec=5min" in dropin and "StartLimitBurst=3" in dropin
     assert "tls_check.py ready" in dropin
     assert all("Requires=infrabadge-m32-core" not in text for text in files.values())
     assert "Persistent=true" in files[permanent.STEM + "-tls-check.timer"]
