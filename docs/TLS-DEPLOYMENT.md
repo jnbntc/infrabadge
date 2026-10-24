@@ -41,7 +41,8 @@ ceros son placeholders, NO sirven para activar. Guardar root0600:
 - `/etc/infrabadge-tls/config.json`: CA pública pin, SAN aprobados, UID/GID del
   Edge, hash de su archivo de unidad, políticas, inventario público y webhook null.
 - `/etc/infrabadge-tls/runtime.json`: `effective_unit_sha256` de los bytes de
-  `systemctl cat infrabadge-edge-home.service`; todos sus drop-ins root readonly.
+  `systemctl cat infrabadge-edge-home.service`, y `probe_config_sha256` del archivo
+  privado `probe.json` vigente. Todos los drop-ins son root readonly.
 - `/etc/infrabadge-tls-signer/issuer.json`: política de emisión con la CA aprobada,
   igual huella/SAN y14d; firmante sólo si se autoriza su custodia. Alternativa:
   adaptador emisor externo aprobado; conservar contrato stdin-CSR/stdout-leaf.

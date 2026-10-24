@@ -28,7 +28,8 @@ una CA nueva necesita aprobación y distribución explícita a consumidores.
 
 `additional_certificates` permite observar certificados públicos de Core/CA con
 huellas y propietarios propios. Un leaf renovable no se fija por hash; su CA,
-SAN exactos, propósito, permisos, par de claves y unidad sí se validan. No se
+SAN exactos, propósito, permisos, par de claves y unidad sí se validan.
+El probe se fija por hash y el leaf realmente servido debe coincidir con el instalado. No se
 abre SQLite ni se importan claves privadas en el monitor Python.
 
 ## Diseño
@@ -53,7 +54,8 @@ el filtro persistente. Dos renames no son una transacción conjunta: ambos ocurr
 con listener detenido, con journal y copia anterior fsync antes de parar. Es una
 interrupción breve controlada; no se promete cero downtime.
 
-Un timer independiente120s, comprobado por deadline monotónico numérico, se arma
+Un timer independiente120s con OnBootSec absoluto, comprobado por deadline
+monotónico numérico que no se extiende por daemon-reload, se arma
 antes de detener Edge. Renovación tiene límite90s y su unidad100s. Si muere el
 proceso entre reemplazos, la recuperación usa journal y acepta sólo hashes del
 par anterior o nuevo. Drift de archivos/unidad causa revisión, nunca sobrescritura
@@ -121,7 +123,7 @@ CI existente ejecuta toda la suite en x86_64/ARM64; mantiene nueve perfiles IDF,
 visuales y C con ASan/UBSan. No cambian fuentes ni tamaño de firmware por esta fase.
 CI verifica software; no demuestra timer/reboot, renovación ni notificación reales.
 
-Resultados locales del24/10/2026: **583 tests PASS**, incluidos61 nuevos de ciclo
+Resultados locales del24/10/2026: **586 tests PASS**, incluidos64 nuevos de ciclo
 de vida TLS; Ruff y formato84 archivos. Un warning heredado Starlette/TestClient.
 Plantillas propias verificadas con systemd-analyze; autoridad de comandos de
 administración sustituida por mocks en tests. La única red de tests es loopback.

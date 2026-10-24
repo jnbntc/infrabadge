@@ -2,11 +2,14 @@
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
+import ssl
 import sys
 import time
 from pathlib import Path
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "permanent_edge"))
@@ -18,6 +21,7 @@ import pki
 
 CONFIG = Path("/etc/infrabadge-tls/config.json")
 UNIT = Path("/etc/systemd/system/infrabadge-edge-home.service")
+PROBE = Path("/etc/infrabadge-edge-home/probe.json")
 GUARD = "infrabadge-edge-home-tls-recovery"
 
 
@@ -87,8 +91,36 @@ class Host:
         pki.command(["/usr/bin/systemctl", "start", engine.SERVICE], timeout=30)
 
     def probe(self):
-        # Existing code validates TLS, purpose, hostname, expiry, v2, ETag and TTL.
-        # Probe JSON/credential remain owned by Edge; root never impersonates badge.
+        # Pin probe configuration and actual served leaf, then reuse v2/ETag/TTL checks.
+        self.check()
+        engine.verify_runtime(self.config, UNIT)
+        runtime = engine.load(CONFIG.parent / "runtime.json")
+        probe_path = PROBE
+        raw = pki.private(probe_path, self.config["owner_uid"])
+        if hashlib.sha256(raw).hexdigest() != runtime["probe_config_sha256"]:
+            raise ValueError("probe_configuration_drift")
+        probe = json.loads(raw)
+        url = urlsplit(probe["url"])
+        cert, _, ca = engine.paths(self.config)
+        if (
+            url.scheme != "https"
+            or url.hostname not in self.config["sans"]
+            or url.port != 8443
+            or probe["ca_file"] != str(ca)
+        ):
+            raise ValueError("approved_probe_origin")
+        context = ssl.create_default_context(cafile=str(ca))
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        connection = http.client.HTTPSConnection(url.hostname, 8443, context=context, timeout=4)
+        try:
+            connection.connect()
+            served = connection.sock.getpeercert(binary_form=True)
+            expected = ssl.PEM_cert_to_DER_cert(cert.read_text())
+            if hashlib.sha256(served).digest() != hashlib.sha256(expected).digest():
+                raise ValueError("served_leaf_mismatch")
+        finally:
+            connection.close()
+        # Credential remains owned by Edge; root never impersonates badge.
         release = Path(__file__).resolve().parents[2]
         pki.command(
             [
@@ -114,7 +146,7 @@ class Host:
                 "/usr/bin/systemd-run",
                 "--unit=" + GUARD,
                 "--collect",
-                "--on-active=120s",
+                "--on-boot=" + str(time.monotonic() + 120) + "s",
                 "--timer-property=AccuracySec=1s",
                 "--property=Type=oneshot",
                 "--property=TimeoutStartSec=60s",

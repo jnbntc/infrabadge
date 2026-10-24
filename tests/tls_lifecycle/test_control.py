@@ -10,6 +10,8 @@ import lifecycle as engine
 import pki
 import pytest
 
+from tests.tls_lifecycle.test_lifecycle import lab  # noqa: F401
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -39,7 +41,8 @@ def test_independent_timer_numeric_deadline(monkeypatch, delta, valid):
         with pytest.raises(ValueError, match="deadline"):
             host.arm()
     assert calls[0][0] == "/usr/bin/systemd-run"
-    assert "--on-active=120s" in calls[0]
+    deadline = next(x for x in calls[0] if x.startswith("--on-boot="))
+    assert 110 <= float(deadline.split("=", 1)[1][:-1]) - time.monotonic() <= 125
     assert "--collect" in calls[0]
     assert host.guard_created
     assert not any("stop" in args for args in calls)
@@ -83,3 +86,54 @@ def test_duplicate_json_and_key_permissions(tmp_path):
     path.chmod(0o644)
     with pytest.raises(ValueError, match="owner_mode"):
         engine.load(path)
+
+
+@pytest.mark.parametrize("failure", [None, "served_leaf", "probe_drift"])
+def test_postcheck_pins_actual_leaf_and_probe(lab, monkeypatch, failure):  # noqa: F811
+    import ssl
+
+    config, _, unit, root = lab
+    cli = module("tls_test_postcheck", "cli.py")
+    probe = root / "probe.json"
+    runtime = root / "runtime.json"
+    cert, _, ca = engine.paths(config)
+    engine.save(probe, {"url": "https://127.0.0.1:8443", "ca_file": str(ca)})
+    engine.save(runtime, {"probe_config_sha256": pki.digest(probe)})
+    monkeypatch.setattr(cli, "CONFIG", root / "config.json")
+    monkeypatch.setattr(cli, "PROBE", probe)
+    monkeypatch.setattr(cli, "UNIT", unit)
+    monkeypatch.setattr(cli.Host, "check", lambda self: None)
+    if failure == "probe_drift":
+        engine.save(probe, {"url": "https://elsewhere.invalid:8443", "ca_file": str(ca)})
+    calls = []
+
+    class Connection:
+        sock = None
+
+        def __init__(self, *args, **kwargs):
+            calls.append("connect_created")
+            self.sock = self
+
+        def connect(self):
+            pass
+
+        def getpeercert(self, binary_form):
+            assert binary_form
+            return (
+                b"old served leaf"
+                if failure == "served_leaf"
+                else ssl.PEM_cert_to_DER_cert(cert.read_text())
+            )
+
+        def close(self):
+            calls.append("closed")
+
+    monkeypatch.setattr(cli.http.client, "HTTPSConnection", Connection)
+    monkeypatch.setattr(pki, "command", lambda args, **kwargs: calls.append(args))
+    if failure:
+        with pytest.raises(ValueError, match="mismatch" if failure == "served_leaf" else "drift"):
+            cli.Host(config).probe()
+        assert not any(isinstance(x, list) and "/usr/sbin/runuser" in x for x in calls)
+    else:
+        cli.Host(config).probe()
+        assert calls[-1][0] == "/usr/sbin/runuser"
