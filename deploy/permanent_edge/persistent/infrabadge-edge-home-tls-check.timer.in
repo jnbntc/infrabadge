@@ -1,0 +1,11 @@
+[Unit]
+Description=InfraBadge CASA TLS check every six hours
+
+[Timer]
+OnCalendar=*-*-* 00,06,12,18:00:00 UTC
+Persistent=true
+AccuracySec=1min
+Unit=infrabadge-edge-home-tls-check.service
+
+[Install]
+WantedBy=timers.target

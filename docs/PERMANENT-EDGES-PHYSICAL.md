@@ -108,6 +108,73 @@ para suplir esa incógnita. TLS8443 desde Wi-Fi no se probó: el puerto sigue ce
 El piloto C2 no incluye persistencia firewall, enable permanente ni reboot.
 Esas operaciones y renovación de materiales necesitan autorización posterior.
 
+## Activación permanente controlada (autorización explícita por host)
+
+La autorización debe abarcar el delta del manifiesto C2 y los componentes de
+`deploy/permanent_edge/persistent/`. No instalar desde un checkout sucio ni
+atribuir a un SHA previo las herramientas nuevas. `prepare_companions` produce
+las siete unidades/drop-in y sus hashes; no modifica el sistema. La aplicación
+y sus dependencias pueden permanecer iguales mientras cambia el código de administración.
+
+1. Verificar primero, por lecturas: firewall original, Core/collector saludables,
+   identidades/scopes ya registrados, PKI/CA/SAN/fecha/permisos y fuentes /32
+   exactamente aprobadas. Si hay drift, detenerse sin ampliar permisos/red.
+2. Ejecutar ensayo real del watchdog corregido con nuevo plan: deadline absoluto
+   inmutable después de daemon-reload, guardia independiente anterior a nft y
+   retirada selectiva. No enable. Completar retirada y comprobar baseline antes
+   de reinstalar. No repetir ensayos físicos de otros componentes sin cambios.
+3. Para la reinstalación, conservar código readonly en release con SHA/manifiesto,
+   usuario y secretos privados separados del Core. Armar nueva guardia antes de
+   instalar o exponer; nunca reutilizar planes consumidos. Edge debe estar parado
+   al preparar las unidades de persistencia y los objetos de firewall.
+4. Preparar referencia canónica nft en namespace efímero y huella de la cadena
+   base sin excepción Edge. Guardar contrato root0600 bajo directorio root0700
+   `/etc/infrabadge-edge-home-admin/manifest.json`. Su estado por boot sólo va a
+   `/run/infrabadge-edge-home-admin/`, root0700, nunca al usuario Edge.
+5. Instalar sólo compañeros/drop-in propios y verificar todos los hashes antes
+   de arrancar. El cargador real es `infrabadge-firewall.service`; la unidad propia
+   se ordena después y comprueba que ya está activa sin iniciarla o recargarla.
+   Nunca utilizar `nftables.service`: su ExecStop puede hacer flush global.
+6. `permanent.py firewall-start --execute-authorized-edge-persistence` aplica
+   exactamente tabla y aceptación C2 en una transacción, valida propiedad y guarda
+   estado del boot. Si falla su publicación, intenta retirar ambos objetos exactos.
+   Colisiones/deriva son fatales; no adopta reglas preexistentes por nombre.
+7. El drop-in del Edge requiere su propio firewall y ejecuta disponibilidad TLS
+   del Core por127.0.0.1:9443 con CA/SAN/fecha, reloj sincronizado y espera <=20s.
+   No HTTP/tokens en ese precheck. La dependencia no inicia ni reinicia Core.
+   Una IP DHCP diferente bloquea el arranque; no ampliar bind o fuentes.
+8. Validar TLS del listener,200/304,TTL,scopes/rechazos y continuidad del collector.
+   Las consultas normales pueden generar snapshots/clock_floor en Core; no migrar,
+   editar ni restaurar SQLite. El usuario Edge no accede al archivo de base.
+9. Confirmar enable del Edge, probe.timer y tls-check.timer sólo tras verificaciones.
+   La unidad firewall es dependencia del Edge, sin enable independiente. Verificar
+   orden/sintaxis y enlaces; no afirmar reboot probado sin efectuarlo. Cerrar guardias
+   de despliegue sólo después de un commit explícito verificado. No dejar watchdog
+   de piloto contra un servicio aceptado como permanente.
+
+El monitor TLS usa sólo certificados públicos, cada6h UTC con Persistent=true.
+Advertencia<=10d, crítico<=7d, error/advertencia visibles en journal y estado del
+servicio; no existe notificación remota por defecto. Ready bloquea arranques con
+<=7d restantes. No renueva ni lee firmante o tokens. La renovación se prepara con
+CA/SAN y roles existentes y requiere aprobación antes de sustituir clave/certificado.
+No prometer producción sin un mecanismo operativo de avisos y renovación a tiempo.
+
+Rollback permanente: parar sólo timers/probes/Edge y luego su unidad firewall;
+su ExecStop retira tabla y aceptación exactas en una transacción. Verificar baseline
+de red antes de retirar unidades. Registrar con `retirement.record` cada raíz nueva,
+UID/GID, archivos y enlaces propios antes del listener; actualizar sólo tras cambios
+autorizados. `retirement.verify` rechaza drift y rutas ajenas. `archive_files` archiva
+configuración/secretos/unidades/release y conserva contenidos, con verificación de
+copia antes de retirar los runtime de tmpfs. No borra PKI de preparación ni backups.
+Antes de userdel, verificar ausencia de procesos en todas las identidades UID de
+/proc. Desactivar únicamente enlaces enable registrados, conservar evidencia y
+recargar systemd sólo dentro de la ventana segura del collector. Revisar ausencia
+de huérfanos y salud nuevamente. Una cancelación comprobada del probe se reconoce
+por su ejecución propia; no reset global ni enmascarar errores nuevos.
+
+Estas herramientas/plantillas son código preparado: sus tests de fixtures no
+prueban arranque físico, deadline real o permanencia del host por sí solos.
+
 ## Renovación TLS diseñada, no ejecutada
 
 Avisar a10d y bloquear despliegues nuevos si restan menos de7d. Inventariar fecha

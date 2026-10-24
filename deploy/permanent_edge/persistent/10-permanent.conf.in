@@ -1,0 +1,7 @@
+# CASA-only. Install only after a verified independent rollback trial.
+[Unit]
+Requires=infrabadge-edge-home-firewall.service
+After=infrabadge-edge-home-firewall.service
+
+[Service]
+ExecStartPre=@RELEASE@/venv/bin/python -I -B @RELEASE@/tools/permanent_edge/tls_check.py ready

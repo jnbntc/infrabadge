@@ -447,7 +447,7 @@ def install_loopback(
 def release_files(root):
     files = set(root.glob("gateway/infrabadge_gateway/**/*.py"))
     files.update(root.glob("tools/permanent_edge/*.py"))
-    files.update(root.glob("deploy/permanent_edge/*.in"))
+    files.update(root.glob("deploy/permanent_edge/**/*.in"))
     files.update(
         (root / "gateway/requirements.lock", root / "deploy/m32/native/requirements-runtime.lock")
     )

@@ -13,3 +13,5 @@ select = ["E4", "E7", "E9", "F", "I"]
 "tools/m32/smoke.py" = ["F821"]
 
 "tools/permanent_edge/pilot.py" = ["E402"]
+"tools/permanent_edge/permanent.py" = ["E402"]
+"tools/permanent_edge/tls_check.py" = ["E402"]
