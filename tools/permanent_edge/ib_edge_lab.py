@@ -32,12 +32,14 @@ def plan(value):
         "client_ipv4",
         "core_ipv4",
         "edge_hostname",
+        "device_ids",
+        "probe_device_id",
     }
     if (
         type(value) is not dict
         or set(value) != fields
         or type(value["schema_version"]) is not int
-        or value["schema_version"] != 1
+        or value["schema_version"] != 2
     ):
         raise ValueError("plan_schema")
     if value["site"] not in ("home", "work"):
@@ -55,7 +57,18 @@ def plan(value):
         for label in value["edge_hostname"].split(".")
     ):
         raise ValueError("dns_labels")
-    if value["service_user"] in ("root", "nobody"):
+    ids = value["device_ids"]
+    if (
+        type(ids) is not list
+        or not 2 <= len(ids) <= 16
+        or any(type(i) is not str or not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,31}", i) for i in ids)
+        or len(set(ids)) != len(ids)
+        or type(value["probe_device_id"]) is not str
+        or not re.fullmatch(r"probe-[a-z0-9_-]{1,26}", value["probe_device_id"])
+        or value["probe_device_id"] not in ids
+    ):
+        raise ValueError("distinct_scoped_probe_and_badge")
+    if value["service_user"] in ("root", "nobody", "infrabadge", "ibcollector"):
         raise ValueError("dedicated_unprivileged_user")
     if any(type(value[k]) is not str for k in ("lan_cidr", "lan_ipv4", "client_ipv4", "core_ipv4")):
         raise ValueError("address_string_required")
@@ -72,9 +85,13 @@ def plan(value):
             for a in (lan, client)
         )
         or lan == client
-        or core not in ipaddress.IPv4Network("100.64.0.0/10")
+        or (
+            core != ipaddress.IPv4Address("127.0.0.1")
+            if value["site"] == "home"
+            else core not in ipaddress.IPv4Network("100.64.0.0/10")
+        )
     ):
-        raise ValueError("explicit_lan_tailnet_required")
+        raise ValueError("explicit_lan_and_approved_core_required")
     return dict(value)
 
 
@@ -85,8 +102,10 @@ def private_json(path):
     return read_json(path)
 
 
-def render(value, template_root):
+def render(value, template_root, phase="loopback"):
     value = plan(value)
+    if phase not in ("loopback", "lan"):
+        raise ValueError("phase")
     pairs = {
         "@SITE@": value["site"],
         "@EDGE_USER@": value["service_user"],
@@ -94,6 +113,19 @@ def render(value, template_root):
         "@LAN_IPV4@": value["lan_ipv4"],
         "@LAN_INTERFACE@": value["lan_interface"],
         "@LAN_CIDR@": value["lan_cidr"],
+        "@EDGE_BIND@": "127.0.0.1" if phase == "loopback" else value["lan_ipv4"],
+        "@HOST_ACCEPT@": (
+            'insert rule inet infrabadge_host input iifname "'
+            + value["lan_interface"]
+            + '" ip saddr '
+            + value["lan_cidr"]
+            + " ip daddr "
+            + value["lan_ipv4"]
+            + ' tcp dport 8443 accept comment "infrabadge-edge-home-allow8443"'
+            if value["site"] == "home"
+            else ""
+        ),
+        "@CORE_ORDER@": "After=infrabadge-m32-core.socket" if value["site"] == "home" else "",
     }
     result = {}
     for source in sorted(Path(template_root).glob("*.in")):
@@ -148,11 +180,10 @@ def preflight(value, run=command, proc=Path("/proc")):
     synchronized = run(["timedatectl", "show", "--property=NTPSynchronized", "--value"])
     services = {}
     for unit in (
-        "docker.service",
-        "containerd.service",
+        "infrabadge-m32-core.service",
+        "infrabadge-m32-core.socket",
         "tailscaled.service",
         "infrabadge-m32-collector.timer",
-        "infrabadge-m32-nas01-collector.timer",
     ):
         text = run(["systemctl", "show", "--property=ActiveState", "--value", unit])
         services[unit] = (
@@ -184,10 +215,14 @@ def preflight(value, run=command, proc=Path("/proc")):
         if isinstance(interface, dict)
         for a in interface.get("addr_info", [])
     )
-    core_via_tailnet = (
+    core_path_matches = (
         core_selected is not None
         and bool(core_selected)
-        and all(isinstance(r, dict) and r.get("dev") == "tailscale0" for r in core_selected)
+        and all(
+            isinstance(r, dict)
+            and r.get("dev") == ("lo" if value["site"] == "home" else "tailscale0")
+            for r in core_selected
+        )
     )
     correct_route = (
         selected is not None
@@ -203,7 +238,8 @@ def preflight(value, run=command, proc=Path("/proc")):
         "memory_total_bytes": memory.get("MemTotal"),
         "lan_address_present": bound,
         "lan_prefix_matches": prefix_matches,
-        "core_route_uses_tailscale": core_via_tailnet,
+        "core_local_loopback": value["site"] == "home",
+        "core_route_matches": core_path_matches,
         "tcp8443_return_interface_matches": correct_route,
         "tcp8443_free": listeners is not None and not listeners.strip(),
         "clock_synchronized": synchronized is not None and synchronized.strip() == "yes",
@@ -341,6 +377,7 @@ def main():
     parser.add_argument("mode", choices=("render", "preflight", "probe"))
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--phase", choices=("loopback", "lan"), default="loopback")
     parser.add_argument("--inspect-local-authorized", action="store_true")
     parser.add_argument("--authorized-administrative-read", action="store_true")
     args = parser.parse_args()
@@ -350,7 +387,7 @@ def main():
             from infrabadge_gateway.distributed.private import private_parent
 
             target = private_parent(args.output)
-            files = render(value, ROOT / "deploy/permanent_edge")
+            files = render(value, ROOT / "deploy/permanent_edge", args.phase)
             # One new directory, never an existing unit/config path.
             target.mkdir(mode=0o700)
             for name, text in files.items():

@@ -21,7 +21,22 @@ from gateway.tests.test_m32_edge import tls_server
 
 @pytest.mark.parametrize(
     "kind",
-    ["valid", "wrong_ca", "wrong_host", "bad_token", "extended_304", "near_expiry", "changing"],
+    [
+        "valid",
+        "wrong_ca",
+        "wrong_host",
+        "bad_token",
+        "extended_304",
+        "near_expiry",
+        "changing",
+        "core_wrong_ca",
+        "core_wrong_host",
+        "core_expired",
+        "edge_token",
+        "collector_token",
+        "core_recovery",
+        "edge_down",
+    ],
 )
 def test_probe_verified_tls_own_identity_and_no_lifetime_extension(tmp_path, kind, capsys):
     tmp_path.chmod(0o700)
@@ -39,14 +54,49 @@ def test_probe_verified_tls_own_identity_and_no_lifetime_extension(tmp_path, kin
         core.ingest(node, sample(node=node), NOW)
     tls = tmp_path / "tls"
     tls.mkdir()
-    ca, cert, key = certificates(tls)
-    context = ssl.create_default_context(cafile=str(ca))
+    ca, cert, key = certificates(
+        tls,
+        host="127.0.0.1",
+        kind=(
+            "wronghost"
+            if kind == "core_wrong_host"
+            else "expired"
+            if kind == "core_expired"
+            else "valid"
+        ),
+    )
+    client_ca = ca
+    if kind == "core_wrong_ca":
+        other = tmp_path / "untrusted-core"
+        other.mkdir()
+        client_ca, _, _ = certificates(other)
+    context = ssl.create_default_context(cafile=str(client_ca))
+    front = tmp_path / "front"
+    front.mkdir()
+    front_ca, front_cert, front_key = certificates(front)
     secret = tmp_path / "probe.token"
-    secret.write_text("wrong-token-" * 4 if kind == "bad_token" else token)
+    secret.write_text(
+        "wrong-token-" * 4
+        if kind == "bad_token"
+        else TOKENS["collector-a"]
+        if kind == "collector_token"
+        else token
+    )
     secret.chmod(0o600)
     current = [NOW]
+    available = [True]
+    core_app = create_app(core, clock=lambda: current[0])
+
+    async def core_gate(scope, receive, send):
+        if not available[0] and scope["type"] == "http":
+            from starlette.responses import Response
+
+            return await Response(status_code=503)(scope, receive, send)
+        await core_app(scope, receive, send)
+
     try:
-        with tls_server(create_app(core, clock=lambda: current[0]), cert, key) as origin:
+        with tls_server(core_gate, cert, key) as origin:
+            origin = origin.replace("localhost", "127.0.0.1")
             upstream = httpx.AsyncClient(verify=context, trust_env=False, timeout=2)
             edge = Edge(
                 EdgeConfig(
@@ -58,7 +108,7 @@ def test_probe_verified_tls_own_identity_and_no_lifetime_extension(tmp_path, kin
                     presentation_v2=True,
                 ),
                 upstream,
-                TOKENS["e-edge"],
+                "x" * 40 if kind == "edge_token" else TOKENS["e-edge"],
                 clock=lambda: current[0],
             )
 
@@ -91,7 +141,7 @@ def test_probe_verified_tls_own_identity_and_no_lifetime_extension(tmp_path, kin
 
                 await edge(scope, receive, checked)
 
-            edge_cert, edge_key, trusted_ca = cert, key, ca
+            edge_cert, edge_key, trusted_ca = front_cert, front_key, front_ca
             if kind in ("wrong_ca", "wrong_host"):
                 bad = tmp_path / "bad"
                 bad.mkdir()
@@ -122,7 +172,30 @@ def test_probe_verified_tls_own_identity_and_no_lifetime_extension(tmp_path, kin
                     "probe_device_id": "probe-home",
                     "minimum_leaf_seconds": 30 * 86400 if kind == "near_expiry" else 0,
                 }
-                if kind in ("valid", "changing"):
+                if kind == "core_recovery":
+                    available[0] = False
+                    with pytest.raises(ValueError):
+                        lab.probe(
+                            settings, clock=lambda: current[0], connection_factory=LocalConnection
+                        )
+                    available[0] = True
+                    assert lab.probe(
+                        settings, clock=lambda: current[0], connection_factory=LocalConnection
+                    )["pass"]
+                elif kind == "edge_down":
+
+                    class Unavailable(LocalConnection):
+                        def connect(self):
+                            raise ConnectionRefusedError("synthetic edge offline")
+
+                    with pytest.raises(ConnectionRefusedError):
+                        lab.probe(
+                            settings, clock=lambda: current[0], connection_factory=Unavailable
+                        )
+                    assert lab.probe(
+                        settings, clock=lambda: current[0], connection_factory=LocalConnection
+                    )["pass"]
+                elif kind in ("valid", "changing"):
                     result = lab.probe(
                         settings, clock=lambda: current[0], connection_factory=LocalConnection
                     )

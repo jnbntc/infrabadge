@@ -16,6 +16,7 @@ CapabilityBoundingSet=
 AmbientCapabilities=
 ProtectSystem=strict
 ProtectHome=true
+InaccessiblePaths=-/etc/infrabadge -/var/lib/infrabadge -/opt/infrabadge -/var/backups/infrabadge-host
 PrivateTmp=true
 PrivateDevices=true
 ProtectClock=true

@@ -367,7 +367,7 @@ provisión o carga. La validación física nueva y el consumo permanecen pendien
 
 [Paquete ejecutable e inerte](docs/PERMANENT-EDGES.md): preflight allowlisted,
 plantillas nativas/systemd, HTTPS probe con identidad propia y rollback limitado
-a sus unidades/tabla. Auditoría CASA autorizada de sólo lectura; ningún servicio
-o regla desplegados. TRABAJO requiere aprobación organizacional.
+a sus unidades/tabla. CASA se prepara en infrabadge-core, con HTTPS loopback hacia el Core;
+nas-01 queda sólo como NAS/Docker/collector. Ningún servicio o regla desplegados. TRABAJO requiere aprobación organizacional.
 [Plan físico futuro](docs/PERMANENT-EDGES-PHYSICAL.md): roaming/noche y energía
 pendientes; M3.5 instalado se conserva.

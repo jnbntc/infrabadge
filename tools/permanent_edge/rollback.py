@@ -65,7 +65,7 @@ def check(value, boot_hash, boottime):
     }
     if (
         type(value) is not dict
-        or set(value) != fields
+        or set(value) not in (fields, fields | {"host_accept_rule"})
         or type(value["schema_version"]) is not int
         or value["schema_version"] != 1
         or value["site"] not in ("home", "work")
@@ -73,10 +73,24 @@ def check(value, boot_hash, boottime):
     ):
         raise ValueError("rollback_schema")
     for key, size in (("plan_id", 32), ("boot_sha256", 64), ("table_sha256", 64)):
+        if key == "table_sha256" and value[key] is None:
+            continue
         if type(value[key]) is not str or not re.fullmatch(
             "[a-f0-9]{" + str(size) + "}", value[key]
         ):
             raise ValueError("rollback_id")
+    owned = value.get("host_accept_rule")
+    if owned is not None and (
+        value["site"] != "home"
+        or value["table_sha256"] is None
+        or type(owned) is not dict
+        or set(owned) != {"handle", "sha256"}
+        or type(owned["handle"]) is not int
+        or owned["handle"] <= 0
+        or type(owned["sha256"]) is not str
+        or not re.fullmatch("[a-f0-9]{64}", owned["sha256"])
+    ):
+        raise ValueError("host_exception_ownership")
     a, b = value["armed_boottime"], value["deadline_boottime"]
     if (
         any(type(n) not in (int, float) for n in (a, b))
@@ -125,6 +139,14 @@ def execute(value, boot_hash, boottime, unit_root=Path("/etc/systemd/system"), r
         capture_output=True,
         timeout=15,
     )
+    if value["table_sha256"] is None:
+        return {
+            "event": "edge_rollback",
+            "listener_stopped": True,
+            "owned_table_removed": False,
+            "firewall_changed": False,
+            "unit_files_preserved": True,
+        }
     nft = "/usr/sbin/nft" if Path("/usr/sbin/nft").is_file() else "/usr/bin/nft"
     table = "infrabadge_edge_" + value["site"]
     before = run(
@@ -132,12 +154,53 @@ def execute(value, boot_hash, boottime, unit_root=Path("/etc/systemd/system"), r
     )
     if table_digest(json.loads(before.stdout)) != value["table_sha256"]:
         raise ValueError("table_drift_listener_already_stopped")
+    owned = value.get("host_accept_rule")
+    if owned is not None:
+        chain = run(
+            [nft, "-j", "list", "chain", "inet", "infrabadge_host", "input"],
+            check=True,
+            capture_output=True,
+            timeout=3,
+        )
+        rules = [
+            x["rule"]
+            for x in json.loads(chain.stdout).get("nftables", [])
+            if "rule" in x and x["rule"].get("handle") == owned["handle"]
+        ]
+        if (
+            len(rules) != 1
+            or rules[0].get("comment") != "infrabadge-edge-home-allow8443"
+            or table_digest(rules[0]) != owned["sha256"]
+            or not any(
+                x.get("match", {}).get("left") == {"payload": {"protocol": "tcp", "field": "dport"}}
+                and x["match"].get("right") == 8443
+                for x in rules[0].get("expr", [])
+            )
+            or {"accept": None} not in rules[0].get("expr", [])
+        ):
+            raise ValueError("host_exception_drift_listener_already_stopped")
+        run(
+            [
+                nft,
+                "delete",
+                "rule",
+                "inet",
+                "infrabadge_host",
+                "input",
+                "handle",
+                str(owned["handle"]),
+            ],
+            check=True,
+            capture_output=True,
+            timeout=3,
+        )
     run([nft, "delete", "table", "inet", table], check=True, capture_output=True, timeout=3)
     return {
         "event": "edge_rollback",
         "listener_stopped": True,
         "owned_table_removed": True,
         "unit_files_preserved": True,
+        "host_exception_removed": owned is not None,
     }
 
 

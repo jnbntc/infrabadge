@@ -1,4 +1,22 @@
-# Current permanent-edge preparation (2026-10-23)
+# Current CASA edge on Core (2026-10-23)
+
+- Adapt PR10/feat/permanent-edge-preparation in place. CASA runs on
+  infrabadge-core: separate unprivileged edge -> verified127.0.0.1:9443 Core.
+  NAS deployment proposal is abandoned; do NOT access or modify NAS for this task.
+- Core SSH metadata/TLS preflight is authorized read-only. Operator separately
+  ran the sudo reader; never request passwords in chat or reuse deployment plans.
+- Implement/test offline install and rollback tools; local TLS fixtures only.
+  No real users/files/services, Core/collector/SQLite changes, firewall/routes/
+  DNS/Grants, credentials, host restart, board/USB/NVS/flash or PR10 merge.
+- Actual host has final INPUT DROP: separate allow table alone is insufficient.
+  Future8443 access needs explicit exact owned exception before existing drop,
+  plus owned source restriction and rollback by handle/digest. No general policy.
+- Core already binds127.0.0.1+Tailscale9443 with valid127 SAN. No bind/PKI change
+  to Core. Copy only public CA to separate edge dir after future authorization;
+  no shared user/group or access to Core config/SQLite/key. Memory controller
+  is absent, so MemoryMax is NOT a physical RAM limit on this host.
+
+# Historical permanent-edge preparation (2026-10-23)
 
 - User-authorized consolidation merged PR8/c24b0dc, PR9/66bf529 and scoped
   PR7/c62f800 with exact-HEAD checks; verify main post-merge CI before reporting

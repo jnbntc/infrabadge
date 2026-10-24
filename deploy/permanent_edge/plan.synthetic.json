@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "site": "home",
   "service_user": "ibedgehome",
   "release_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
@@ -7,6 +7,11 @@
   "lan_ipv4": "10.23.0.2",
   "lan_cidr": "10.23.0.0/24",
   "client_ipv4": "10.23.0.50",
-  "core_ipv4": "100.64.0.10",
-  "edge_hostname": "home-edge.test"
+  "core_ipv4": "127.0.0.1",
+  "edge_hostname": "home-edge.test",
+  "device_ids": [
+    "badge-demo",
+    "probe-home"
+  ],
+  "probe_device_id": "probe-home"
 }

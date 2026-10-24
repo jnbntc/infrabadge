@@ -49,13 +49,13 @@ def test_plan_rejects_broad_or_injected_values(field, value):
 
 def test_templates_exact_bind_nonroot_restart_and_independent_rollback(tmp_path):
     p = example()
-    files = lab.render(p, TEMPLATES)
+    files = lab.render(p, TEMPLATES, phase="lan")
     assert len(files) == 6
     service = files["infrabadge-edge-home.service"]
     assert "User=ibedgehome" in service and "--bind 10.23.0.2 --port 8443" in service
     assert "Restart=on-failure" in service and "CapabilityBoundingSet=\n" in service
     assert "/etc/infrabadge-edge-home/edge.json" in service
-    assert "/etc/infrabadge/" not in service
+    assert "InaccessiblePaths=-/etc/infrabadge -/var/lib/infrabadge" in service
     assert "ProtectClock=true" in service and "NoNewPrivileges=true" in service
     assert "OnActiveSec=19min" in files["infrabadge-edge-home-rollback.timer"]
     assert "--execute-authorized-rollback" in files["infrabadge-edge-home-rollback.service"]
