@@ -1,0 +1,12 @@
+# PROPOSAL ONLY. Require empty port, ownership check and authorized firewall review.
+# Does not accept traffic rejected by another firewall chain; no global policy change.
+table inet infrabadge_edge_@SITE@ {
+  chain lan_input {
+    type filter hook input priority -5; policy accept;
+    iifname "lo" ip daddr @LAN_IPV4@ tcp dport 8443 accept
+    iifname "@LAN_INTERFACE@" ip saddr @LAN_SOURCES@ ip daddr @LAN_IPV4@ tcp dport 8443 accept
+    ip daddr @LAN_IPV4@ tcp dport 8443 drop
+  }
+}
+
+@HOST_ACCEPT@
