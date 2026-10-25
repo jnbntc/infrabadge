@@ -1,3 +1,32 @@
+# Current CASA v0.1.0 closure (2026-10-25)
+
+- User authorizes documentation-only update, Ready/merge of PR12 after exact-HEAD
+  CI/rules checks, and post-merge main CI. This supersedes earlier no-merge scope.
+- Productive TLS supervised installation and exact installation rollback confirmed:
+  monitor/evaluate/renew active, historical monitor disabled, same leaf/CA retained.
+  Source bd4a98a plus two approved operational inventory adapters; no redeployment.
+- First real leaf rotation remains unobserved until renewal_due27/10 22:03 ART.
+  Three recovered collector failures have unknown cause; no extended investigation.
+- Prepare v0.1.0 notes and tag/release candidate only. DO NOT create/push tag or
+  publish release, alter hosts/services/timers/certs/network or touch ESP32/NVS.
+- Night remains disabled; TRABAJO, energy, M3.6 expiry/recovery, OTA and extra
+  peripherals are accepted deferrals, not new closure blockers.
+
+# Current CASA stable closeout (2026-10-25)
+
+- Work `chore/casa-stable-closeout` from verified main7e6d7af. PR11 is merged;
+  corrected verifier passed three real sandbox checks. Keep its initial probe
+  failure with undetermined cause documented. No need to repeat those trials.
+- Development/tests/CI/docs, inert operational bundle and one draft PR only.
+  Read-only Core inventory is authorized; no production certificate, timer,
+  restart, network, SQLite, ESP32/USB/NVS, NAS or corporate-host changes.
+- M3.6 CASA daytime is the installed physical baseline; night stays disabled,
+  TRABAJO absent. Do not repeat BOOT/HTTPS/daytime expiry or factory backups.
+- Existing public-only verifier/custodian separation remains mandatory. New
+  heartbeat detection must work locally without an enabled webhook channel.
+- Renewal <=10 days, never forced early; signer custody and retirement inventory
+  must be reconciled before productive activation. No merge/tag/release.
+
 # Current accelerated TLS fix (2026-10-24)
 
 - Work PR11/feat/supervised-tls-renewal from verified7eca981. Fix verifier key

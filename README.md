@@ -1,4 +1,4 @@
-# InfraBadge — distributed monitoring core
+# InfraBadge — monitoreo distribuido CASA
 
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
@@ -11,6 +11,23 @@ Este repositorio es **jnbntc/infrabadge**. `jnbntc/distrobox-stack` sigue admini
 exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente.
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
+
+## Estado actual CASA — candidato v0.1.0
+
+Core y Edge CASA permanentes corren en `infrabadge-core`; el ESP32 consulta
+HTTPS8443 directamente. Fedora sólo aporta su collector independiente.
+M3.6 está instalado con CASA, datos reales de tres nodos, navegación y consultas
+autónomas comprobadas. Noche deshabilitada y TRABAJO ausente.
+
+[Cierre y límites actuales](docs/CASA-STABLE.md),
+[operación TLS](docs/TLS-DEPLOYMENT.md), [modo nocturno](docs/NIGHT-MODE.md).
+La renovación TLS supervisada está **instalada**, con monitor/evaluate/renew
+activos y monitor histórico deshabilitado. Rollback de instalación con restauración
+exacta probado; la **primera rotación real del leaf sigue pendiente**. El leaf
+vence el06/11/2026 a las22:03:10 ART; umbral de10 días el27/10 a las22:03:10 ART.
+Tres fallos transitorios del collector se recuperaron; causa no determinada.
+[Notas preparadas de v0.1.0 CASA](docs/releases/v0.1.0.md). Sin tag ni release
+publicados. Las secciones siguientes conservan el historial de cada etapa.
 
 ## M3.5: UI multisitio y edge HTTPS
 
@@ -63,7 +80,7 @@ Core multisitio, collectors con identidad propia, SQLite transaccional e histór
 explícitos. El piloto nativo ARM64/Python/systemd de dos nodos aprobó HTTPS privado,
 autenticación, scopes, duplicados/replay, caducidad independiente y recuperación.
 Las capturas Linux pertenecen a la aplicación b2ae0de; esta consolidación no
-actualiza los hosts. No hay validación nueva del ESP32 ni edge LAN desplegado.
+actualiza los hosts. En aquel piloto no hubo validación nueva del ESP32 ni edge LAN desplegado.
 
 - [Auditoría de integración, comparación M3.1 y propuesta de cierre](docs/M3.2-INTEGRATION-AUDIT.md).
 - [Evidencia real de hosts y separación del dispositivo](docs/M3.2-PHYSICAL-VALIDATION.md).
@@ -103,7 +120,7 @@ usuario confirmó métricas reales, REAL, hora verificada y vencimiento en panta
 La sesión posterior, sin otra carga de firmware y con USB cerrado tras la provisión,
 confirmó consultas autónomas, caducidad y recuperación al pausar/restaurar el
 collector. El usuario confirmó ambas transiciones en pantalla y ausencia de
-intervención. La causa exacta reset/wake no se capturó. M3 permanece instalado;
+intervención. La causa exacta reset/wake no se capturó. En ese ensayo M3 permaneció instalado;
 los backups M2/fábrica se conservan.
 
 - [Arquitectura, modelo de salud y seguridad](docs/M3-ARCHITECTURE.md).
@@ -355,23 +372,25 @@ original se elegirá antes de publicar; los avisos Waveshare ya están preservad
 
 ## Preparación M3.6: roaming y reposo nocturno
 
-Perfil independiente `roaming`, todavía no instalado: dos redes/edges fijos,
+Perfil independiente `roaming`, instalado en CASA con un único binding activo:
+dos redes/edges fijos como capacidad software,
 TLS verificado y suspensión configurable00:00–08:00 Buenos Aires. Preserva M3.5
 y la configuración existente; sin cambios en Core/collectors/edges actuales.
 [Arquitectura](docs/M3.6-ARCHITECTURE.md), [modo nocturno](docs/NIGHT-MODE.md),
 [tests y tamaño](docs/M3.6-VALIDATION.md), [procedimiento sin ejecución](docs/M3.6-DEPLOYMENT.md).
-Requiere integrar primero PR #8 y autorización separada para cualquier despliegue,
-provisión o carga. La validación física nueva y el consumo permanecen pendientes.
+PR8 y M3.6 ya integrados; cualquier nueva provisión o carga requiere autorización.
+Roaming TRABAJO, noche real y consumo permanecen pendientes.
 
 ## Preparación de edges permanentes
 
 [Paquete ejecutable e inerte](docs/PERMANENT-EDGES.md): preflight allowlisted,
 plantillas nativas/systemd, HTTPS probe con identidad propia y rollback limitado
 a sus unidades/tabla. CASA se prepara en infrabadge-core, con HTTPS loopback hacia el Core;
-nas-01 queda sólo como NAS/Docker/collector. Ningún servicio o regla desplegados. TRABAJO requiere aprobación organizacional.
+nas-01 queda sólo como NAS/Docker/collector. Edge CASA permanente operativo;
+TRABAJO requiere aprobación organizacional.
 [Plan físico futuro](docs/PERMANENT-EDGES-PHYSICAL.md): roaming/noche y energía
-pendientes; M3.5 instalado se conserva.
+pendientes; M3.6 es el baseline diurno instalado.
 
 Renovación TLS supervisada: [diseño y pruebas](docs/TLS-LIFECYCLE.md),
-[procedimiento de piloto y rollback](docs/TLS-DEPLOYMENT.md). Código preparado,
-sin rotación ni notificaciones productivas habilitadas.
+[estado productivo y rollback](docs/TLS-DEPLOYMENT.md). Supervisión instalada y
+timers activos; primera rotación real pendiente y notificación externa deshabilitada.

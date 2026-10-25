@@ -31,4 +31,4 @@ cc "${flags[@]}" -I tests/native/mobile_stubs -I components/mobile_policy/includ
     components/m35_ui/{decode,state,render}.c components/display_manager/display.c \
     components/connectivity_core/{snapshot,errors}.c components/ui/{render,model}.c \
     "$IDF_PATH/components/json/cJSON/cJSON.c" tests/native/test_mobile_app.c -lm -o results/m36-native/app-test
-results/m36-native/app-test results/m36-native/bundle.json
+results/m36-native/app-test results/m36-native/bundle.json tests/fixtures/m35-wire/healthy.json

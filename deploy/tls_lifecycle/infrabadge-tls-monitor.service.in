@@ -1,4 +1,4 @@
-# INERT: requires separately authorized installation and channel approval.
+# INERT: requires separately authorized installation; no notification channel needed.
 [Unit]
 Description=InfraBadge CASA TLS monitor
 After=time-sync.target

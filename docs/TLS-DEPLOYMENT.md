@@ -1,9 +1,12 @@
 # Entrega al operador de infrabadge-core
 
-**Preparación, no despliegue autorizado.** No enviar este procedimiento a otro chat
+**Procedimiento histórico de preparación.** El estado productivo vigente figura
+en la sección final; no ejecutar una reinstalación desde este cierre. No enviar a otro chat
 ni ejecutarlo contra el Core automáticamente. No repetir los pilotos M3.7 ya
 superados. El piloto TLS descartable ya fue informado como satisfactorio por el operador.
-Para esta corrección sólo falta el verificador bajo su sandbox en el Core.
+El verificador corregido ya pasó tres veces bajo sandbox real; PR11 está integrado.
+Se conserva el fallo inicial de probe con causa no determinada. No repetir esos
+ensayos ni las pruebas diurnas del ESP32.
 
 ## Preflight de sólo lectura
 
@@ -113,9 +116,8 @@ no ejecutar retirement del Edge para desinstalar esta función. Una retirada de
 código no revierte una hoja renovada válida: volver al par anterior es una
 operación explícita, con aprobación y verificación, nunca una copia ciega.
 
-Pendientes: comprobación dirigida del verificador corregido en Core, reconfirmar
-firmante/material actuales antes de rotar, primera renovación autorizada y
-activación separada de timers/canal. La guardia/rollback y alertas locales previas
+Pendientes históricos de esta preparación, resueltos según el estado productivo
+final para instalación/custodia/timers. Primera rotación y canal externo siguen pendientes. La guardia/rollback y alertas locales previas
 son evidencia del operador, no nuevos ensayos de este chat.
 
 
@@ -125,11 +127,9 @@ No ejecutar desde este chat. Usar el SHA corregido aprobado por CI, release
 readonly y configuración privada vigente, no los valores sintéticos. No habilitar
 timers ni notificaciones durante esta primera operación.
 
-1. **Cerrar el defecto**: preparar sólo el candidato del verificador y su unidad
-   en el Core, preservando InaccessiblePaths de server.key y del firmante. Ejecutar
-   su oneshot una vez contra el listener aprobado: debe confirmar HTTPS/leaf/v2
-   sin abrir ni stat de la clave. No cambiar permisos de custodia para hacerlo pasar.
-   Registrar SHA/unidad/resultado saneado. No reiniciar Edge para esta comprobación.
+1. **Código fijado**: usar el SHA de cierre con CI aprobada y sus nueve unidades
+   preparadas, conservando las barreras de claves del verificador. Las tres
+   comprobaciones reales del defecto anterior ya existen; no repetir el piloto.
 2. **Preflight** (lecturas): confirmar NTP, salud de Core/collector/Edge, ausencia
    de transacción pendiente y otros renovadores; leaf anterior >7d, CA fijada/SAN
    sin cambios, firmante aprobado disponible y configurado para14d. Leer claves
@@ -195,23 +195,75 @@ El webhook sigue `null` hasta aprobar receptor HTTPS y credencial privada propio
 No enviar avisos reales para probar el canal: las13 pruebas locales ya informadas
 más las regresiones software se conservan como evidencia separada.
 
-## ESP32: regreso mínimo, sin cambiar firmware
+## ESP32 CASA actual
 
-- M3.5 instalado puede consultar el Edge CASA permanente mediante v2. Confirmar
-  endpoint/IP estable, fuente del ESP32 ya autorizada y device_id/token/scopes v2
-  existentes; no regenerarlos si coinciden. No modificar reglas desde este chat.
-- Renovar únicamente el leaf con la misma CA y SAN no requiere actualizar la CA
-  del ESP32. Pero la **primera migración desde el Edge Fedora** sí debe comparar
-  huellas: no asumir que ya confía en la CA del Edge permanente.
-- Preparar un nuevo archivo privado0600 IBPROV1 con URL CASA8443, CA pública
-  correcta, identidad device, Wi-Fi existente y UTC fresco de host confiable.
-  Reutilizar `tools/m2/provision.py` (validación previa y envío único); M3.5 usa
-  ventana IBPROV_READY tras arranque, no asumir que BOOT corto abre provisión.
-  Una carga USB de configuración/NVS y cualquier reset necesitan autorización
-  explícita aparte; no flashear ni reutilizar planes consumidos. No usar RTC2056.
-- Tras provisión autorizada: cerrar serie, observar un200 real, resumen REAL /
-  HTTPS OK / nodos / HORA VERIFICADA y una consulta autónoma sin tocar botones.
-  No repetir navegación, periféricos ni el conjunto M2 ya validado. Un304 sólo
-  corresponde si no cambió el snapshot; las métricas reales pueden producir200.
-- Con ese enlace estable, siguiente paso: M3.6 roaming y modo nocturno ya
-  implementados, con autorización propia antes de cargar/provisionar el perfil.
+M3.6 ya está instalado con binding CASA, CA y credencial device propia; HTTPS,
+hora, navegación y consulta autónoma están comprobados. No depende de Fedora.
+Noche está deshabilitada y TRABAJO ausente. Renovar el leaf bajo la **misma CA y
+SAN** no requiere cambiar el ESP32. No usar su token para el probe ni abrir USB.
+Ver [cierre CASA](CASA-STABLE.md) para la única prueba nocturna opcional pendiente.
+
+## Estado productivo confirmado (25/10/2026)
+
+La operación autorizada separada instaló el release TLS bd4a98a y dos complementos
+operativos (`inventory_cli.py`/`inventory_contract.py`) para la transacción exacta
+del inventario del par. No son cambios de código de este PR documental. Su
+manifiesto privado preserva fuente, unidades, hashes, backup y recibos; no publicar
+ese inventario ni los logs. El merge no vuelve a desplegar el release instalado.
+
+| Elemento | Estado confirmado |
+| --- | --- |
+| monitor/evaluate/renew timers | active/enabled |
+| monitor histórico | disabled/inactive; archivos conservados para rollback |
+| notify timer / webhook | disabled/inactive / null; sin avisos externos |
+| firmante | misma CA y clave original bajo custodia privada, aislada del Edge/verificador |
+| leaf/CA activos | conservados, sin primera rotación |
+| ejecución real renew | `not_due`, `renewal_due=false` |
+| Core/Edge/collectors | operativos, tres nodos frescos en cierre productivo |
+
+Rollback real de **instalación** probado dejando vencer la guardia independiente
+120s: retiró/restauró exactamente el baseline y su inventario, seguido por una
+verificación separada; después se confirmó la instalación final. No se rotó el
+leaf ni se reiniciaron Core/Edge. No confundir ese resultado con rollback físico
+del primer leaf productivo renovado. El inventario transaccional sólo admite las
+entradas autorizadas del par; la migración retiró exclusivamente el enlace wants
+del timer histórico, preservando el resto del registro.
+
+Leaf vence **06/11/2026 22:03:10 ART**. Primera elegibilidad de10 días:
+**27/10/2026 22:03:10 ART**. Renew horario:25 UTC con jitter; primera oportunidad
+prevista después del umbral alrededor de22:25 ART, sujeta a reloj, estado y
+validaciones. No ejecutar una rotación anticipada para cerrar v0.1.0. La CA vence
+21/01/2027 a22:03:10 ART; renovar leaf no prolonga su CA.
+
+Calendario UTC: monitor00/06/12/18:05, evaluate cada hora:15, renew:25;
+`Persistent=false`, lock compartido. Enable no acredita una prueba física de
+reinicio; no se reinició la Pi para validarlo. El monitor mantiene heartbeat y
+la evaluación detecta su ausencia localmente aunque no exista canal externo.
+
+**Observación collector:** tres fallos transitorios `collection_or_submission_failed`
+recuperados, seguidos de envíos exitosos y estado fresco. **Causa desconocida**;
+no se atribuyen a RAM, TLS, red, temporización ni instalación. No se cambiaron
+políticas o unidades ni se inicia investigación extensa mientras no reaparezcan.
+También se conservaron timeouts SSH del cierre: se recuperaron recibos ya
+completados mediante lectura, sin repetir escrituras; causa no confirmada.
+
+### Uso del procedimiento histórico anterior
+
+Las secciones previas conservan el procedimiento preparado antes de la operación.
+Sus aprobaciones de instalación ya se consumieron; no son una orden de reinstalar,
+habilitar otra vez timers o repetir pilotos. La primera rotación queda a cargo
+del timer autorizado cuando `renewal_due`; observar recibos, nueva vigencia y HTTPS.
+
+El entorno productivo usa el adaptador de inventario aprobado para `renew` y
+`recover`, no la CLI base aislada mostrada en el ejemplo histórico. Saltarlo
+omitiría el contrato de retirada. Ante recuperación pendiente, usar el mismo
+release/adaptador y backup privado registrado; no regenerar inventarios ni
+restaurar una SQLite antigua. No ejecutar recovery como prueba adicional de cierre.
+Guardias transitorias no sobreviven reboot: ante corte y pending, revisar y
+recuperar par/registro antes de operar; recuperación automática de arranque no
+se declara validada. No retirar una instalación confirmada invocando su guardia
+consumida; una retirada administrativa requiere autorización nueva y control de drift.
+
+La primera rotación productiva, alerta externa, reinicio futuro, modo nocturno y
+mediciones eléctricas permanecen pendientes diferenciados. Ninguna operación en
+Core/Edge/certificados/servicios/timers/red/ESP32 se ejecuta en este cierre documental.
