@@ -2,7 +2,8 @@
 
 **Preparación, no despliegue autorizado.** No enviar este procedimiento a otro chat
 ni ejecutarlo contra el Core automáticamente. No repetir los pilotos M3.7 ya
-superados. Este piloto nuevo ensaya sólo el ciclo de vida TLS con material descartable.
+superados. El piloto TLS descartable ya fue informado como satisfactorio por el operador.
+Para esta corrección sólo falta el verificador bajo su sandbox en el Core.
 
 ## Preflight de sólo lectura
 
@@ -49,9 +50,8 @@ ceros son placeholders, NO sirven para activar. Guardar root0600:
 - `/var/lib/infrabadge-tls/`: estado/journal/lock root0700. No utilizar tmpfs para
   backups; guardar copia privada independiente del par/config anteriores.
 
-En un entorno aislado, ejecutar primero toda la suite `tests/tls_lifecycle`.
-Sus certs son nuevos y descartables; verificar HTTPS y alertas contra receptor
-localhost. En Core, un piloto de unidades reales debe usar configuración, listener
+La regresión software ejecuta `tests/tls_lifecycle` con material descartable.
+No repetir por defecto los65 tests físicos/cinco escenarios ya informados. En Core, un piloto de unidades reales debe usar configuración, listener
 y CA descartables **separados** y un adaptador de ensayo revisado: la CLI productiva
 está fijada a CASA, no repuntarla a producción para simular errores. Ningún flag
 `--execute-*` convierte una aprobación CI en autorización del operador.
@@ -113,6 +113,105 @@ no ejecutar retirement del Edge para desinstalar esta función. Una retirada de
 código no revierte una hoja renovada válida: volver al par anterior es una
 operación explícita, con aprobación y verificación, nunca una copia ciega.
 
-Pendientes: inventorizar firmante real, aprobar custodia y canal, probar guardia
-real y recuperación/recarga del Edge con material descartable, primera rotación
-y activación de timers. ESP32, otros hosts, roaming y energía quedan fuera.
+Pendientes: comprobación dirigida del verificador corregido en Core, reconfirmar
+firmante/material actuales antes de rotar, primera renovación autorizada y
+activación separada de timers/canal. La guardia/rollback y alertas locales previas
+son evidencia del operador, no nuevos ensayos de este chat.
+
+
+## Primera renovación: secuencia exacta para el operador del Core
+
+No ejecutar desde este chat. Usar el SHA corregido aprobado por CI, release
+readonly y configuración privada vigente, no los valores sintéticos. No habilitar
+timers ni notificaciones durante esta primera operación.
+
+1. **Cerrar el defecto**: preparar sólo el candidato del verificador y su unidad
+   en el Core, preservando InaccessiblePaths de server.key y del firmante. Ejecutar
+   su oneshot una vez contra el listener aprobado: debe confirmar HTTPS/leaf/v2
+   sin abrir ni stat de la clave. No cambiar permisos de custodia para hacerlo pasar.
+   Registrar SHA/unidad/resultado saneado. No reiniciar Edge para esta comprobación.
+2. **Preflight** (lecturas): confirmar NTP, salud de Core/collector/Edge, ausencia
+   de transacción pendiente y otros renovadores; leaf anterior >7d, CA fijada/SAN
+   sin cambios, firmante aprobado disponible y configurado para14d. Leer claves
+   sólo desde el custodio al comparar el par o respaldarlo. El verificador no las lee.
+3. **Backup verificable**: en terminal administrativa autorizada, configuración
+   ya preparada, directorio root0700 y lock común. El archivo contiene secretos:
+   conservarlo privado; no copiar el firmante CA como parte de este backup.
+
+```sh
+umask 077
+flock -n /var/lib/infrabadge-tls/lock sh -s <<'BACKUP'
+set -eu
+TLS_BACKUP=$(mktemp -d /var/backups/infrabadge-tls-XXXXXXXX)
+tar --acls --xattrs --numeric-owner -C / -cf "$TLS_BACKUP/before.tar"   etc/infrabadge-edge-home etc/infrabadge-tls var/lib/infrabadge-tls
+sha256sum "$TLS_BACKUP/before.tar" > "$TLS_BACKUP/before.sha256"
+sha256sum -c "$TLS_BACKUP/before.sha256"
+mkdir -m 700 "$TLS_BACKUP/restore-check"
+tar --acls --xattrs --numeric-owner -xf "$TLS_BACKUP/before.tar" -C "$TLS_BACKUP/restore-check"
+for TLS_FILE in server.pem server.key edge-ca.pem; do
+  cmp --silent "/etc/infrabadge-edge-home/$TLS_FILE"     "$TLS_BACKUP/restore-check/etc/infrabadge-edge-home/$TLS_FILE"
+done
+printf 'Backup y restauración separada verificados: %s\n' "$TLS_BACKUP"
+BACKUP
+```
+
+4. **Una renovación autorizada**: fijar TLS_RELEASE al release del SHA aprobado
+   (sin enlaces/escritura del Edge); ejecutar únicamente:
+
+```sh
+/usr/bin/python3 -I -B "$TLS_RELEASE/tools/tls_lifecycle/cli.py" renew --execute-authorized-renewal
+```
+
+   El comando comprueba custodia/par activo, emite CSR/hoja con misma CA y SAN,
+   valida cadena/fechas/clave nueva, conserva el par anterior y arma la guardia
+   independiente120s con deadline absoluto numérico. Sólo entonces detiene Edge,
+   hace los dos reemplazos con fsync y listener apagado, arranca sólo Edge y exige
+   leaf servido correcto + HTTPS autenticado/v2/ETag/TTL. No es una recarga en
+   caliente: el servidor actual requiere stop/start. Core/collector/firewall no se
+   reinician. Error: restaura el par anterior y verifica; crash: actúa la guardia.
+   Drift o par anterior inutilizable detienen la recuperación y exigen revisión.
+5. **Verificación LAN**: desde un cliente LAN ya autorizado y con config privada
+   de probe dedicada, ejecutar como usuario normal el comando existente:
+
+```sh
+python -I -B tools/permanent_edge/ib_edge_lab.py probe --config /ruta/privada/probe-casa.json
+```
+
+   Debe usar IP LAN8443/CA vigente, no loopback ni túnel. Confirmar200 y304 si el
+   snapshot permanece idéntico (o200 nuevo si cambió), TTL sin prolongación por304.
+   No abrir fuentes, modificar firewall/DNS o usar el token del ESP32 para probar.
+6. **Cierre**: exigir journal committed, CA/SAN conservados, guardia retirada y
+   Core/collector frescos. Guardar hoja/par anteriores durante al menos48h de
+   recuperación y hasta confirmar LAN; después aplicar retención aprobada, nunca
+   borrarlos durante la activación. Conservar el backup completo según política.
+   Si existe inventario de retirada con hashes de estos archivos, registrar sólo
+   la rotación autorizada y su delta exacto, preservando el inventario anterior;
+   no actualizar hashes ajenos ni contratos de firewall/unidades para ocultar drift.
+   Ante fallo no reintentar ciegamente ni borrar pending/contadores. Recovery del
+   mismo release usa `recover --execute-authorized-renewal` bajo autorización.
+
+Después, y sólo con aprobación separada, activar monitor/evaluate/renew timers.
+El webhook sigue `null` hasta aprobar receptor HTTPS y credencial privada propios.
+No enviar avisos reales para probar el canal: las13 pruebas locales ya informadas
+más las regresiones software se conservan como evidencia separada.
+
+## ESP32: regreso mínimo, sin cambiar firmware
+
+- M3.5 instalado puede consultar el Edge CASA permanente mediante v2. Confirmar
+  endpoint/IP estable, fuente del ESP32 ya autorizada y device_id/token/scopes v2
+  existentes; no regenerarlos si coinciden. No modificar reglas desde este chat.
+- Renovar únicamente el leaf con la misma CA y SAN no requiere actualizar la CA
+  del ESP32. Pero la **primera migración desde el Edge Fedora** sí debe comparar
+  huellas: no asumir que ya confía en la CA del Edge permanente.
+- Preparar un nuevo archivo privado0600 IBPROV1 con URL CASA8443, CA pública
+  correcta, identidad device, Wi-Fi existente y UTC fresco de host confiable.
+  Reutilizar `tools/m2/provision.py` (validación previa y envío único); M3.5 usa
+  ventana IBPROV_READY tras arranque, no asumir que BOOT corto abre provisión.
+  Una carga USB de configuración/NVS y cualquier reset necesitan autorización
+  explícita aparte; no flashear ni reutilizar planes consumidos. No usar RTC2056.
+- Tras provisión autorizada: cerrar serie, observar un200 real, resumen REAL /
+  HTTPS OK / nodos / HORA VERIFICADA y una consulta autónoma sin tocar botones.
+  No repetir navegación, periféricos ni el conjunto M2 ya validado. Un304 sólo
+  corresponde si no cambió el snapshot; las métricas reales pueden producir200.
+- Con ese enlace estable, siguiente paso: M3.6 roaming y modo nocturno ya
+  implementados, con autorización propia antes de cargar/provisionar el perfil.

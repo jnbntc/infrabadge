@@ -1,3 +1,15 @@
+# Current accelerated TLS fix (2026-10-24)
+
+- Work PR11/feat/supervised-tls-renewal from verified7eca981. Fix verifier key
+  isolation with public-only verification; never remove key/issuer masks or add
+  privileges to bypass custody. Keep key-pair validation in authorized renewer.
+- Operator reported previous65 TLS, five physical scenarios,120s guard/rollback
+  and13 local alerts passed. Do not repeat or attribute them to corrected code.
+  Corrected verifier on Core is pending; document it and keep PR11 unmerged.
+- Software/full CI, exact production procedure and M3.5 provisioning preparation
+  only. No production/SSH changes, rotation, timers, messages, network, NAS,
+  reboot or board operations. No new firmware; M3.6/night remains subsequent.
+
 # Current TLS lifecycle scope (2026-10-24)
 
 - User explicitly authorized ready/merge of PR10 after exact-SHA checks; merged

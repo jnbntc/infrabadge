@@ -37,7 +37,10 @@ def private(path, owner, maximum=65536, *, read=True):
             info.st_mode & 0o022 and not (info.st_uid == 0 and info.st_mode & stat.S_ISVTX)
         ):
             raise ValueError("unsafe_parent")
-    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+    # Metadata-only callers must not acquire a readable key descriptor. Linux O_PATH
+    # still permits fstat; O_NOFOLLOW plus the regular-file check rejects link races.
+    access = os.O_RDONLY if read else os.O_PATH
+    fd = os.open(path, access | os.O_NOFOLLOW | os.O_NONBLOCK)
     try:
         info = os.fstat(fd)
         if not stat.S_ISREG(info.st_mode) or info.st_uid != owner or info.st_mode & 0o077:
@@ -146,10 +149,7 @@ def validate(cert, key, ca, names, now, *, minimum=0):
     if "CA:FALSE" not in constraints or "TLS Web Server Authentication" not in constraints:
         raise ValueError("leaf_constraints")
     if key is not None:
-        pub = command(["/usr/bin/openssl", "x509", "-in", str(cert), "-noout", "-pubkey"])
-        pair = command(["/usr/bin/openssl", "pkey", "-in", str(key), "-pubout"])
-        if pub != pair:
-            raise ValueError("key_mismatch")
+        matching_key(cert, key)
     return {"not_before": before, "not_after": after, "remaining": after - now}
 
 
@@ -178,3 +178,11 @@ def csr(directory, names):
     key.chmod(0o600)
     request.chmod(0o600)
     return key, request
+
+
+def matching_key(cert, key):
+    """Authorized custodian only; return no key material, including public-key bytes."""
+    pub = command(["/usr/bin/openssl", "x509", "-in", str(cert), "-noout", "-pubkey"])
+    pair = command(["/usr/bin/openssl", "pkey", "-in", str(key), "-pubout"])
+    if pub != pair:
+        raise ValueError("key_mismatch")

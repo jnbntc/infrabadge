@@ -147,3 +147,62 @@ def test_large_private_material_rejected_even_for_metadata(tmp_path):
         pki.private(path, os.getuid(), read=False)
     with pytest.raises(ValueError, match="size"):
         pki.digest(path)
+
+
+@pytest.mark.parametrize("kind", ["missing", "metadata_denied", "unreadable"])
+def test_public_runtime_never_inspects_private_key(lab, monkeypatch, kind):  # noqa: F811
+    config, _, unit, _ = lab
+    key = engine.paths(config)[1]
+    if kind == "missing":
+        key.unlink()
+    elif kind == "unreadable":
+        key.chmod(0)
+    original_stat, original_lstat = Path.stat, Path.lstat
+
+    def guarded_stat(path, *args, **kwargs):
+        if path == key:
+            raise AssertionError("public verifier inspected key metadata")
+        return original_stat(path, *args, **kwargs)
+
+    def guarded_lstat(path, *args, **kwargs):
+        if path == key:
+            raise AssertionError("public verifier resolved protected key")
+        return original_lstat(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "stat", guarded_stat)
+    monkeypatch.setattr(Path, "lstat", guarded_lstat)
+    engine.verify_public_runtime(config, unit)
+
+
+def test_metadata_descriptor_cannot_read_key_content(tmp_path, monkeypatch):
+    tmp_path.chmod(0o700)
+    key = tmp_path / "protected.key"
+    engine.atomic(key, b"synthetic-secret-not-to-be-read")
+    key.chmod(0o400)
+    original_open = os.open
+    checked = []
+
+    def open_path(path, flags, *args, **kwargs):
+        fd = original_open(path, flags, *args, **kwargs)
+        if Path(path) == key:
+            assert flags & os.O_PATH and flags & os.O_NOFOLLOW
+            with pytest.raises(OSError):
+                os.read(fd, 1)  # Kernel rejects content access on O_PATH descriptor.
+            checked.append(True)
+        return fd
+
+    monkeypatch.setattr(os, "open", open_path)
+    assert pki.private(key, os.getuid(), read=False) is None
+    assert checked == [True]
+
+
+def test_verifier_sandbox_keeps_all_key_barriers():
+    prepare = module("tls_test_barriers", "prepare.py")
+    unit = prepare.render("/opt/infrabadge-tls/releases/" + "a" * 40)[
+        "infrabadge-tls-verify.service"
+    ]
+    assert "-/etc/infrabadge-edge-home/server.key" in unit
+    assert "-/etc/infrabadge-tls-signer" in unit
+    assert "ProtectSystem=strict" in unit and "NoNewPrivileges=true" in unit
+    assert "BindReadOnlyPaths=" not in unit and "BindPaths=" not in unit
+    assert "CAP_DAC_OVERRIDE" not in unit

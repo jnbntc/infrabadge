@@ -93,7 +93,7 @@ class Host:
     def probe(self):
         # Pin probe configuration and actual served leaf, then reuse v2/ETag/TTL checks.
         self.check()
-        engine.verify_runtime(self.config, UNIT)
+        engine.verify_public_runtime(self.config, UNIT)
         runtime = engine.load(CONFIG.parent / "runtime.json")
         probe_path = PROBE
         raw = pki.private(probe_path, self.config["owner_uid"])

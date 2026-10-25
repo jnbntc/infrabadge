@@ -481,3 +481,65 @@ def test_crash_recovery_rejects_configuration_drift(lab, monkeypatch):
     config["sans"].append("wrong.invalid")
     with pytest.raises(ValueError, match="configuration_drift"):
         engine.restore(config, transaction, host, time.time())
+
+
+def test_custodian_rejects_mismatched_active_key_before_interruption(lab):
+    config, signer, unit, root = due(lab)
+    other = root / "other-key"
+    other.mkdir(mode=0o700)
+    wrong, _ = pki.csr(other, config["sans"])
+    engine.atomic(engine.paths(config)[1], wrong.read_bytes())
+    host = Host(unit)
+    with pytest.raises(ValueError, match="key_mismatch"):
+        engine.renew(
+            config, {}, time.time(), host, lambda csr: issuer.sign(signer, csr, time.time())
+        )
+    assert "stop" not in host.calls and "arm_verified" not in host.calls
+
+
+def test_public_tls_verification_works_with_key_unreadable(lab, monkeypatch):
+    import importlib.util
+    from types import SimpleNamespace
+
+    config, _, unit, root = lab
+    cert, key, ca = engine.paths(config)
+    spec = importlib.util.spec_from_file_location(
+        "tls_protected_probe", Path(__file__).resolve().parents[2] / "tools/tls_lifecycle/cli.py"
+    )
+    cli = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
+    tls = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    tls.load_cert_chain(cert, key)  # Authorized Edge loads its key before sandbox proof.
+    key.chmod(0)
+    with pytest.raises(PermissionError):
+        key.read_bytes()
+    server = http.server.HTTPServer(("127.0.0.1", 0), http.server.BaseHTTPRequestHandler)
+    server.socket = tls.wrap_socket(server.socket, server_side=True)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    probe = root / "probe.json"
+    engine.save(probe, {"url": "https://127.0.0.1:8443", "ca_file": str(ca)})
+    engine.save(root / "runtime.json", {"probe_config_sha256": pki.digest(probe)})
+    monkeypatch.setattr(cli, "CONFIG", root / "config.json")
+    monkeypatch.setattr(cli, "PROBE", probe)
+    monkeypatch.setattr(cli, "UNIT", unit)
+    monkeypatch.setattr(cli.Host, "check", lambda self: None)
+    real_connection = http.client.HTTPSConnection
+    commands = []
+
+    def local_connection(host, _port, **kwargs):
+        return real_connection(host, server.server_port, **kwargs)
+
+    monkeypatch.setattr(
+        cli, "http", SimpleNamespace(client=SimpleNamespace(HTTPSConnection=local_connection))
+    )
+    monkeypatch.setattr(pki, "command", lambda args, **kwargs: commands.append(args))
+    try:
+        cli.Host(
+            config
+        ).probe()  # Real verified handshake + served-leaf pin; API subprocess mocked.
+        assert commands[0][0] == "/usr/sbin/runuser"
+        assert not any(str(key) in args for args in commands)
+    finally:
+        server.shutdown()
+        server.server_close()
+        key.chmod(0o600)

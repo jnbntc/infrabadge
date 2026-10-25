@@ -214,14 +214,25 @@ def check_stale(config, state, now):
         notifications.emit(state, "monitor", "monitor_stale", now)
 
 
-def verify_runtime(config, unit_path):
-    cert, key, ca = paths(config)
-    for path in (cert, key, ca):
-        pki.private(path, config["owner_uid"], read=path != key)
-    if any(p.stat().st_gid != config["owner_gid"] for p in (cert, key, ca)):
+def verify_public_runtime(config, unit_path):
+    """Verifier boundary: never open, stat, resolve or hash the private key path."""
+    cert, _, ca = paths(config)
+    for path in (cert, ca):
+        pki.private(path, config["owner_uid"])
+    if any(p.stat().st_gid != config["owner_gid"] for p in (cert, ca)):
         raise ValueError("runtime_group_drift")
     if pki.digest(ca) != config["ca_sha256"] or pki.digest(unit_path) != config["unit_sha256"]:
         raise ValueError("runtime_configuration_drift")
+
+
+def verify_runtime(config, unit_path):
+    """Authorized renewer boundary: custody metadata and cryptographic pair check."""
+    verify_public_runtime(config, unit_path)
+    cert, key, _ = paths(config)
+    pki.private(key, config["owner_uid"], read=False)
+    if key.stat().st_gid != config["owner_gid"]:
+        raise ValueError("runtime_group_drift")
+    pki.matching_key(cert, key)
 
 
 def candidate(config, folder, now, issue):

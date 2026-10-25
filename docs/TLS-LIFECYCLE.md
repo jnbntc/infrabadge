@@ -128,3 +128,42 @@ de vida TLS; Ruff y formato84 archivos. Un warning heredado Starlette/TestClient
 Plantillas propias verificadas con systemd-analyze; autoridad de comandos de
 administración sustituida por mocks en tests. La única red de tests es loopback.
 La CI exacta del PR se registra en GitHub; no heredar checks de main a esta rama.
+
+## Corrección del verificador tras piloto (24/10/2026)
+
+El operador informó sobre7eca981:65/65 pruebas TLS, cinco escenarios físicos,
+watchdog120s/rollback real,13/13 alertas HTTPS locales, limpieza y servicios
+saludables. Es evidencia del piloto comunicado por el operador; no son pruebas
+repetidas por este chat ni validación física de la corrección siguiente.
+
+Defecto: `Host.probe()` reutilizaba `verify_runtime()`, que comprobaba la clave;
+`private(read=False)` abría igualmente O_RDONLY. InaccessiblePaths bloqueaba esa
+operación incluso sin intención de leer. No se elimina ninguna barrera systemd.
+
+Corrección: `verify_public_runtime()` no consulta, resuelve, abre ni calcula hash
+de la clave. Verifica archivos públicos, CA/unidad/probe fijados y certificado
+servido. El handshake TLS verificado demuestra posesión de la clave correspondiente
+al certificado activo. No acredita permisos o correspondencia del archivo privado
+en disco: esos controles pertenecen al renovador autorizado, que ahora comprueba
+además el par activo antes de emitir/interrumpir. Emisión y recuperación mantienen
+la comprobación criptográfica del par. Sólo se expone éxito o error, no material.
+
+Los metadatos necesarios para el custodio usan O_PATH/O_NOFOLLOW/fstat (Linux),
+no un descriptor de lectura; se mantienen propietario, grupo, tamaño, permisos
+y rechazo de enlaces. No se añade CAP_DAC_OVERRIDE al verificador, bind mounts,
+acceso a directorios de secretos ni nuevas cuentas/root. Véanse
+[open(2)](https://man7.org/linux/man-pages/man2/open.2.html) y
+[systemd.exec](https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#InaccessiblePaths=).
+
+Regresión específica: clave ausente/ilegible y stat/lstat prohibidos; descriptor
+O_PATH no legible; sandbox conservado; par incompatible rechazado antes de parar;
+TLS loopback real con clave chmod000 tras cargar el contexto. Reutiliza todas las
+pruebas de error de arranque/postcheck, guardia, rollback y concurrencia.
+**La corrección sobre infrabadge-core sigue pendiente**: ejecutar sólo el
+verificador corregido bajo las restricciones originales, sin rotar ni repetir
+los cinco escenarios. Mantener PR11 sin fusionar hasta revisar ese resultado;
+la CI de otro SHA no sustituye esta verificación dirigida.
+
+Validación local de la corrección: **594 tests PASS**, incluidos72 TLS (7 nuevos);
+Ruff/formato84 archivos. Un warning heredado Starlette/TestClient. CI del SHA
+corregido y comprobación dirigida en Core se registran por separado en PR11.

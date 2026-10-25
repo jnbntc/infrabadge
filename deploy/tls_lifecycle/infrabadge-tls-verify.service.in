@@ -31,4 +31,5 @@ StandardError=journal
 LogRateLimitIntervalSec=60s
 LogRateLimitBurst=10
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+# Verification uses public files and the TLS handshake; no key metadata access.
 InaccessiblePaths=-/etc/infrabadge -/var/lib/infrabadge -/etc/infrabadge-edge-home/server.key -/etc/infrabadge-tls-signer
