@@ -243,6 +243,12 @@ Histórico:00/06/12/18:00 UTC; nuevo monitor:05, evaluate:15, renew:25,
 notify:03/08/…/58. Persistent=false en los nuevos. El lock evita concurrencia;
 los horarios reducen colisiones, no sustituyen el lock. Si falla la migración,
 restaurar los estados exactos del histórico y detener sólo las unidades nuevas.
+La retirada del timer histórico quita también su enlace en `timers.target.wants`,
+registrado por el inventario de retirada. Preparar un delta **separado y exacto**
+de esa única entrada y el estado enabled/active, conservando manifiesto anterior;
+restaurarlos juntos si se revierte la migración. No tratarlo como deriva permitida
+general ni recalcular todo el inventario. No retirar los archivos de la unidad
+histórica durante esta primera migración.
 No activar renew/notify con monitor/evaluate. Sin receptor aprobado, webhook null;
 los fallos se guardan localmente, no se promete aviso externo ni vigilancia del
 host apagado. Revisar journal y última ejecución como parte del control operativo.
