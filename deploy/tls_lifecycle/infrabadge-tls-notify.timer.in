@@ -3,7 +3,7 @@
 Description=InfraBadge CASA TLS notify schedule
 
 [Timer]
-OnCalendar=*-*-* *:0/5:00 UTC
+OnCalendar=*-*-* *:3/5:00 UTC
 Persistent=false
 WakeSystem=false
 AccuracySec=30s

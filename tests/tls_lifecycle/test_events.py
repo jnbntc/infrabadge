@@ -5,6 +5,7 @@ import json
 import ssl
 import threading
 import time
+from pathlib import Path
 
 import notifications
 import pytest
@@ -125,3 +126,28 @@ def test_real_https_authenticated_webhook_and_rejection(lab):  # noqa: F811
     finally:
         server.shutdown()
         server.server_close()
+
+
+def test_local_evaluate_detects_monitor_loss_without_webhook(lab):  # noqa: F811
+    import lifecycle as engine
+    import pki
+
+    config, _, _, _ = lab
+    now = time.time()
+    assert config["notification"] is None
+    state = {"last_monitor": int(now) - config["monitor_max_age"] - 1}
+    for stamp in (now, now + 1):
+        result = engine.evaluate(config, state, stamp)
+        assert result["monitor_stale"]
+    assert [x["event"]["kind"] for x in state["outbox"]] == ["monitor_stale"]
+    engine.save(Path(config["state_directory"]) / "state.json", state)
+    loaded = engine.load(Path(config["state_directory"]) / "state.json")
+    assert loaded["last_monitor"] == state["last_monitor"]
+    assert len(loaded["outbox"]) == 1
+    engine.monitor(config, loaded, now + 2)
+    assert not engine.evaluate(config, loaded, now + 3)["monitor_stale"]
+    recovered = [x for x in loaded["outbox"] if x["event"]["component"] == "monitor"]
+    assert [x["event"]["kind"] for x in recovered] == ["monitor_stale", "recovered"]
+    _, after = pki.dates(engine.paths(config)[0])
+    assert engine.evaluate(config, {}, after - 10 * pki.DAY)["renewal_due"]
+    assert not engine.evaluate(config, {}, after - 10 * pki.DAY - 1)["renewal_due"]

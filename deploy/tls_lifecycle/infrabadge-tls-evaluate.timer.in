@@ -3,7 +3,7 @@
 Description=InfraBadge CASA TLS evaluate schedule
 
 [Timer]
-OnCalendar=*-*-* *:00:00 UTC
+OnCalendar=*-*-* *:15:00 UTC
 Persistent=false
 WakeSystem=false
 AccuracySec=30s

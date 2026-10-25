@@ -233,9 +233,12 @@ def main():
             if args.mode == "monitor":
                 result["certificates"] = engine.monitor(config, state, now)
             elif args.mode == "evaluate":
-                cert, _, _ = engine.paths(config)
-                _, after = pki.dates(cert)
-                result["renewal_due"] = after - now <= config["renew_seconds"]
+                try:
+                    result.update(engine.evaluate(config, state, now))
+                except Exception:
+                    # Preserve a detected heartbeat failure even if the leaf is unreadable.
+                    engine.save(state_path, state)
+                    raise
             elif args.mode == "verify":
                 host = Host(config)
                 host.check()
@@ -275,7 +278,8 @@ def main():
         return (
             1
             if (
-                result.get("failed")
+                result.get("monitor_stale")
+                or result.get("failed")
                 or result.get("exhausted")
                 or any(x["status"] != "ok" for x in result.get("certificates", []))
             )

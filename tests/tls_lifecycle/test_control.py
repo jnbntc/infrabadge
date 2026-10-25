@@ -206,3 +206,72 @@ def test_verifier_sandbox_keeps_all_key_barriers():
     assert "ProtectSystem=strict" in unit and "NoNewPrivileges=true" in unit
     assert "BindReadOnlyPaths=" not in unit and "BindPaths=" not in unit
     assert "CAP_DAC_OVERRIDE" not in unit
+
+
+def test_schedules_separate_local_jobs_from_legacy_monitor():
+    prepare = module("tls_test_schedule", "prepare.py")
+    files = prepare.render("/opt/infrabadge-tls/releases/" + "a" * 40)
+    expected = {
+        "monitor": "00,06,12,18:05:00",
+        "evaluate": "*:15:00",
+        "renew": "*:25:00",
+        "notify": "*:3/5:00",
+    }
+    for name, schedule in expected.items():
+        unit = files["infrabadge-tls-" + name + ".timer"]
+        assert "OnCalendar=*-*-* " + schedule + " UTC" in unit
+        assert "Persistent=false" in unit and "WakeSystem=false" in unit
+    legacy = (
+        ROOT / "deploy/permanent_edge/persistent/infrabadge-edge-home-tls-check.timer.in"
+    ).read_text()
+    assert "00,06,12,18:00:00 UTC" in legacy
+
+
+@pytest.mark.parametrize("stale,broken_leaf", [(False, False), (True, False), (True, True)])
+def test_cli_evaluate_persists_heartbeat_without_channel(
+    lab,  # noqa: F811
+    monkeypatch,
+    capsys,
+    stale,
+    broken_leaf,
+):
+    import contextlib
+    import json
+
+    config, _, _, _ = lab
+    config = dict(
+        config, directory="/etc/infrabadge-edge-home", state_directory="/var/lib/infrabadge-tls"
+    )
+    cli = module("tls_test_evaluate_offline", "cli.py")
+    now = time.time()
+    state = {"last_monitor": int(now) - (config["monitor_max_age"] + 1 if stale else 1)}
+    saved = []
+    monkeypatch.setattr(cli.sys, "argv", ["cli.py", "evaluate"])
+    monkeypatch.setattr(cli.os, "getuid", lambda: 0)
+    monkeypatch.setattr(cli, "synchronized", lambda: True)
+    monkeypatch.setattr(engine, "locked", lambda _: contextlib.nullcontext())
+    monkeypatch.setattr(engine, "load", lambda path: config if path == cli.CONFIG else state)
+    monkeypatch.setattr(Path, "exists", lambda _: True)
+    monkeypatch.setattr(
+        engine, "save", lambda path, value: saved.append(json.loads(json.dumps(value)))
+    )
+
+    def dates(_path):
+        if broken_leaf:
+            raise ValueError("opaque certificate failure")
+        return now - 86400, now + 5 * 86400
+
+    monkeypatch.setattr(pki, "dates", dates)
+    monkeypatch.setattr(
+        pki, "command", lambda *_args, **_kwargs: pytest.fail("no host command or issuer")
+    )
+    assert cli.main() == int(stale)
+    result = json.loads(capsys.readouterr().out)
+    if broken_leaf:
+        assert result == {"event": "tls_lifecycle_error", "action": "review_private_state"}
+    else:
+        assert result == {"mode": "evaluate", "monitor_stale": stale, "renewal_due": True}
+    assert len(saved) == 1 and saved[0]["last_monitor"] == state["last_monitor"]
+    assert [x["event"]["kind"] for x in saved[0].get("outbox", [])] == (
+        ["monitor_stale"] if stale else []
+    )

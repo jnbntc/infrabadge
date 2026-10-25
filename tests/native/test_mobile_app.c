@@ -7,13 +7,15 @@
 #include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "cJSON.h"
 #include "../../main/m35_main.c"
 static ib36_config_t saved;
 static jmp_buf sleeping;
 static uint32_t now=1800068400,base=1800068000;
 static uint32_t ms;
 static unsigned wifi_calls,queries,paints,seconds_slept,usb_calls;
-static bool rtc_valid=true,usb_seed=false;
+static bool rtc_valid=true,usb_seed=false,transport_ok=false;
+static char fresh_wire[4097];
 static esp_reset_reason_t reason=ESP_RST_DEEPSLEEP;
 static esp_sleep_wakeup_cause_t cause=ESP_SLEEP_WAKEUP_TIMER;
 time_t simulated_time(time_t *out){time_t value=now+ms/1000;if(out)*out=value;return value;}
@@ -39,10 +41,16 @@ bool ib_store_init(void){return true;}
 bool ib36_load(ib36_config_t *out){*out=saved;return true;}
 bool ib36_usb(ib36_config_t *out,uint32_t *seed,unsigned timeout)
 {(void)out;assert(timeout==10000);++usb_calls;*seed=now;return usb_seed;}
-ib_net_error_t ib_wifi_start(const ib_device_config_t *c){assert(ib_config_valid(c));++wifi_calls;return IB_NET_WIFI;}
+ib_net_error_t ib_wifi_start(const ib_device_config_t *c){assert(ib_config_valid(c));++wifi_calls;return transport_ok?IB_NET_OK:IB_NET_WIFI;}
 void ib_wifi_stop(void){}
 ib_net_error_t ib_https_fetch_presentation(const ib_device_config_t *c,const char *tag,ib_http_reply_t *r,char body[4097])
-{(void)c;(void)tag;(void)r;(void)body;++queries;return IB_NET_HTTP;}
+{(void)c;(void)tag;++queries;
+    if(!transport_ok)return IB_NET_HTTP;
+    assert(!retained.snapshot.valid&&!retained.etag[0]); /* morning invalidates old data BEFORE HTTPS */
+    r->status=200;r->server_now=now;r->length=strlen(fresh_wire);
+    strcpy(r->etag,"\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"");
+    memcpy(body,fresh_wire,r->length+1);return IB_NET_OK;
+}
 esp_err_t ib_power_sleep(unsigned seconds)
 {assert(seconds>0&&seconds<=3600);seconds_slept=seconds;longjmp(sleeping,1);return ESP_FAIL;}
 static void run(void)
@@ -56,7 +64,7 @@ static void start(uint32_t stamp)
 }
 int main(int argc,char **argv)
 {
-    assert(argc==2);FILE *f=fopen(argv[1],"rb");assert(f);char data[IB36_BUNDLE_MAX+1];size_t n=fread(data,1,sizeof(data),f);fclose(f);uint32_t seed;
+    assert(argc==3);FILE *f=fopen(argv[1],"rb");assert(f);char data[IB36_BUNDLE_MAX+1];size_t n=fread(data,1,sizeof(data),f);fclose(f);uint32_t seed;
     assert(ib36_decode(data,n,&saved,&seed));
     start(1800068400-200);run();assert(paints==1&&wifi_calls==0&&queries==0&&usb_calls==0);
     /* Checkpoints and an EXT1 manual wake remain dark/radio-off. */
@@ -75,5 +83,33 @@ int main(int argc,char **argv)
     /* Five possible BUSY waits are30s each; do not start a paint with only100s left. */
     old_paints=paints;rtc_valid=true;start(1800068400-100);run();
     assert(paints==old_paints&&wifi_calls==old_wifi);
+    /* Single CASA binding: retain selected view through the night, then accept
+     * only a new morning snapshot. Synthetic wire, no network or clock changes. */
+    saved.count=1;rtc_valid=true;usb_seed=false;transport_ok=true;
+    start(1800068400-200);
+    retained.nav=(ib35_nav_t){IB35_NODE,1};
+    retained.snapshot.valid=true;retained.snapshot.generated_at=now-60;retained.snapshot.expires_at=now+60;
+    strcpy(retained.etag,"\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"");
+    ib35_seal(&retained,ib_crc32(&saved,sizeof(saved)));
+    old_wifi=wifi_calls;old_paints=paints;unsigned old_queries=queries;
+    run();assert(wifi_calls==old_wifi&&paints==old_paints+1&&mobility.night.armed);
+    assert(retained.nav.view==IB35_NODE&&retained.nav.node==1);
+    now=1800068400+28800;
+    f=fopen(argv[2],"rb");assert(f);n=fread(data,1,sizeof(data)-1,f);fclose(f);data[n]=0;
+    cJSON *snapshot=cJSON_Parse(data);assert(snapshot);
+    cJSON_SetNumberValue(cJSON_GetObjectItemCaseSensitive(snapshot,"generated_at"),now);
+    cJSON_SetNumberValue(cJSON_GetObjectItemCaseSensitive(snapshot,"expires_at"),now+180);
+    cJSON *nodes=cJSON_GetObjectItemCaseSensitive(snapshot,"nodes");
+    for(int i=0;i<cJSON_GetArraySize(nodes);++i){
+        cJSON *node=cJSON_GetArrayItem(nodes,i);
+        cJSON_SetNumberValue(cJSON_GetObjectItemCaseSensitive(node,"sampled_at"),now);
+        cJSON_SetNumberValue(cJSON_GetObjectItemCaseSensitive(node,"valid_until"),now+180);
+    }
+    char *json=cJSON_PrintUnformatted(snapshot);assert(json&&strlen(json)<sizeof(fresh_wire));
+    strcpy(fresh_wire,json);cJSON_free(json);cJSON_Delete(snapshot);
+    run();assert(wifi_calls==old_wifi+1&&queries==old_queries+1&&paints==old_paints+2);
+    assert(ib35_fresh(&retained.snapshot,now,true)&&!mobility.night.armed);
+    assert(retained.nav.view==IB35_NODE&&retained.nav.node==1);
+    puts("PASS single CASA morning: new data required, selected node preserved, one refresh; SIMULATED");
     puts("PASS actual M3.6 app: pre-night indicator, 8 silent checkpoints/manual wake, morning failure, cold reset and invalid RTC; SIMULATED");
 }

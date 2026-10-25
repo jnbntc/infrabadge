@@ -3,7 +3,7 @@
 Description=InfraBadge CASA TLS monitor schedule
 
 [Timer]
-OnCalendar=*-*-* 00,06,12,18:00:00 UTC
+OnCalendar=*-*-* 00,06,12,18:05:00 UTC
 Persistent=false
 WakeSystem=false
 AccuracySec=30s

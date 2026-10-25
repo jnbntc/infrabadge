@@ -210,8 +210,22 @@ def monitor(config, state, now, synchronized=True):
 
 
 def check_stale(config, state, now):
-    if now - state.get("last_monitor", 0) > config["monitor_max_age"]:
+    stale = now - state.get("last_monitor", 0) > config["monitor_max_age"]
+    if stale:
         notifications.emit(state, "monitor", "monitor_stale", now)
+    return stale
+
+
+def evaluate(config, state, now, synchronized=True):
+    """Local heartbeat check remains active without a notification channel."""
+    clock_ok(state, now, synchronized)
+    stale = check_stale(config, state, now)
+    cert, _, _ = paths(config)
+    _, after = pki.dates(cert)
+    return {
+        "renewal_due": after - now <= config["renew_seconds"],
+        "monitor_stale": stale,
+    }
 
 
 def verify_public_runtime(config, unit_path):

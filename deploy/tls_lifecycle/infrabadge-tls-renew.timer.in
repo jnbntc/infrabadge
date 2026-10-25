@@ -2,7 +2,7 @@
 [Unit]
 Description=InfraBadge supervised CASA renewal schedule
 [Timer]
-OnCalendar=*-*-* *:10:00 UTC
+OnCalendar=*-*-* *:25:00 UTC
 Persistent=false
 WakeSystem=false
 RandomizedDelaySec=30s
