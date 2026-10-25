@@ -1,6 +1,7 @@
 # CASA — candidato de uso cotidiano v0.1.0
 
-Cierre25/10/2026. **Propuesta de versión**, sin tag/release ni fusión automática.
+Cierre25/10/2026. **v0.1.0 CASA propuesta**, sin tag/release publicado.
+[Notas de release preparadas](releases/v0.1.0.md).
 Baseline fuente main `7e6d7afae33da9ffe712df9f8ad4a0754a472848`; los cambios de
 este cierre y su CI exacta se identifican en el único PR de consolidación.
 
@@ -49,20 +50,30 @@ No se tocaron componentes/main/configuración compilada ni el firmware instalado
 Slot1MiB:144064B libres (13,74%); no implica soporte OTA o heap mínimo TLS medido.
 RTC retenida6216B, límite estático7680B; no contiene credenciales.
 
-## Renovación: plazo controlado, activación pendiente
+## Renovación instalada: primera rotación pendiente
 
 Leaf Edge: vence06/11/2026 a22:03:10 ART. `renewal_due` desde27/10 a22:03:10 ART.
-No se fuerza ni se instala nada antes del umbral. Las tres comprobaciones del
+No se fuerza una rotación antes del umbral. Las tres comprobaciones del
 verificador bajo sandbox real ya pasaron; primer probe fallido de causa no
-establecida permanece documentado. Core/Edge/certificados/timers están intactos.
+establecida permanece documentado. Este cierre documental no modifica servicios,
+certificados, timers, red ni el dispositivo.
 
-La custodia del firmante de la misma CA no está confirmada en el inventario.
-También se requiere delta exacto del inventario de retirada al rotar el par;
-el motor no lo actualiza automáticamente. Ambos son controles previos reales
-para activar renovación, no motivos para reflashear ni invalidar HTTPS actual.
-Paquete privado de cierre preparado; no copiar claves al verificador.
-Monitor histórico activo; nuevos monitor/evaluate/renew/notify no instalados.
-No hay receptor externo habilitado. Ver procedimiento y rollback en TLS-DEPLOYMENT.
+El cierre operativo productivo posterior del25/10 confirma instalación y custodia
+de la misma CA, con supervisión y timers monitor/evaluate/renew activos. El monitor
+histórico quedó disabled/inactive; notify sigue deshabilitado y notification=null.
+Release operativo bd4a98a más dos complementos de inventario autorizados
+(`inventory_cli.py`/`inventory_contract.py`), separados de este cambio documental.
+Estos conservan el registro del par y lo restauran exactamente en recuperación;
+no rebaselinan archivos ajenos. El merge no instala ni reemplaza ese runtime.
+
+Se probó rollback **de la instalación** al vencer su guardia independiente120s,
+con restauración exacta y comprobación separada; luego instalación final confirmada.
+No se sustituyó el leaf ni se reiniciaron Core/Edge. `renew` real devolvió `not_due`.
+La primera rotación productiva del certificado y su recuperación real siguen
+pendientes; no atribuirles el PASS de instalación o los pilotos descartables.
+Tres fallos transitorios del collector se recuperaron; **causa desconocida**.
+Son una observación registrada, sin cambio de umbrales/políticas ni diagnóstico
+extenso mientras no reaparezcan. Ver estado y límites en TLS-DEPLOYMENT.
 
 ## Una noche real opcional
 
@@ -132,10 +143,12 @@ M3.5 sólo bajo autorización posterior, conservando `ib_m2`; no tocar tabla,
 bootloader, eFuses o NVS. Una regresión de política nocturna usa configuración,
 no una restauración completa de flash. No se intervino USB durante este cierre.
 
-Agrupar futura autorización de TLS: custodia de CA existente, instalación aislada,
-backup/par/config/inventario, guardia120s, renovación dentro del umbral, stop/start
-sólo Edge, probe LAN y migración de monitor/evaluate. Contrato de inventario
-automatizado antes de renew.timer; receptor autorizado antes de notify.timer.
-Noche es una autorización opcional separable de ese grupo. PR/release/tag no se
-fusionan ni publican por este cierre. TRABAJO, audio/micrófono/LED, OTA, energía,
-movilidad Fedora y DR prolongado quedan diferidos; no bloquean uso cotidiano CASA.
+Instalación y activación TLS ya confirmadas en la operación autorizada separada.
+La política mantiene su umbral; no ejecutar una renovación manual anticipada.
+Noche requiere una provisión opcional autorizada; un canal externo necesita
+aprobación propia. Publicar tag/release v0.1.0 también requiere autorización y definir la licencia
+general pendiente en README; conservar avisos de terceros.
+PR12 puede fusionarse sólo tras sus controles obligatorios y CI del HEAD exacto;
+CI posterior de main se verifica antes de presentar el candidato publicable.
+TRABAJO, audio/micrófono/LED, OTA, energía, movilidad Fedora, caducidad/recuperación
+física M3.6 y DR prolongado quedan diferidos; no bloquean uso cotidiano CASA.

@@ -1,4 +1,4 @@
-# Renovación TLS supervisada — código integrado, activación pendiente
+# Renovación TLS supervisada — instalada, primera rotación pendiente
 
 PR11 (`2dfc00b`) está integrado en main `7e6d7af`. El verificador corregido
 superó **tres comprobaciones satisfactorias bajo sandbox real** en el Core;
@@ -6,7 +6,9 @@ no accede a la clave ni a sus metadatos. Se conserva el fallo del primer probe:
 su causa no se determinó. No se vuelve a atribuir ese fallo a una causa supuesta.
 El piloto anterior incluyó65 pruebas TLS, cinco escenarios físicos, guardia120s,
 rollback y13 pruebas de alertas locales. Son evidencias históricas diferenciadas.
-La integración no instaló el mecanismo productivo ni renovó el leaf.
+La integración por sí sola no instaló el mecanismo productivo ni renovó el leaf.
+La operación autorizada posterior del25/10 sí instaló la supervisión; ver estado
+actual en [TLS-DEPLOYMENT](TLS-DEPLOYMENT.md#estado-productivo-confirmado-25102026).
 
 ## Inventario y confianza
 
@@ -18,7 +20,7 @@ La integración no instaló el mecanismo productivo ni renovó el leaf.
 | Token Edge → Core | Core | Sin cambios; no es una clave PKI |
 | Token de probe | Validación v2 | Identidad sintética exclusiva; no usar token del badge |
 | Credenciales ESP32/collectors | Sus APIs respectivas | Fuera de esta fase |
-| CA firmante | Emisor aprobado, fuera del Edge | Disponibilidad/ubicación y política pendientes de preflight |
+| CA firmante | Emisor aprobado, fuera del Edge | Misma CA, custodia productiva confirmada; inaccesible al verificador/Edge |
 | Token webhook | Receptor aprobado | Credencial independiente, archivo privado |
 
 El vencimiento informado del leaf actual es **06/11/2026 22:03 Argentina**
@@ -80,9 +82,10 @@ existente. Inventario admite certificados con plazos distintos.
 Plantillas inertes UTC: monitor00/06/12/18:05, evaluación cada hora:15,
 renovación cada hora:25 sólo tras aprobación y notificaciones:03/:08/…/:58
 sólo tras aprobar el canal. El jitter de cada unidad se conserva. Timers `Persistent=false`, sin
-WakeSystem: no acumulan ejecuciones. El monitor local ya instalado sigue intacto,
-con sus umbrales históricos10d/7d; no reemplazarlo hasta migración autorizada.
-No tomar los nuevos7d/48h como política ya desplegada.
+WakeSystem: no acumulan ejecuciones. El monitor histórico quedó disabled/inactive tras la migración autorizada,
+con sus archivos conservados para rollback. Monitor/evaluate/renew nuevos están
+activos; notify continúa deshabilitado. Umbrales del mecanismo nuevo7d/48h,
+renovación<=10d. Esta sección describe capacidad; no acredita la primera rotación.
 
 Máximo3 intentos de renovación, backoff1h/2h/4h, luego revisión manual del estado;
 no borrar contadores para ocultar fallos. Éxito reinicia el presupuesto. CA, SAN,

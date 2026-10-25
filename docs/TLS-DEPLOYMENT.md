@@ -1,6 +1,7 @@
 # Entrega al operador de infrabadge-core
 
-**Preparación, no despliegue autorizado.** No enviar este procedimiento a otro chat
+**Procedimiento histórico de preparación.** El estado productivo vigente figura
+en la sección final; no ejecutar una reinstalación desde este cierre. No enviar a otro chat
 ni ejecutarlo contra el Core automáticamente. No repetir los pilotos M3.7 ya
 superados. El piloto TLS descartable ya fue informado como satisfactorio por el operador.
 El verificador corregido ya pasó tres veces bajo sandbox real; PR11 está integrado.
@@ -115,8 +116,8 @@ no ejecutar retirement del Edge para desinstalar esta función. Una retirada de
 código no revierte una hoja renovada válida: volver al par anterior es una
 operación explícita, con aprobación y verificación, nunca una copia ciega.
 
-Pendientes: confirmar custodia y disponibilidad del firmante actual, primera renovación autorizada y
-activación separada de timers/canal. La guardia/rollback y alertas locales previas
+Pendientes históricos de esta preparación, resueltos según el estado productivo
+final para instalación/custodia/timers. Primera rotación y canal externo siguen pendientes. La guardia/rollback y alertas locales previas
 son evidencia del operador, no nuevos ensayos de este chat.
 
 
@@ -202,63 +203,67 @@ Noche está deshabilitada y TRABAJO ausente. Renovar el leaf bajo la **misma CA 
 SAN** no requiere cambiar el ESP32. No usar su token para el probe ni abrir USB.
 Ver [cierre CASA](CASA-STABLE.md) para la única prueba nocturna opcional pendiente.
 
-## Paquete operativo de cierre y bloqueos reales (25/10/2026)
+## Estado productivo confirmado (25/10/2026)
 
-La lectura protegida confirmó Edge/Core activos sin reinicios ni errores recientes,
-collector timer activo, NTP, tres nodos frescos y firewall exactamente propio.
-Leaf vence **06/11/2026 22:03:10 ART**; primera elegibilidad `renewal_due`:
-**27/10/2026 22:03:10 ART**, diez días antes. Antes, `renew` devuelve `not_due`:
-no variar reloj/umbral ni forzar. Si el siguiente intento se demora hasta quedar
-<=7 días, revisar el margen del precheck/rollback; no prometer el mismo recorrido.
-CA Edge vence21/01/2027 a22:03:10 ART; su renovación/distribución es otra operación.
+La operación autorizada separada instaló el release TLS bd4a98a y dos complementos
+operativos (`inventory_cli.py`/`inventory_contract.py`) para la transacción exacta
+del inventario del par. No son cambios de código de este PR documental. Su
+manifiesto privado preserva fuente, unidades, hashes, backup y recibos; no publicar
+ese inventario ni los logs. El merge no vuelve a desplegar el release instalado.
 
-El paquete local privado contiene inventario, config/runtime candidatos con
-UID/GID, SAN y hashes observados; fuente/manifest y nueve unidades fijadas al
-SHA de cierre. Es **inactivo**, no un instalador que pueda ejecutarse ciegamente.
-Antes de aplicar, repetir únicamente comparación de drift/NTP/fechas/estado del
-mismo material; no toda la auditoría ni nuevas pruebas físicas de periféricos.
+| Elemento | Estado confirmado |
+| --- | --- |
+| monitor/evaluate/renew timers | active/enabled |
+| monitor histórico | disabled/inactive; archivos conservados para rollback |
+| notify timer / webhook | disabled/inactive / null; sin avisos externos |
+| firmante | misma CA y clave original bajo custodia privada, aislada del Edge/verificador |
+| leaf/CA activos | conservados, sin primera rotación |
+| ejecución real renew | `not_due`, `renewal_due=false` |
+| Core/Edge/collectors | operativos, tres nodos frescos en cierre productivo |
 
-Dos controles impiden declarar renovación operativa hoy:
+Rollback real de **instalación** probado dejando vencer la guardia independiente
+120s: retiró/restauró exactamente el baseline y su inventario, seguido por una
+verificación separada; después se confirmó la instalación final. No se rotó el
+leaf ni se reiniciaron Core/Edge. No confundir ese resultado con rollback físico
+del primer leaf productivo renovado. El inventario transaccional sólo admite las
+entradas autorizadas del par; la migración retiró exclusivamente el enlace wants
+del timer histórico, preservando el resto del registro.
 
-- `/etc/infrabadge-tls-signer/ca.key` no existe; no se encontró un firmante CA en
-  las ubicaciones inspeccionadas. Esto no acredita que se haya perdido: confirmar
-  con el custodio la clave de la **misma CA** o emisor autorizado. No crear otra CA.
-  El candidato issuer describe el destino aprobado futuro, no una clave existente.
-  Validar correspondencia y capacidad de firma exclusivamente dentro del custodio.
-- El inventario privado de retirada del Edge fija hashes del par actual. El motor
-  TLS no lo modifica. Para la primera operación supervisada: respaldar ese
-  manifiesto junto al par, validar el inventario completo contra baseline antes,
-  y tras commit sustituir **sólo** las entradas de `server.pem`/`server.key` bajo
-  lock administrativo; comprobar que ningún otro byte lógico cambió. Ante
-  rollback restaurar esas dos entradas antiguas y verificar inventario/HTTPS.
-  Si cualquier otro elemento deriva, abortar sin rebaselinarlo. Conservar ambos
-  manifiestos privados. No habilitar `renew.timer` hasta automatizar/probar este
-  contrato de inventario en la transacción autorizada: un delta manual de una
-  renovación no valida renovaciones futuras desatendidas.
+Leaf vence **06/11/2026 22:03:10 ART**. Primera elegibilidad de10 días:
+**27/10/2026 22:03:10 ART**. Renew horario:25 UTC con jitter; primera oportunidad
+prevista después del umbral alrededor de22:25 ART, sujeta a reloj, estado y
+validaciones. No ejecutar una rotación anticipada para cerrar v0.1.0. La CA vence
+21/01/2027 a22:03:10 ART; renovar leaf no prolonga su CA.
 
-Migración de timers tras aprobación: registrar `is-enabled`/`is-active` del
-histórico; arrancar monitor nuevo una vez y verificar estado/heartbeat; sólo
-entonces retirar su timer histórico y activar monitor/evaluate nuevos.
-Histórico:00/06/12/18:00 UTC; nuevo monitor:05, evaluate:15, renew:25,
-notify:03/08/…/58. Persistent=false en los nuevos. El lock evita concurrencia;
-los horarios reducen colisiones, no sustituyen el lock. Si falla la migración,
-restaurar los estados exactos del histórico y detener sólo las unidades nuevas.
-La retirada del timer histórico quita también su enlace en `timers.target.wants`,
-registrado por el inventario de retirada. Preparar un delta **separado y exacto**
-de esa única entrada y el estado enabled/active, conservando manifiesto anterior;
-restaurarlos juntos si se revierte la migración. No tratarlo como deriva permitida
-general ni recalcular todo el inventario. No retirar los archivos de la unidad
-histórica durante esta primera migración.
-No activar renew/notify con monitor/evaluate. Sin receptor aprobado, webhook null;
-los fallos se guardan localmente, no se promete aviso externo ni vigilancia del
-host apagado. Revisar journal y última ejecución como parte del control operativo.
+Calendario UTC: monitor00/06/12/18:05, evaluate cada hora:15, renew:25;
+`Persistent=false`, lock compartido. Enable no acredita una prueba física de
+reinicio; no se reinició la Pi para validarlo. El monitor mantiene heartbeat y
+la evaluación detecta su ausencia localmente aunque no exista canal externo.
 
-**Una aprobación operativa agrupada futura** puede cubrir instalación aislada,
-custodia, backup/restauración separada del par/config/inventario, guardia120s,
-primera renovación dentro del umbral, stop/start sólo Edge, probe LAN200/304 y
-migración monitor/evaluate. Requiere primero resolver los dos controles anteriores.
-No incluye renovación automática, canal externo ni reboots. Activar renew.timer
-requiere contrato de retirada automatizado; notify requiere receptor aprobado.
-El timer transitorio no sobrevive reboot: transacción pending debe recuperarse
-con el mismo release antes de cualquier reinicio autorizado. No declarar crash
-recovery de arranque validado por el piloto de kill de proceso.
+**Observación collector:** tres fallos transitorios `collection_or_submission_failed`
+recuperados, seguidos de envíos exitosos y estado fresco. **Causa desconocida**;
+no se atribuyen a RAM, TLS, red, temporización ni instalación. No se cambiaron
+políticas o unidades ni se inicia investigación extensa mientras no reaparezcan.
+También se conservaron timeouts SSH del cierre: se recuperaron recibos ya
+completados mediante lectura, sin repetir escrituras; causa no confirmada.
+
+### Uso del procedimiento histórico anterior
+
+Las secciones previas conservan el procedimiento preparado antes de la operación.
+Sus aprobaciones de instalación ya se consumieron; no son una orden de reinstalar,
+habilitar otra vez timers o repetir pilotos. La primera rotación queda a cargo
+del timer autorizado cuando `renewal_due`; observar recibos, nueva vigencia y HTTPS.
+
+El entorno productivo usa el adaptador de inventario aprobado para `renew` y
+`recover`, no la CLI base aislada mostrada en el ejemplo histórico. Saltarlo
+omitiría el contrato de retirada. Ante recuperación pendiente, usar el mismo
+release/adaptador y backup privado registrado; no regenerar inventarios ni
+restaurar una SQLite antigua. No ejecutar recovery como prueba adicional de cierre.
+Guardias transitorias no sobreviven reboot: ante corte y pending, revisar y
+recuperar par/registro antes de operar; recuperación automática de arranque no
+se declara validada. No retirar una instalación confirmada invocando su guardia
+consumida; una retirada administrativa requiere autorización nueva y control de drift.
+
+La primera rotación productiva, alerta externa, reinicio futuro, modo nocturno y
+mediciones eléctricas permanecen pendientes diferenciados. Ninguna operación en
+Core/Edge/certificados/servicios/timers/red/ESP32 se ejecuta en este cierre documental.

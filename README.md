@@ -21,11 +21,13 @@ autónomas comprobadas. Noche deshabilitada y TRABAJO ausente.
 
 [Cierre y límites actuales](docs/CASA-STABLE.md),
 [operación TLS](docs/TLS-DEPLOYMENT.md), [modo nocturno](docs/NIGHT-MODE.md).
-La renovación está implementada, pero **no instalada ni activada**; el leaf
-vence el06/11/2026 a las22:03:10 ART. El umbral de10 días se alcanza el27/10
-a las22:03:10 ART. Custodia del firmante y activación requieren autorización.
-No hay tag ni release publicados por este cierre. Las secciones siguientes
-conservan el historial de cada etapa; no describen todas el despliegue actual.
+La renovación TLS supervisada está **instalada**, con monitor/evaluate/renew
+activos y monitor histórico deshabilitado. Rollback de instalación con restauración
+exacta probado; la **primera rotación real del leaf sigue pendiente**. El leaf
+vence el06/11/2026 a las22:03:10 ART; umbral de10 días el27/10 a las22:03:10 ART.
+Tres fallos transitorios del collector se recuperaron; causa no determinada.
+[Notas preparadas de v0.1.0 CASA](docs/releases/v0.1.0.md). Sin tag ni release
+publicados. Las secciones siguientes conservan el historial de cada etapa.
 
 ## M3.5: UI multisitio y edge HTTPS
 
@@ -370,23 +372,25 @@ original se elegirá antes de publicar; los avisos Waveshare ya están preservad
 
 ## Preparación M3.6: roaming y reposo nocturno
 
-Perfil independiente `roaming`, todavía no instalado: dos redes/edges fijos,
+Perfil independiente `roaming`, instalado en CASA con un único binding activo:
+dos redes/edges fijos como capacidad software,
 TLS verificado y suspensión configurable00:00–08:00 Buenos Aires. Preserva M3.5
 y la configuración existente; sin cambios en Core/collectors/edges actuales.
 [Arquitectura](docs/M3.6-ARCHITECTURE.md), [modo nocturno](docs/NIGHT-MODE.md),
 [tests y tamaño](docs/M3.6-VALIDATION.md), [procedimiento sin ejecución](docs/M3.6-DEPLOYMENT.md).
-Requiere integrar primero PR #8 y autorización separada para cualquier despliegue,
-provisión o carga. La validación física nueva y el consumo permanecen pendientes.
+PR8 y M3.6 ya integrados; cualquier nueva provisión o carga requiere autorización.
+Roaming TRABAJO, noche real y consumo permanecen pendientes.
 
 ## Preparación de edges permanentes
 
 [Paquete ejecutable e inerte](docs/PERMANENT-EDGES.md): preflight allowlisted,
 plantillas nativas/systemd, HTTPS probe con identidad propia y rollback limitado
 a sus unidades/tabla. CASA se prepara en infrabadge-core, con HTTPS loopback hacia el Core;
-nas-01 queda sólo como NAS/Docker/collector. Ningún servicio o regla desplegados. TRABAJO requiere aprobación organizacional.
+nas-01 queda sólo como NAS/Docker/collector. Edge CASA permanente operativo;
+TRABAJO requiere aprobación organizacional.
 [Plan físico futuro](docs/PERMANENT-EDGES-PHYSICAL.md): roaming/noche y energía
-pendientes; M3.5 instalado se conserva.
+pendientes; M3.6 es el baseline diurno instalado.
 
 Renovación TLS supervisada: [diseño y pruebas](docs/TLS-LIFECYCLE.md),
-[procedimiento de piloto y rollback](docs/TLS-DEPLOYMENT.md). Código preparado,
-sin rotación ni notificaciones productivas habilitadas.
+[estado productivo y rollback](docs/TLS-DEPLOYMENT.md). Supervisión instalada y
+timers activos; primera rotación real pendiente y notificación externa deshabilitada.
