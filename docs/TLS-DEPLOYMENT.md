@@ -3,7 +3,9 @@
 **Preparación, no despliegue autorizado.** No enviar este procedimiento a otro chat
 ni ejecutarlo contra el Core automáticamente. No repetir los pilotos M3.7 ya
 superados. El piloto TLS descartable ya fue informado como satisfactorio por el operador.
-Para esta corrección sólo falta el verificador bajo su sandbox en el Core.
+El verificador corregido ya pasó tres veces bajo sandbox real; PR11 está integrado.
+Se conserva el fallo inicial de probe con causa no determinada. No repetir esos
+ensayos ni las pruebas diurnas del ESP32.
 
 ## Preflight de sólo lectura
 
@@ -113,8 +115,7 @@ no ejecutar retirement del Edge para desinstalar esta función. Una retirada de
 código no revierte una hoja renovada válida: volver al par anterior es una
 operación explícita, con aprobación y verificación, nunca una copia ciega.
 
-Pendientes: comprobación dirigida del verificador corregido en Core, reconfirmar
-firmante/material actuales antes de rotar, primera renovación autorizada y
+Pendientes: confirmar custodia y disponibilidad del firmante actual, primera renovación autorizada y
 activación separada de timers/canal. La guardia/rollback y alertas locales previas
 son evidencia del operador, no nuevos ensayos de este chat.
 
@@ -125,11 +126,9 @@ No ejecutar desde este chat. Usar el SHA corregido aprobado por CI, release
 readonly y configuración privada vigente, no los valores sintéticos. No habilitar
 timers ni notificaciones durante esta primera operación.
 
-1. **Cerrar el defecto**: preparar sólo el candidato del verificador y su unidad
-   en el Core, preservando InaccessiblePaths de server.key y del firmante. Ejecutar
-   su oneshot una vez contra el listener aprobado: debe confirmar HTTPS/leaf/v2
-   sin abrir ni stat de la clave. No cambiar permisos de custodia para hacerlo pasar.
-   Registrar SHA/unidad/resultado saneado. No reiniciar Edge para esta comprobación.
+1. **Código fijado**: usar el SHA de cierre con CI aprobada y sus nueve unidades
+   preparadas, conservando las barreras de claves del verificador. Las tres
+   comprobaciones reales del defecto anterior ya existen; no repetir el piloto.
 2. **Preflight** (lecturas): confirmar NTP, salud de Core/collector/Edge, ausencia
    de transacción pendiente y otros renovadores; leaf anterior >7d, CA fijada/SAN
    sin cambios, firmante aprobado disponible y configurado para14d. Leer claves
@@ -195,23 +194,65 @@ El webhook sigue `null` hasta aprobar receptor HTTPS y credencial privada propio
 No enviar avisos reales para probar el canal: las13 pruebas locales ya informadas
 más las regresiones software se conservan como evidencia separada.
 
-## ESP32: regreso mínimo, sin cambiar firmware
+## ESP32 CASA actual
 
-- M3.5 instalado puede consultar el Edge CASA permanente mediante v2. Confirmar
-  endpoint/IP estable, fuente del ESP32 ya autorizada y device_id/token/scopes v2
-  existentes; no regenerarlos si coinciden. No modificar reglas desde este chat.
-- Renovar únicamente el leaf con la misma CA y SAN no requiere actualizar la CA
-  del ESP32. Pero la **primera migración desde el Edge Fedora** sí debe comparar
-  huellas: no asumir que ya confía en la CA del Edge permanente.
-- Preparar un nuevo archivo privado0600 IBPROV1 con URL CASA8443, CA pública
-  correcta, identidad device, Wi-Fi existente y UTC fresco de host confiable.
-  Reutilizar `tools/m2/provision.py` (validación previa y envío único); M3.5 usa
-  ventana IBPROV_READY tras arranque, no asumir que BOOT corto abre provisión.
-  Una carga USB de configuración/NVS y cualquier reset necesitan autorización
-  explícita aparte; no flashear ni reutilizar planes consumidos. No usar RTC2056.
-- Tras provisión autorizada: cerrar serie, observar un200 real, resumen REAL /
-  HTTPS OK / nodos / HORA VERIFICADA y una consulta autónoma sin tocar botones.
-  No repetir navegación, periféricos ni el conjunto M2 ya validado. Un304 sólo
-  corresponde si no cambió el snapshot; las métricas reales pueden producir200.
-- Con ese enlace estable, siguiente paso: M3.6 roaming y modo nocturno ya
-  implementados, con autorización propia antes de cargar/provisionar el perfil.
+M3.6 ya está instalado con binding CASA, CA y credencial device propia; HTTPS,
+hora, navegación y consulta autónoma están comprobados. No depende de Fedora.
+Noche está deshabilitada y TRABAJO ausente. Renovar el leaf bajo la **misma CA y
+SAN** no requiere cambiar el ESP32. No usar su token para el probe ni abrir USB.
+Ver [cierre CASA](CASA-STABLE.md) para la única prueba nocturna opcional pendiente.
+
+## Paquete operativo de cierre y bloqueos reales (25/10/2026)
+
+La lectura protegida confirmó Edge/Core activos sin reinicios ni errores recientes,
+collector timer activo, NTP, tres nodos frescos y firewall exactamente propio.
+Leaf vence **06/11/2026 22:03:10 ART**; primera elegibilidad `renewal_due`:
+**27/10/2026 22:03:10 ART**, diez días antes. Antes, `renew` devuelve `not_due`:
+no variar reloj/umbral ni forzar. Si el siguiente intento se demora hasta quedar
+<=7 días, revisar el margen del precheck/rollback; no prometer el mismo recorrido.
+CA Edge vence21/01/2027 a22:03:10 ART; su renovación/distribución es otra operación.
+
+El paquete local privado contiene inventario, config/runtime candidatos con
+UID/GID, SAN y hashes observados; fuente/manifest y nueve unidades fijadas al
+SHA de cierre. Es **inactivo**, no un instalador que pueda ejecutarse ciegamente.
+Antes de aplicar, repetir únicamente comparación de drift/NTP/fechas/estado del
+mismo material; no toda la auditoría ni nuevas pruebas físicas de periféricos.
+
+Dos controles impiden declarar renovación operativa hoy:
+
+- `/etc/infrabadge-tls-signer/ca.key` no existe; no se encontró un firmante CA en
+  las ubicaciones inspeccionadas. Esto no acredita que se haya perdido: confirmar
+  con el custodio la clave de la **misma CA** o emisor autorizado. No crear otra CA.
+  El candidato issuer describe el destino aprobado futuro, no una clave existente.
+  Validar correspondencia y capacidad de firma exclusivamente dentro del custodio.
+- El inventario privado de retirada del Edge fija hashes del par actual. El motor
+  TLS no lo modifica. Para la primera operación supervisada: respaldar ese
+  manifiesto junto al par, validar el inventario completo contra baseline antes,
+  y tras commit sustituir **sólo** las entradas de `server.pem`/`server.key` bajo
+  lock administrativo; comprobar que ningún otro byte lógico cambió. Ante
+  rollback restaurar esas dos entradas antiguas y verificar inventario/HTTPS.
+  Si cualquier otro elemento deriva, abortar sin rebaselinarlo. Conservar ambos
+  manifiestos privados. No habilitar `renew.timer` hasta automatizar/probar este
+  contrato de inventario en la transacción autorizada: un delta manual de una
+  renovación no valida renovaciones futuras desatendidas.
+
+Migración de timers tras aprobación: registrar `is-enabled`/`is-active` del
+histórico; arrancar monitor nuevo una vez y verificar estado/heartbeat; sólo
+entonces retirar su timer histórico y activar monitor/evaluate nuevos.
+Histórico:00/06/12/18:00 UTC; nuevo monitor:05, evaluate:15, renew:25,
+notify:03/08/…/58. Persistent=false en los nuevos. El lock evita concurrencia;
+los horarios reducen colisiones, no sustituyen el lock. Si falla la migración,
+restaurar los estados exactos del histórico y detener sólo las unidades nuevas.
+No activar renew/notify con monitor/evaluate. Sin receptor aprobado, webhook null;
+los fallos se guardan localmente, no se promete aviso externo ni vigilancia del
+host apagado. Revisar journal y última ejecución como parte del control operativo.
+
+**Una aprobación operativa agrupada futura** puede cubrir instalación aislada,
+custodia, backup/restauración separada del par/config/inventario, guardia120s,
+primera renovación dentro del umbral, stop/start sólo Edge, probe LAN200/304 y
+migración monitor/evaluate. Requiere primero resolver los dos controles anteriores.
+No incluye renovación automática, canal externo ni reboots. Activar renew.timer
+requiere contrato de retirada automatizado; notify requiere receptor aprobado.
+El timer transitorio no sobrevive reboot: transacción pending debe recuperarse
+con el mismo release antes de cualquier reinicio autorizado. No declarar crash
+recovery de arranque validado por el piloto de kill de proceso.

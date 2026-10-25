@@ -1,6 +1,6 @@
 # Reposo nocturno configurable — implementación M3.6
 
-No está instalado en el ESP32. Ejemplo público en
+M3.6 está instalado en CASA, con noche **deshabilitada**. Ejemplo público en
 `deploy/m36/policy.example.json`: deshabilitado hasta provisión explícita;
 horarios predeterminados00:00–08:00 y zona America/Argentina/Buenos_Aires.
 `night_start`/`night_end` aceptan HH:MM estricto, diferentes entre sí. Se admiten
@@ -76,8 +76,8 @@ M3.5 siguen activos. Referencia sintética, no fotografía:
 
 ![Pantalla esperada de reposo](m36-night.png)
 
-Para validar físicamente: autorizar app-only y bundle nuevos, hacer primero una
-ventana corta con hora real confiable (sin adelantar relojes del host/Core),
-verificar cero consultas en edge, retención óptica, wake manual y recuperación
-fresca; luego ventana00–08 en batería. Sin monitor USB durante sueño. Mediciones
-eléctricas y prueba nocturna real están pendientes; no se declara PASS físico.
+Una única prueba física00:00–08:00 con hora real está preparada en
+[CASA-STABLE](CASA-STABLE.md#una-noche-real-opcional). Requiere autorización para
+una provisión IBPROV36 de la política, conservando binding CASA, Wi-Fi, CA, token,
+URL e intervalos. No requiere reflashear ni un piloto corto previo. Sin saltos de
+reloj productivo. No se activó durante este cierre ni se declara ahorro medido.
