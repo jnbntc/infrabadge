@@ -15,3 +15,6 @@ select = ["E4", "E7", "E9", "F", "I"]
 "tools/permanent_edge/pilot.py" = ["E402"]
 "tools/permanent_edge/permanent.py" = ["E402"]
 "tools/permanent_edge/tls_check.py" = ["E402"]
+
+"tools/tls_lifecycle/cli.py" = ["E402"]
+"tools/tls_lifecycle/issuer.py" = ["E402"]

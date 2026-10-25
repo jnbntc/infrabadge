@@ -2,6 +2,6 @@
 set -euo pipefail
 cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.."
 files=(gateway/infrabadge_gateway/distributed gateway/tests/test_m32*.py gateway/tests/test_m35.py tools/m32 deploy/m32/native collector/fedora gateway/infrabadge_gateway/{app,base,metrics,models}.py
-       gateway/tests/test_m3.py gateway/tests/test_m3_https.py gateway/tests/test_m3_observer.py gateway/tests/test_m3_session.py tools/m3 tools/simulate_m3.py tools/m35 tests/m35 tools/m36 tests/m36 tools/permanent_edge tests/permanent_edge)
+       gateway/tests/test_m3.py gateway/tests/test_m3_https.py gateway/tests/test_m3_observer.py gateway/tests/test_m3_session.py tools/m3 tools/simulate_m3.py tools/m35 tests/m35 tools/m36 tests/m36 tools/permanent_edge tests/permanent_edge tools/tls_lifecycle tests/tls_lifecycle)
 ruff check "${files[@]}"
 ruff format --check "${files[@]}"

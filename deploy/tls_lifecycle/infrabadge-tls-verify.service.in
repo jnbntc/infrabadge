@@ -1,0 +1,35 @@
+# INERT: requires separately authorized installation and channel approval.
+[Unit]
+Description=InfraBadge CASA TLS post-renewal verification
+After=time-sync.target
+StartLimitIntervalSec=3600
+StartLimitBurst=3
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I -B @RELEASE@/tools/tls_lifecycle/cli.py verify
+TimeoutStartSec=45s
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_SETUID CAP_SETGID
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+RestrictSUIDSGID=true
+LockPersonality=true
+LimitAS=512M
+CPUQuota=20%
+TasksMax=16
+ReadWritePaths=/var/lib/infrabadge-tls
+StandardOutput=journal
+StandardError=journal
+LogRateLimitIntervalSec=60s
+LogRateLimitBurst=10
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+# Verification uses public files and the TLS handshake; no key metadata access.
+InaccessiblePaths=-/etc/infrabadge -/var/lib/infrabadge -/etc/infrabadge-edge-home/server.key -/etc/infrabadge-tls-signer

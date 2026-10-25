@@ -1,3 +1,28 @@
+# Current accelerated TLS fix (2026-10-24)
+
+- Work PR11/feat/supervised-tls-renewal from verified7eca981. Fix verifier key
+  isolation with public-only verification; never remove key/issuer masks or add
+  privileges to bypass custody. Keep key-pair validation in authorized renewer.
+- Operator reported previous65 TLS, five physical scenarios,120s guard/rollback
+  and13 local alerts passed. Do not repeat or attribute them to corrected code.
+  Corrected verifier on Core is pending; document it and keep PR11 unmerged.
+- Software/full CI, exact production procedure and M3.5 provisioning preparation
+  only. No production/SSH changes, rotation, timers, messages, network, NAS,
+  reboot or board operations. No new firmware; M3.6/night remains subsequent.
+
+# Current TLS lifecycle scope (2026-10-24)
+
+- User explicitly authorized ready/merge of PR10 after exact-SHA checks; merged
+  as ca9c172 with main CI successful. Preserve branches and operational evidence.
+- Work feat/supervised-tls-renewal from that main: software, disposable PKI/TLS
+  tests, inert units, docs and draft PR only; do NOT merge the new PR.
+- No real certificate rotation, CA replacement, Edge/Core/collector/host service
+  changes, installed timers, network/firewall/DNS/Grants, external messages,
+  board/USB/NVS/flash, NAS or work-host access. Production remains untouched.
+- Keep CA/SAN trust, v1/v2 ETag/TTL and dedicated probe identity. Never use the
+  lab CA generator to renew production. Signer custody/channel need approval.
+- No memory controller on Core: LimitAS is virtual, not RSS. Energy remains deferred.
+
 # Current CASA edge on Core (2026-10-23)
 
 - Adapt PR10/feat/permanent-edge-preparation in place. CASA runs on

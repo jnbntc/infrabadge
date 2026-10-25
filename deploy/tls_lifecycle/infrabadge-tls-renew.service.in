@@ -1,0 +1,35 @@
+# INERT: explicit one-shot activation; evaluate never triggers this automatically.
+[Unit]
+Description=InfraBadge supervised CASA leaf renewal
+After=time-sync.target
+StartLimitIntervalSec=3600
+StartLimitBurst=3
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 -I -B @RELEASE@/tools/tls_lifecycle/cli.py renew --execute-authorized-renewal
+TimeoutStartSec=100s
+UMask=0077
+NoNewPrivileges=true
+CapabilityBoundingSet=CAP_CHOWN CAP_DAC_OVERRIDE CAP_SETUID CAP_SETGID
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+RestrictSUIDSGID=true
+LockPersonality=true
+LimitAS=512M
+CPUQuota=20%
+TasksMax=16
+ReadWritePaths=/var/lib/infrabadge-tls
+StandardOutput=journal
+StandardError=journal
+LogRateLimitIntervalSec=60s
+LogRateLimitBurst=10
+ReadWritePaths=/etc/infrabadge-edge-home /run/systemd/transient
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+InaccessiblePaths=-/etc/infrabadge -/var/lib/infrabadge
