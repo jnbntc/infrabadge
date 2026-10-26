@@ -1,3 +1,16 @@
+# Current official CASA v0.1.0 publication (2026-10-25)
+
+- Owner explicitly authorizes Apache-2.0 for original code, license/docs PR,
+  merge under main rules, annotated v0.1.0 tag and public GitHub Release.
+- Work chore/license-v0.1.0 from verified main03e5948. License/docs only;
+  preserve third-party notices and scope, no functional changes or new features.
+- Verify exact PR HEAD/CI/protections, merge without bypass, then verify main CI
+  before tagging the exact commit. Publish notes from docs/releases/v0.1.0.md.
+- No extra binaries/assets, private data, hosts/services/timers/certs/network,
+  ESP32/USB/NVS or firmware intervention. The installed M3.6 is distinct from CI.
+- Preserve all accepted deferrals; do not claim first productive leaf rotation,
+  physical night/energy/TRABAJO or M3.6 expiry/recovery passed. No collector audit.
+
 # Current CASA v0.1.0 closure (2026-10-25)
 
 - User authorizes documentation-only update, Ready/merge of PR12 after exact-HEAD

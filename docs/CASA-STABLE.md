@@ -1,7 +1,7 @@
 # CASA — candidato de uso cotidiano v0.1.0
 
-Cierre25/10/2026. **v0.1.0 CASA propuesta**, sin tag/release publicado.
-[Notas de release preparadas](releases/v0.1.0.md).
+Cierre25/10/2026. **v0.1.0 CASA**, código original Apache-2.0.
+[Notas de release](releases/v0.1.0.md).
 Baseline fuente main `7e6d7afae33da9ffe712df9f8ad4a0754a472848`; los cambios de
 este cierre y su CI exacta se identifican en el único PR de consolidación.
 
@@ -146,8 +146,9 @@ no una restauración completa de flash. No se intervino USB durante este cierre.
 Instalación y activación TLS ya confirmadas en la operación autorizada separada.
 La política mantiene su umbral; no ejecutar una renovación manual anticipada.
 Noche requiere una provisión opcional autorizada; un canal externo necesita
-aprobación propia. Publicar tag/release v0.1.0 también requiere autorización y definir la licencia
-general pendiente en README; conservar avisos de terceros.
+aprobación propia. El propietario autorizó publicar tag anotado/release v0.1.0 y adoptó Apache-2.0
+para código original, conservando avisos de terceros. Publicar sólo sobre el
+commit definitivo de main con CI aprobada, sin desplegar ni cambiar el firmware.
 PR12 puede fusionarse sólo tras sus controles obligatorios y CI del HEAD exacto;
 CI posterior de main se verifica antes de presentar el candidato publicable.
 TRABAJO, audio/micrófono/LED, OTA, energía, movilidad Fedora, caducidad/recuperación
