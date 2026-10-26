@@ -1,0 +1,13 @@
+InfraBadge
+Copyright 2026 jnbntc and InfraBadge contributors.
+
+Original InfraBadge project code is licensed under the Apache License,
+Version 2.0. See LICENSE for the complete license text.
+
+Third-party material retains its own copyright and license notices.
+The Waveshare e-paper waveform and adapted register protocol retain the
+original Waveshare team permission notice, reproduced without alteration
+in third_party/Waveshare-NOTICE.txt. See THIRD_PARTY.md for scope, provenance,
+and the licenses of separately obtained SDK/runtime/build dependencies.
+
+This NOTICE is informational and does not replace or modify those licenses.

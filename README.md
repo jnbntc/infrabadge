@@ -1,5 +1,8 @@
 # InfraBadge — monitoreo distribuido CASA
 
+Licencia del código original: **Apache-2.0** — [LICENSE](LICENSE).
+Avisos y exclusiones de terceros: [NOTICE](NOTICE) y [THIRD_PARTY.md](THIRD_PARTY.md).
+
 InfraBadge es un dispositivo open source de monitoreo de infraestructura sobre
 **Waveshare ESP32-S3-ePaper-1.54 V2**. M0 prepara y compila pruebas de hardware:
 pantalla, batería/RTC/SHTC3 y un ciclo de deep sleep, sin red. M2 añade un perfil
@@ -12,7 +15,7 @@ exclusivamente el entorno de desarrollo. No se flashea hardware automáticamente
 
 ![Simulación del diseño; no es una fotografía](docs/m0-screen.png)
 
-## Estado actual CASA — candidato v0.1.0
+## InfraBadge CASA v0.1.0
 
 Core y Edge CASA permanentes corren en `infrabadge-core`; el ESP32 consulta
 HTTPS8443 directamente. Fedora sólo aporta su collector independiente.
@@ -26,8 +29,8 @@ activos y monitor histórico deshabilitado. Rollback de instalación con restaur
 exacta probado; la **primera rotación real del leaf sigue pendiente**. El leaf
 vence el06/11/2026 a las22:03:10 ART; umbral de10 días el27/10 a las22:03:10 ART.
 Tres fallos transitorios del collector se recuperaron; causa no determinada.
-[Notas preparadas de v0.1.0 CASA](docs/releases/v0.1.0.md). Sin tag ni release
-publicados. Las secciones siguientes conservan el historial de cada etapa.
+[Notas de v0.1.0 CASA](docs/releases/v0.1.0.md).
+Las secciones siguientes conservan el historial de cada etapa.
 
 ## M3.5: UI multisitio y edge HTTPS
 
@@ -366,8 +369,8 @@ La imagen es una simulación del diseño, no una captura de la placa.
 El backup privado de fábrica queda fuera de Git y CI. Se cargaron los tres perfiles
 M0 tras autorización explícita del usuario. Después se cargó M1 y, para el diagnóstico
 actual, M1.1 con autorización nueva; fábrica no se restauró. No se ejecutaron borrado completo, escrituras de eFuses ni
-cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. La licencia general del código
-original se elegirá antes de publicar; los avisos Waveshare ya están preservados.
+cambios de Secure Boot/Flash Encryption. Las nuevas escrituras requieren autorización. El código original se distribuye bajo Apache-2.0; los avisos y las licencias
+de Waveshare y otros terceros se conservan y no se sustituyen por la licencia propia.
 
 
 ## Preparación M3.6: roaming y reposo nocturno
